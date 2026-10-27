@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{t:meta.title}}</title>
+<meta name="description" content="{{t:meta.description}}">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#16141C">
+<meta property="og:type" content="website">
+<meta property="og:title" content="{{t:meta.title}}">
+<meta property="og:description" content="{{t:meta.description}}">
+<meta property="og:image" content="og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="favicon.ico" sizes="16x16 32x32 48x48">
+<link rel="icon" href="icon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="site.webmanifest">
+<link rel="stylesheet" href="{{var:css}}">
+<link rel="preload" as="image" href="{{var:firstPoster}}" fetchpriority="high">
+<script src="{{var:js}}" defer></script>
+</head>
+<body>
+<a class="skip" href="#download" data-i18n="skip">{{t:skip}}</a>
+
+<header class="top">
+  <a class="brand" href="./" aria-label="Vestra Player">
+    <img src="logo-80.png" width="40" height="40" alt="">
+    <span>Vestra Player</span>
+  </a>
+  <nav class="nav-links">
+    <a href="#highlights" data-i18n="nav.features">{{t:nav.features}}</a>
+    <a href="#download" data-i18n="nav.download">{{t:nav.download}}</a>
+    <button type="button" class="lang" id="lang-toggle" lang="zh-Hans" data-i18n="nav.lang" data-i18n-attr="aria-label:nav.langLabel" aria-label="{{t:nav.langLabel}}">{{t:nav.lang}}</button>
+  </nav>
+</header>
+
+<main>
+  <section class="hero" aria-labelledby="hero-title">
+    <h1 id="hero-title" data-i18n="hero.title">{{t:hero.title}}</h1>
+    <p class="lede" data-i18n="hero.lede">{{t:hero.lede}}</p>
+    <div class="cta" id="cta">
+{{slot:cta}}
+    </div>
+    <p class="cta-more">
+      <a href="#download" data-i18n="hero.other">{{t:hero.other}}</a>
+      <span class="dot" aria-hidden="true">·</span>
+      <span data-i18n="hero.unsigned">{{t:hero.unsigned}}</span>
+    </p>
+
+    <div class="tour" id="tour" style="--ratio: {{var:frameRatioNumber}}" role="region" aria-roledescription="carousel" data-i18n-attr="aria-label:tour.label" aria-label="{{t:tour.label}}">
+      <div class="stage">
+        <button type="button" class="arrow prev" data-i18n-attr="aria-label:tour.prev" aria-label="{{t:tour.prev}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+        <div class="frame" style="aspect-ratio: {{var:frameRatio}}">
+          <img class="chrome" src="{{var:frameImage}}" width="{{var:frameWidth}}" height="{{var:frameHeight}}" alt="{{var:frameAlt}}" data-i18n-alt-frame>
+{{slot:slides}}
+          <button type="button" class="clip-toggle" hidden data-i18n-attr="aria-label:tour.playClip" aria-label="{{t:tour.playClip}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></button>
+        </div>
+        <button type="button" class="arrow next" data-i18n-attr="aria-label:tour.next" aria-label="{{t:tour.next}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+      </div>
+      <div class="caption" id="tour-caption" aria-live="off">
+{{slot:caption}}
+      </div>
+      <div class="controls">
+        <button type="button" class="pause" aria-pressed="false" data-i18n-attr="aria-label:tour.pause" aria-label="{{t:tour.pause}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="i-pause" d="M7 5h3v14H7zM14 5h3v14h-3z"/><path class="i-play" d="M8 5v14l11-7z"/></svg></button>
+        <div class="dots">
+{{slot:dots}}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="highlights" id="highlights" aria-labelledby="hl-title">
+    <h2 id="hl-title" class="visually-hidden" data-i18n="hl.title">{{t:hl.title}}</h2>
+    <ul>
+      <li><h3 data-i18n="hl.mpv.title">{{t:hl.mpv.title}}</h3><p data-i18n="hl.mpv.text">{{t:hl.mpv.text}}</p></li>
+      <li><h3 data-i18n="hl.plugins.title">{{t:hl.plugins.title}}</h3><p data-i18n="hl.plugins.text">{{t:hl.plugins.text}}</p></li>
+      <li><h3 data-i18n="hl.seek.title">{{t:hl.seek.title}}</h3><p data-i18n="hl.seek.text">{{t:hl.seek.text}}</p></li>
+      <li><h3 data-i18n="hl.open.title">{{t:hl.open.title}}</h3><p data-i18n="hl.open.text">{{t:hl.open.text}}</p></li>
+    </ul>
+  </section>
+
+  <section class="download" id="download" aria-labelledby="dl-title">
+    <h2 id="dl-title" data-i18n="dl.title">{{t:dl.title}}</h2>
+    <p class="section-lede" data-i18n="dl.lede">{{t:dl.lede}}</p>
+{{slot:downloads}}
+    <div class="dl-foot">
+{{slot:requirements}}
+      <p class="verify" data-i18n-html="dl.verify">{{h:dl.verify}}</p>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="foot-grid">
+    <div>
+      <h2 data-i18n="ft.links">{{t:ft.links}}</h2>
+      <ul class="foot-links">
+{{slot:links}}
+      </ul>
+    </div>
+    <div>
+      <h2 data-i18n="ft.credits">{{t:ft.credits}}</h2>
+{{slot:credits}}
+    </div>
+  </div>
+  <p class="licence" data-i18n-html="ft.licence">{{slot:licence}}</p>
+  <p data-i18n="ft.builtWith">{{t:ft.builtWith}}</p>
+  <p data-i18n="ft.privacy">{{t:ft.privacy}}</p>
+</footer>
+
+<script type="application/json" id="page-data">{{slot:data}}</script>
+</body>
+</html>

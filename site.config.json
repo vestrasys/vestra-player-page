@@ -1,0 +1,18 @@
+{
+  "$comment": "Links and facts the page shows. A null link is left out of the page.",
+  "links": {
+    "playerRepo": null,
+    "pluginsRepo": "https://github.com/vestrasys/vestra-player-plugins",
+    "sdkRepo": "https://github.com/vestrasys/vestra-player-sdk",
+    "sdkDocs": "https://vestrasys.github.io/vestra-player-sdk/",
+    "pageRepo": "https://github.com/vestrasys/vestra-player-page"
+  },
+  "playerLicense": {
+    "name": "GPL-3.0-or-later",
+    "url": "https://www.gnu.org/licenses/gpl-3.0.html"
+  },
+  "pluginsLicense": {
+    "name": "Apache-2.0",
+    "url": "https://www.apache.org/licenses/LICENSE-2.0"
+  }
+}
