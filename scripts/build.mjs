@@ -19,6 +19,8 @@ const site = readJson(fromRoot("site.config.json"));
 const releaseConfig = readJson(fromRoot("release.config.json"));
 if (process.env.RELEASE_INCLUDE_PRERELEASES === "1") releaseConfig.includePrereleases = true;
 const manifest = readJson(fromRoot("media/slides.json"));
+// Hidden slides (drafts such as a slide whose recording does not exist yet) stay out of the page.
+manifest.slides = (manifest.slides ?? []).filter((slide) => !slide.hidden);
 const i18n = readJson(fromRoot("src/i18n.json"));
 const credits = parseCredits(readFileSync(fromRoot("media/CREDITS.md"), "utf8"));
 
@@ -54,6 +56,7 @@ const media = copyMedia();
 
 const frame = manifest.frame;
 const slots = {
+  backdrop: renderBackdrop(),
   cta: renderCta(),
   slides: manifest.slides.map(renderSlide).join("\n"),
   caption: renderCaption(manifest.slides[0]),
@@ -72,6 +75,7 @@ const slots = {
 const vars = {
   css, js,
   firstPoster: manifest.slides[0].poster,
+  backdropPoster: manifest.backdrop?.poster ?? manifest.slides[0].poster,
   frameImage: frame.image,
   frameWidth: frame.width,
   frameHeight: frame.height,
@@ -125,8 +129,12 @@ function hashed(source, name, ext) {
   return file;
 }
 
-function checkManifest({ frame, slides }) {
+function checkManifest({ backdrop, frame, slides }) {
   const files = [frame.image];
+  if (backdrop) {
+    if (!backdrop.poster || !backdrop.sources?.length) fail("media/slides.json backdrop: needs a poster and sources");
+    files.push(backdrop.poster, ...backdrop.sources.map((s) => s.src));
+  }
   if (!slides?.length) fail("media/slides.json: no slides");
   const ids = new Set();
   for (const slide of slides) {
@@ -149,6 +157,10 @@ function checkManifest({ frame, slides }) {
 /** Copies only the media the manifest names (local paths). */
 function copyMedia() {
   const files = new Set([manifest.frame.image]);
+  if (manifest.backdrop) {
+    files.add(manifest.backdrop.poster);
+    for (const source of manifest.backdrop.sources) files.add(source.src);
+  }
   for (const s of manifest.slides) {
     files.add(s.poster);
     if (s.icon) files.add(s.icon);
@@ -170,6 +182,18 @@ function area(slide) {
   const a = manifest.frame.areas[slide.area];
   const pct = (v, of) => `${((v / of) * 100).toFixed(4)}%`;
   return `left:${pct(a.x, frame.width)};top:${pct(a.y, frame.height)};width:${pct(a.width, frame.width)};height:${pct(a.height, frame.height)}`;
+}
+
+/** The looping video behind the hero; main.js starts it (never with reduced motion or Save-Data). */
+function renderBackdrop() {
+  const b = manifest.backdrop;
+  if (!b) return "";
+  const sources = b.sources.map((s) => `    <source src="${escape(s.src)}" type="${escape(s.type)}">`).join("\n");
+  return `<div class="backdrop" aria-hidden="true">
+  <video muted loop playsinline preload="none" poster="${escape(b.poster)}" tabindex="-1">
+${sources}
+  </video>
+</div>`;
 }
 
 function renderSlide(slide, i) {

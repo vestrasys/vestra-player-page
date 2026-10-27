@@ -1,5 +1,18 @@
 {
-  "$comment": "Feature carousel. Paths are relative to the site root (this repository's root at build time). Replace placeholder-* files with real recordings and edit only this file; see README.md 'Replacing media'.",
+  "$comment": "Hero backdrop and feature carousel. Paths are relative to the site root (this repository's root at build time). Replace placeholder-* files with real recordings and edit only this file; see README.md 'Replacing media'. A slide with \"hidden\": true is left out of the page (its files need not exist).",
+  "backdrop": {
+    "poster": "media/posters/aurora.webp",
+    "sources": [
+      {
+        "src": "media/clips/aurora.webm",
+        "type": "video/webm; codecs=av01.0.09M.08"
+      },
+      {
+        "src": "media/clips/aurora.mp4",
+        "type": "video/mp4; codecs=avc1.64002A"
+      }
+    ]
+  },
   "frame": {
     "image": "media/frame/placeholder-frame.webp",
     "width": 684,
@@ -9,8 +22,18 @@
       "zh-Hans": "Vestra Player 窗口"
     },
     "areas": {
-      "client": { "x": 1, "y": 26, "width": 682, "height": 588 },
-      "video": { "x": 1, "y": 26, "width": 402, "height": 531 }
+      "client": {
+        "x": 1,
+        "y": 26,
+        "width": 682,
+        "height": 588
+      },
+      "video": {
+        "x": 1,
+        "y": 26,
+        "width": 402,
+        "height": 531
+      }
     }
   },
   "slides": [
@@ -27,26 +50,37 @@
       },
       "poster": "media/posters/placeholder-menus.webp",
       "sources": [
-        { "src": "media/clips/placeholder-menus.webm", "type": "video/webm; codecs=av01.0.09M.08" },
-        { "src": "media/clips/placeholder-menus.mp4", "type": "video/mp4; codecs=avc1.64002A" }
+        {
+          "src": "media/clips/placeholder-menus.webm",
+          "type": "video/webm; codecs=av01.0.09M.08"
+        },
+        {
+          "src": "media/clips/placeholder-menus.mp4",
+          "type": "video/mp4; codecs=avc1.64002A"
+        }
       ]
     },
     {
       "id": "store",
       "area": "client",
-      "icon": "media/icons/vestratube.svg",
       "title": {
-        "en": "Add features from the plugin store",
+        "en": "Add features from the Plugin Store",
         "zh-Hans": "从插件商城添加功能"
       },
       "caption": {
-        "en": "Install a plugin such as VestraTube, a YouTube sidebar, and it appears in the player right away.",
-        "zh-Hans": "安装 VestraTube（YouTube 侧边栏）等插件，装好即可在播放器里使用。"
+        "en": "Open the store from the bottom bar, install a plugin, and it appears in the player right away.",
+        "zh-Hans": "在底部栏打开插件商城，安装插件，装好立刻出现在播放器里。"
       },
       "poster": "media/posters/placeholder-store.webp",
       "sources": [
-        { "src": "media/clips/placeholder-store.webm", "type": "video/webm; codecs=av01.0.09M.08" },
-        { "src": "media/clips/placeholder-store.mp4", "type": "video/mp4; codecs=avc1.64002A" }
+        {
+          "src": "media/clips/placeholder-store.webm",
+          "type": "video/webm; codecs=av01.0.09M.08"
+        },
+        {
+          "src": "media/clips/placeholder-store.mp4",
+          "type": "video/mp4; codecs=avc1.64002A"
+        }
       ]
     },
     {
@@ -63,12 +97,19 @@
       },
       "poster": "media/posters/placeholder-nes.webp",
       "sources": [
-        { "src": "media/clips/placeholder-nes.webm", "type": "video/webm; codecs=av01.0.09M.08" },
-        { "src": "media/clips/placeholder-nes.mp4", "type": "video/mp4; codecs=avc1.64002A" }
+        {
+          "src": "media/clips/placeholder-nes.webm",
+          "type": "video/webm; codecs=av01.0.09M.08"
+        },
+        {
+          "src": "media/clips/placeholder-nes.mp4",
+          "type": "video/mp4; codecs=avc1.64002A"
+        }
       ]
     },
     {
       "id": "ai",
+      "hidden": true,
       "area": "client",
       "title": {
         "en": "Describe a plugin, and AI builds it",
@@ -80,8 +121,14 @@
       },
       "poster": "media/posters/placeholder-ai.webp",
       "sources": [
-        { "src": "media/clips/placeholder-ai.webm", "type": "video/webm; codecs=av01.0.09M.08" },
-        { "src": "media/clips/placeholder-ai.mp4", "type": "video/mp4; codecs=avc1.64002A" }
+        {
+          "src": "media/clips/placeholder-ai.webm",
+          "type": "video/webm; codecs=av01.0.09M.08"
+        },
+        {
+          "src": "media/clips/placeholder-ai.mp4",
+          "type": "video/mp4; codecs=avc1.64002A"
+        }
       ]
     }
   ]

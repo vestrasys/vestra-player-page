@@ -19,11 +19,13 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="site.webmanifest">
 <link rel="stylesheet" href="{{var:css}}">
-<link rel="preload" as="image" href="{{var:firstPoster}}" fetchpriority="high">
+<link rel="preload" as="image" href="{{var:backdropPoster}}" fetchpriority="high">
+<link rel="preload" as="image" href="{{var:firstPoster}}">
 <script src="{{var:js}}" defer></script>
 </head>
 <body>
 <a class="skip" href="#download" data-i18n="skip">{{t:skip}}</a>
+{{slot:backdrop}}
 
 <header class="top">
   <a class="brand" href="./" aria-label="Vestra Player">

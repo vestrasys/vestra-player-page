@@ -86,6 +86,33 @@
     });
   }
 
+  // ---- Hero backdrop: plays only while on screen, never with reduced motion or Save-Data ----
+
+  (() => {
+    const video = $(".backdrop video");
+    if (!video) return;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const saveData = Boolean(navigator.connection && navigator.connection.saveData);
+    let visible = true;
+    const update = () => {
+      if (visible && !document.hidden && !reduce.matches && !saveData) {
+        const promise = video.play();
+        if (promise) promise.catch(() => { /* autoplay refused: the poster stays */ });
+      } else {
+        video.pause();
+      }
+    };
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver((entries) => {
+        visible = entries[0].isIntersecting;
+        update();
+      }).observe(video.parentNode);
+    }
+    document.addEventListener("visibilitychange", update);
+    reduce.addEventListener?.("change", update);
+    update();
+  })();
+
   // ---- Feature tour ----
 
   const tour = (() => {
