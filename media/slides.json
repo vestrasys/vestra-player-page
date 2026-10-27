@@ -1,0 +1,88 @@
+{
+  "$comment": "Feature carousel. Paths are relative to the site root (this repository's root at build time). Replace placeholder-* files with real recordings and edit only this file; see README.md 'Replacing media'.",
+  "frame": {
+    "image": "media/frame/placeholder-frame.webp",
+    "width": 684,
+    "height": 615,
+    "alt": {
+      "en": "The Vestra Player window",
+      "zh-Hans": "Vestra Player 窗口"
+    },
+    "areas": {
+      "client": { "x": 1, "y": 26, "width": 682, "height": 588 },
+      "video": { "x": 1, "y": 26, "width": 402, "height": 531 }
+    }
+  },
+  "slides": [
+    {
+      "id": "menus",
+      "area": "client",
+      "title": {
+        "en": "Adjust everything from one menu",
+        "zh-Hans": "一个菜单，调整一切"
+      },
+      "caption": {
+        "en": "Right-click for picture, deinterlacing, subtitle style and sync, audio, framing and snapshots. Changes apply while the video plays.",
+        "zh-Hans": "右键即可调整画面、反交错、字幕样式与同步、音频、画面裁切和截图，播放中即时生效。"
+      },
+      "poster": "media/posters/placeholder-menus.webp",
+      "sources": [
+        { "src": "media/clips/placeholder-menus.webm", "type": "video/webm; codecs=av01.0.09M.08" },
+        { "src": "media/clips/placeholder-menus.mp4", "type": "video/mp4; codecs=avc1.64002A" }
+      ]
+    },
+    {
+      "id": "store",
+      "area": "client",
+      "icon": "media/icons/vestratube.svg",
+      "title": {
+        "en": "Add features from the plugin store",
+        "zh-Hans": "从插件商城添加功能"
+      },
+      "caption": {
+        "en": "Install a plugin such as VestraTube, a YouTube sidebar, and it appears in the player right away.",
+        "zh-Hans": "安装 VestraTube（YouTube 侧边栏）等插件，装好即可在播放器里使用。"
+      },
+      "poster": "media/posters/placeholder-store.webp",
+      "sources": [
+        { "src": "media/clips/placeholder-store.webm", "type": "video/webm; codecs=av01.0.09M.08" },
+        { "src": "media/clips/placeholder-store.mp4", "type": "video/mp4; codecs=avc1.64002A" }
+      ]
+    },
+    {
+      "id": "nes",
+      "area": "client",
+      "icon": "media/icons/vestranes.svg",
+      "title": {
+        "en": "Even games: VestraNES",
+        "zh-Hans": "还能玩游戏：VestraNES"
+      },
+      "caption": {
+        "en": "A plugin can be a whole emulator. Load a ROM from the Games menu and play with the keyboard.",
+        "zh-Hans": "插件甚至可以是一个完整的模拟器。从“游戏”菜单加载 ROM，用键盘就能玩。"
+      },
+      "poster": "media/posters/placeholder-nes.webp",
+      "sources": [
+        { "src": "media/clips/placeholder-nes.webm", "type": "video/webm; codecs=av01.0.09M.08" },
+        { "src": "media/clips/placeholder-nes.mp4", "type": "video/mp4; codecs=avc1.64002A" }
+      ]
+    },
+    {
+      "id": "ai",
+      "area": "client",
+      "title": {
+        "en": "Describe a plugin, and AI builds it",
+        "zh-Hans": "说出想要的插件，AI 帮你做"
+      },
+      "caption": {
+        "en": "Vestra Player AI (experimental) writes, type-checks and tests the plugin; you install it with one click. Uses your own AI provider key.",
+        "zh-Hans": "Vestra Player AI（实验性）会编写插件、做类型检查并运行测试，你一键即可安装。需使用你自己的 AI 服务密钥。"
+      },
+      "poster": "media/posters/placeholder-ai.webp",
+      "sources": [
+        { "src": "media/clips/placeholder-ai.webm", "type": "video/webm; codecs=av01.0.09M.08" },
+        { "src": "media/clips/placeholder-ai.mp4", "type": "video/mp4; codecs=avc1.64002A" }
+      ]
+    }
+  ]
+}
