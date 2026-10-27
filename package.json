@@ -1,0 +1,17 @@
+{
+  "name": "vestra-player-page",
+  "version": "0.1.0",
+  "private": true,
+  "description": "The Vestra Player download page: a static site built with plain Node.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "build:offline": "node -e \"process.env.RELEASE_OFFLINE='1'; import('./scripts/build.mjs')\"",
+    "preview": "node scripts/preview.mjs",
+    "assets:icons": "node scripts/make-assets.mjs icons",
+    "assets:placeholders": "node scripts/make-assets.mjs placeholders",
+    "encode": "node scripts/encode-clip.mjs"
+  }
+}
