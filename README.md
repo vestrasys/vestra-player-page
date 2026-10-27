@@ -1,6 +1,6 @@
 # Vestra Player download page
 
-The single-page website for downloading [Vestra Player](https://github.com/vestrasys/vestra-player-plugins):
+The single-page website for downloading Vestra Player:
 a hero with a download button for the visitor's system, a feature tour inside a
 player window frame, highlights, and the download section. Static output for
 Cloudflare Pages; plain HTML, CSS and JavaScript built by a Node script with no
