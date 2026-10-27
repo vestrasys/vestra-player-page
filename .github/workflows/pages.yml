@@ -1,0 +1,48 @@
+# Deploys dist/ to Cloudflare Pages. PREPARED BUT DISABLED:
+# - it runs only when started by hand (no push trigger), and
+# - the job is skipped unless the repository variable PAGES_DEPLOY_ENABLED is "true".
+#
+# To turn it on (see README.md "Deploying"):
+# 1. Create a Cloudflare Pages project (Direct Upload) and note its name.
+# 2. Repository secrets: CLOUDFLARE_API_TOKEN (Account > Cloudflare Pages > Edit),
+#    CLOUDFLARE_ACCOUNT_ID.
+#    Repository variables: CF_PAGES_PROJECT (the project name), PAGES_DEPLOY_ENABLED=true.
+# 3. Optionally add a push trigger for main and a daily schedule, so a new
+#    player release reaches the page without a commit.
+name: pages
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: vars.PAGES_DEPLOY_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          package-manager-cache: false
+      - name: Build
+        run: npm run build
+        env:
+          # Reads public release metadata; a token with read access to the
+          # release repository is needed only while that repository is private.
+          GITHUB_TOKEN: ${{ secrets.RELEASE_READ_TOKEN || github.token }}
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@953926a2e2182532811c01a25e53647d93bf07c0 # v4.1.3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=${{ vars.CF_PAGES_PROJECT }} --branch=main
