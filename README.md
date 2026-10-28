@@ -124,13 +124,17 @@ not loop by themselves (the result is that much shorter; needs `--duration`).
 ```sh
 export FFMPEG=/path/to/ffmpeg        # PowerShell: $env:FFMPEG = 'C:\path\to\ffmpeg.exe'
 
-# Slides: crop = the player window's client area in the recording.
-npm run encode -- <menus-recording> --id menus --crop <x,y,w,h> --start <s> --duration <s> --poster-at 1
-npm run encode -- <store-recording> --id store --crop <x,y,w,h> --start <s> --duration <s> --poster-at 1
-npm run encode -- <nes-recording>   --id nes   --crop <x,y,w,h> --start <s> --duration <s> --poster-at 2
+# As committed: recordings of a 2224x1392 rectangle around the window (2 px
+# border, title bar rows 2-51), so the client area is 4,52,2216,1336 in every
+# recording and 2,52,2216,1336 in the frame cut at 2,0,2220,1390.
+npm run encode -- menus-raw.mkv --id menus --crop 4,52,2216,1336 --duration 13.9 --loop-fade 0.5 --poster-at 4.5
+npm run encode -- store-cut.mkv --id store --crop 4,52,2216,1336 --start 0.6 --duration 14.8 --loop-fade 0.5 --poster-at 6.5
+npm run encode -- nes-raw2.mkv  --id nes   --crop 4,52,2216,1336 --duration 12.5 --loop-fade 0.5 --poster-at 2
+npm run encode -- --frame frame-still.png --id frame --crop 2,0,2220,1390 --client 2,52,2216,1336 --video 2,52,1654,1226
 
-# Frame: a screenshot of the window, cut to its client area.
-npm run encode -- --frame <window-screenshot.png> --id frame --crop <x,y,w,h> [--video <x,y,w,h>]
+# In general: crop = the player window's client area in the recording.
+npm run encode -- <recording> --id <slide-id> --crop <x,y,w,h> --start <s> --duration <s> --loop-fade 0.5 --poster-at <s>
+npm run encode -- --frame <window-screenshot.png> --id frame --crop <x,y,w,h> --client <x,y,w,h> [--video <x,y,w,h>]
 
 # Backdrop (as committed; the source is kept outside the repository).
 npm run encode -- pexels_aurora_timelapse_28889010_2160p60.mp4 --id aurora --duration 8.4 --loop-fade 1 --crf-av1 36 --crf-h264 26
@@ -148,8 +152,7 @@ Then:
 - Aim for 2–5 MB per file (raise `--crf-av1` / `--crf-h264` if larger; the
   script warns above 5 MB). `--vp9` adds a VP9 file.
 - Media are cached for a day: give a re-recorded clip a new id (`menus-2`).
-- Delete the `placeholder-*` files once nothing in `media/slides.json` names
-  them (`git grep placeholder- media/slides.json`).
+- Delete files that `media/slides.json` no longer names.
 - Footage and games visible in a recording need a row in `media/CREDITS.md`.
 
 Recordings:
@@ -157,8 +160,8 @@ Recordings:
 - Record at 60 fps, at least the size of the client area at 2× scale.
 - 6–10 seconds that start and end on the same picture, so the loop is
   seamless (or use `--loop-fade`).
-- Files named `placeholder-*` are drafts cut from test screenshots
-  (`npm run assets:placeholders`).
+- `npm run assets:placeholders` can still cut draft `placeholder-*` media
+  from test screenshots for a new slide.
 
 ## Deploying
 

@@ -1,5 +1,5 @@
 {
-  "$comment": "Hero backdrop and feature carousel. Paths are relative to the site root (this repository's root at build time). Replace placeholder-* files with real recordings and edit only this file; see README.md 'Replacing media'. A slide with \"hidden\": true is left out of the page (its files need not exist).",
+  "$comment": "Hero backdrop and feature carousel. Paths are relative to the site root (this repository's root at build time). Encode a recording with scripts/encode-clip.mjs and edit only this file; see README.md 'Replacing media'. A slide with \"hidden\": true is left out of the page (its files need not exist).",
   "backdrop": {
     "poster": "media/posters/aurora.webp",
     "sources": [
@@ -14,25 +14,25 @@
     ]
   },
   "frame": {
-    "image": "media/frame/placeholder-frame.webp",
-    "width": 684,
-    "height": 615,
+    "image": "media/frame/frame.webp",
+    "width": 2220,
+    "height": 1390,
     "alt": {
       "en": "The Vestra Player window",
       "zh-Hans": "Vestra Player 窗口"
     },
     "areas": {
       "client": {
-        "x": 1,
-        "y": 26,
-        "width": 682,
-        "height": 588
+        "x": 2,
+        "y": 52,
+        "width": 2216,
+        "height": 1336
       },
       "video": {
-        "x": 1,
-        "y": 26,
-        "width": 402,
-        "height": 531
+        "x": 2,
+        "y": 52,
+        "width": 1654,
+        "height": 1226
       }
     }
   },
@@ -48,14 +48,14 @@
         "en": "Right-click for picture, deinterlacing, subtitle style and sync, audio, framing and snapshots. Changes apply while the video plays.",
         "zh-Hans": "右键即可调整画面、反交错、字幕样式与同步、音频、画面裁切和截图，播放中即时生效。"
       },
-      "poster": "media/posters/placeholder-menus.webp",
+      "poster": "media/posters/menus.webp",
       "sources": [
         {
-          "src": "media/clips/placeholder-menus.webm",
+          "src": "media/clips/menus.webm",
           "type": "video/webm; codecs=av01.0.09M.08"
         },
         {
-          "src": "media/clips/placeholder-menus.mp4",
+          "src": "media/clips/menus.mp4",
           "type": "video/mp4; codecs=avc1.64002A"
         }
       ]
@@ -63,6 +63,7 @@
     {
       "id": "store",
       "area": "client",
+      "icon": "media/icons/vestratube.svg",
       "title": {
         "en": "Add features from the Plugin Store",
         "zh-Hans": "从插件商城添加功能"
@@ -71,14 +72,14 @@
         "en": "Open the store from the bottom bar, install a plugin, and it appears in the player right away.",
         "zh-Hans": "在底部栏打开插件商城，安装插件，装好立刻出现在播放器里。"
       },
-      "poster": "media/posters/placeholder-store.webp",
+      "poster": "media/posters/store.webp",
       "sources": [
         {
-          "src": "media/clips/placeholder-store.webm",
+          "src": "media/clips/store.webm",
           "type": "video/webm; codecs=av01.0.09M.08"
         },
         {
-          "src": "media/clips/placeholder-store.mp4",
+          "src": "media/clips/store.mp4",
           "type": "video/mp4; codecs=avc1.64002A"
         }
       ]
@@ -95,14 +96,14 @@
         "en": "A plugin can be a whole emulator. Load a ROM from the Games menu and play with the keyboard.",
         "zh-Hans": "插件甚至可以是一个完整的模拟器。从“游戏”菜单加载 ROM，用键盘就能玩。"
       },
-      "poster": "media/posters/placeholder-nes.webp",
+      "poster": "media/posters/nes.webp",
       "sources": [
         {
-          "src": "media/clips/placeholder-nes.webm",
+          "src": "media/clips/nes.webm",
           "type": "video/webm; codecs=av01.0.09M.08"
         },
         {
-          "src": "media/clips/placeholder-nes.mp4",
+          "src": "media/clips/nes.mp4",
           "type": "video/mp4; codecs=avc1.64002A"
         }
       ]
@@ -119,14 +120,14 @@
         "en": "Vestra Player AI (experimental) writes, type-checks and tests the plugin; you install it with one click. Uses your own AI provider key.",
         "zh-Hans": "Vestra Player AI（实验性）会编写插件、做类型检查并运行测试，你一键即可安装。需使用你自己的 AI 服务密钥。"
       },
-      "poster": "media/posters/placeholder-ai.webp",
+      "poster": "media/posters/ai.webp",
       "sources": [
         {
-          "src": "media/clips/placeholder-ai.webm",
+          "src": "media/clips/ai.webm",
           "type": "video/webm; codecs=av01.0.09M.08"
         },
         {
-          "src": "media/clips/placeholder-ai.mp4",
+          "src": "media/clips/ai.mp4",
           "type": "video/mp4; codecs=avc1.64002A"
         }
       ]
