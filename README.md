@@ -128,7 +128,7 @@ export FFMPEG=/path/to/ffmpeg        # PowerShell: $env:FFMPEG = 'C:\path\to\ffm
 # border, title bar rows 2-51), so the client area is 4,52,2216,1336 in every
 # recording and 2,52,2216,1336 in the frame cut at 2,0,2220,1390.
 npm run encode -- menus-raw.mkv --id menus --crop 4,52,2216,1336 --duration 13.9 --loop-fade 0.5 --poster-at 4.5
-npm run encode -- store-cut.mkv --id store --crop 4,52,2216,1336 --start 0.6 --duration 14.8 --loop-fade 0.5 --poster-at 6.5
+npm run encode -- store-cut2.mkv --id store --crop 4,52,2216,1336 --start 1 --duration 18.8 --loop-fade 0.5 --poster-at 16.5
 npm run encode -- nes-raw2.mkv  --id nes   --crop 4,52,2216,1336 --duration 12.5 --loop-fade 0.5 --poster-at 2
 npm run encode -- --frame frame-still.png --id frame --crop 2,0,2220,1390 --client 2,52,2216,1336 --video 2,52,1654,1226
 

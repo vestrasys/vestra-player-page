@@ -69,8 +69,8 @@
         "zh-Hans": "从插件商城添加功能"
       },
       "caption": {
-        "en": "Open the store from the bottom bar, install a plugin, and it appears in the player right away.",
-        "zh-Hans": "在底部栏打开插件商城，安装插件，装好立刻出现在播放器里。"
+        "en": "Open the store from the bottom bar and install a plugin such as VestraTube: it appears in the player right away.",
+        "zh-Hans": "在底部栏打开插件商城，安装 VestraTube 等插件，装好立刻出现在播放器里。"
       },
       "poster": "media/posters/store.webp",
       "sources": [
