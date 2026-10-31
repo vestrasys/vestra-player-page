@@ -1,5 +1,5 @@
 // npm run build: renders src/index.html into dist/ with the release metadata,
-// the slide manifest and both languages baked in. No dependencies.
+// the slide manifest, the plugin wall and both languages baked in. No dependencies.
 //
 // Environment: GITHUB_TOKEN (optional, raises the API rate limit and reads a
 // private release repository), RELEASE_OFFLINE=1 (skip the network; the page
@@ -13,6 +13,9 @@ import { loadRelease } from "./release.mjs";
 const LANGS = ["en", "zh-Hans"];
 const BUDGET = 150 * 1024; // HTML + CSS + JS, media and images excluded
 const MAX_FILE = 25 * 1024 * 1024; // Cloudflare Pages per-file limit
+const OS_NAMES = { windows: "Windows", macos: "macOS" };
+// The GitHub mark (Octicons mark-github, MIT).
+const GITHUB_ICON = '<svg class="gh-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"/></svg>';
 
 const dist = fromRoot("dist");
 const site = readJson(fromRoot("site.config.json"));
@@ -21,31 +24,47 @@ if (process.env.RELEASE_INCLUDE_PRERELEASES === "1") releaseConfig.includePrerel
 const manifest = readJson(fromRoot("media/slides.json"));
 // Hidden slides (drafts such as a slide whose recording does not exist yet) stay out of the page.
 manifest.slides = (manifest.slides ?? []).filter((slide) => !slide.hidden);
+const plugins = readJson(fromRoot("src/plugins.json")).plugins ?? [];
 const i18n = readJson(fromRoot("src/i18n.json"));
 const credits = parseCredits(readFileSync(fromRoot("media/CREDITS.md"), "utf8"));
 
 checkManifest(manifest);
+checkPlugins(plugins);
 const release = await loadRelease(releaseConfig, { offline: process.env.RELEASE_OFFLINE === "1" });
 if (release.ok) console.log(`release ${release.version} (${release.date}), assets: ${Object.keys(release.assets).join(", ") || "none"}`);
 else console.warn(`warning: no release metadata (${release.reason}); building the fallback`);
 
 // Strings built from configuration join the dictionary, so the page switches them too.
+const licences = {
+  player: link(site.playerLicense.url, site.playerLicense.name),
+  plugins: link(site.pluginsLicense.url, site.pluginsLicense.name),
+};
 const dict = structuredClone(i18n);
 for (const lang of LANGS) {
   for (const slide of manifest.slides) {
     dict[lang][`slide.${slide.id}.title`] = slide.title[lang];
     dict[lang][`slide.${slide.id}.caption`] = slide.caption[lang];
   }
+  for (const plugin of plugins) {
+    dict[lang][`plugin.${plugin.id}.name`] = plugin.name[lang];
+    dict[lang][`plugin.${plugin.id}.text`] = plugin.text[lang];
+  }
   for (const [os, text] of Object.entries(releaseConfig.requirements)) dict[lang][`req.${os}`] = text[lang];
   dict[lang]["frame.alt"] = manifest.frame.alt[lang];
-  dict[lang]["ft.licence"] = format(dict[lang]["ft.licence"], {
-    player: link(site.playerLicense.url, site.playerLicense.name),
-    plugins: link(site.pluginsLicense.url, site.pluginsLicense.name),
-  });
+  for (const key of ["ft.licence", "os.player.text", "os.sdk.text"]) dict[lang][key] = format(dict[lang][key], licences);
   const missing = Object.keys(dict.en).filter((key) => !(key in dict[lang]));
   if (missing.length) fail(`${lang} lacks strings: ${missing.join(", ")}`);
 }
 const en = dict.en;
+
+// Downloads: one primary file per system, every enabled file in the platforms dialog.
+const enabled = releaseConfig.assets.filter((a) => a.enabled);
+const primary = {
+  windows: enabled.find((a) => a.id === "windows-setup") ?? enabled.find((a) => a.os === "windows") ?? null,
+  macos: ["universal", "arm64", "x64"].map((arch) => enabled.find((a) => a.os === "macos" && a.arch === arch)).find(Boolean) ?? null,
+};
+const systems = Object.keys(primary).filter((os) => primary[os]);
+if (!systems.length) fail("release.config.json: no enabled asset for Windows or macOS");
 
 rmSync(dist, { recursive: true, force: true });
 mkdirSync(join(dist, "assets"), { recursive: true });
@@ -55,33 +74,41 @@ const js = hashed("src/main.js", "site", "js");
 const media = copyMedia();
 
 const frame = manifest.frame;
+const github = site.links.playerRepo ?? `https://github.com/${releaseConfig.github.owner}`;
 const slots = {
   backdrop: renderBackdrop(),
-  cta: renderCta(),
+  cta: renderCta("hero"),
+  ctaLine: renderCtaLine(),
+  ctaEnd: renderCta("end"),
+  heroSource: renderHeroSource(),
+  githubIcon: GITHUB_ICON,
+  steps: manifest.slides.map(renderStep).join("\n"),
   slides: manifest.slides.map(renderSlide).join("\n"),
-  caption: renderCaption(manifest.slides[0]),
-  dots: manifest.slides.map(renderDot).join("\n"),
-  downloads: renderDownloads(),
-  requirements: renderRequirements(),
+  stepDots: manifest.slides.map(renderStepDot).join("\n"),
+  plugins: plugins.map(renderPlugin).join("\n"),
+  pluginLinks: renderPluginLinks(),
+  openSource: renderOpenSource(),
+  platforms: renderPlatforms(),
   links: renderLinks(),
   credits: renderCredits(),
   licence: en["ft.licence"],
   data: JSON.stringify({
     langs: LANGS,
     i18n: dict,
-    slides: manifest.slides.map((s) => ({ id: s.id, icon: s.icon ?? null, poster: s.poster })),
+    slides: manifest.slides.map((s) => s.id),
   }).replace(/</g, "\\u003c"),
 };
 const vars = {
   css, js,
-  firstPoster: manifest.slides[0].poster,
   backdropPoster: manifest.backdrop?.poster ?? manifest.slides[0].poster,
   frameImage: frame.image,
   frameWidth: frame.width,
   frameHeight: frame.height,
   frameRatio: `${frame.width} / ${frame.height}`,
-  frameRatioNumber: (frame.width / frame.height).toFixed(4),
   frameAlt: en["frame.alt"],
+  github,
+  navHref: downloadHref(primary[systems[0]]),
+  releasesPage: releaseConfig.releasesPage,
 };
 
 let html = readFileSync(fromRoot("src/index.html"), "utf8");
@@ -122,11 +149,25 @@ function t(key, tag = "span", attrs = "") {
   return `<${tag} data-i18n="${key}"${attrs}>${escape(en[key])}</${tag}>`;
 }
 
+/** Same, for strings that hold HTML (links, <b>, <code>). */
+function h(key, tag = "span", attrs = "") {
+  if (!(key in en)) fail(`unknown string ${key}`);
+  return `<${tag} data-i18n-html="${key}"${attrs}>${en[key]}</${tag}>`;
+}
+
 function hashed(source, name, ext) {
   const data = readFileSync(fromRoot(source));
   const file = `assets/${name}.${createHash("sha256").update(data).digest("hex").slice(0, 10)}.${ext}`;
   writeFileSync(join(dist, file), data);
   return file;
+}
+
+function checkFiles(files, where) {
+  for (const file of files) {
+    if (/^https?:/.test(file)) continue;
+    if (!existsSync(fromRoot(file))) fail(`${where} names a missing file: ${file}`);
+    if (statSync(fromRoot(file)).size > MAX_FILE) fail(`${file} is over 25 MiB (Cloudflare Pages limit)`);
+  }
 }
 
 function checkManifest({ backdrop, frame, slides }) {
@@ -147,14 +188,23 @@ function checkManifest({ backdrop, frame, slides }) {
     if (!slide.sources?.length) fail(`${where}: no sources`);
     files.push(slide.poster, ...slide.sources.map((s) => s.src), ...(slide.icon ? [slide.icon] : []));
   }
-  for (const file of files) {
-    if (/^https?:/.test(file)) continue;
-    if (!existsSync(fromRoot(file))) fail(`media/slides.json names a missing file: ${file}`);
-    if (statSync(fromRoot(file)).size > MAX_FILE) fail(`${file} is over 25 MiB (Cloudflare Pages limit)`);
-  }
+  checkFiles(files, "media/slides.json");
 }
 
-/** Copies only the media the manifest names (local paths). */
+function checkPlugins(list) {
+  const ids = new Set();
+  for (const plugin of list) {
+    const where = `src/plugins.json plugin "${plugin.id}"`;
+    if (!/^[a-z0-9-]+$/.test(plugin.id ?? "") || ids.has(plugin.id)) fail(`${where}: id must be unique [a-z0-9-]`);
+    ids.add(plugin.id);
+    if (!["builtin", "store"].includes(plugin.kind)) fail(`${where}: kind must be "builtin" or "store"`);
+    if (!plugin.author) fail(`${where}: no author`);
+    for (const lang of LANGS) if (!plugin.name?.[lang] || !plugin.text?.[lang]) fail(`${where}: name and text need "${lang}"`);
+  }
+  checkFiles(list.filter((p) => p.icon).map((p) => p.icon), "src/plugins.json");
+}
+
+/** Copies only the media the manifest and the plugin wall name (local paths). */
 function copyMedia() {
   const files = new Set([manifest.frame.image]);
   if (manifest.backdrop) {
@@ -166,6 +216,7 @@ function copyMedia() {
     if (s.icon) files.add(s.icon);
     for (const source of s.sources) files.add(source.src);
   }
+  for (const p of plugins) if (p.icon) files.add(p.icon);
   let bytes = 0;
   let count = 0;
   for (const file of files) {
@@ -196,103 +247,157 @@ ${sources}
 </div>`;
 }
 
-function renderSlide(slide, i) {
-  const first = i === 0;
-  const sources = slide.sources
-    .map((s) => `              <source ${first ? "src" : "data-src"}="${escape(s.src)}" type="${escape(s.type)}">`)
-    .join("\n");
-  return `          <div class="slide${first ? " is-active" : ""}" data-slide="${i}" style="${area(slide)}">
-            <video muted loop playsinline preload="${first ? "metadata" : "none"}" ${first ? "poster" : "data-poster"}="${escape(slide.poster)}" aria-hidden="true" tabindex="-1">
-${sources}
-            </video>
-          </div>`;
-}
-
-function renderCaption(slide) {
-  const icon = slide.icon
-    ? `<img class="slide-icon" src="${escape(slide.icon)}" width="28" height="28" alt="">`
-    : `<img class="slide-icon" width="28" height="28" alt="" hidden>`;
-  return `        <h2 class="slide-title">${icon}${t(`slide.${slide.id}.title`)}</h2>
-        <p class="slide-text">${t(`slide.${slide.id}.caption`)}</p>`;
-}
-
-function renderDot(slide, i) {
-  const label = format(en["tour.show"], { n: i + 1, title: slide.title.en });
-  return `          <button type="button" class="dot-btn" data-go="${i}" aria-label="${escape(label)}"${i === 0 ? ' aria-current="true"' : ""}><span class="fill"></span></button>`;
-}
+// ---- Download ----
 
 function megabytes(bytes) {
   return bytes == null ? null : `${(bytes / 1e6).toFixed(1)} MB`;
 }
 
-function assetInfo(id) {
-  return release.ok ? release.assets[id] ?? null : null;
+function assetInfo(asset) {
+  return release.ok ? release.assets[asset.id] ?? null : null;
 }
 
 function releasesPage() {
   return release.ok ? release.notesUrl : releaseConfig.releasesPage;
 }
 
-function renderCta() {
-  const enabled = releaseConfig.assets.filter((a) => a.enabled);
-  const buttons = [];
-  const button = (asset, titleKey, subKey) => {
-    const info = assetInfo(asset.id);
-    const facts = info ? [release.version, megabytes(info.size)].filter(Boolean).join(" · ") : null;
-    const href = info?.url ?? releasesPage();
-    return `      <a class="cta-btn" data-os="${asset.os}" data-arch="${asset.arch}" href="${escape(href)}">
-        ${t(titleKey, "span", ' class="cta-title"')}
-        <span class="cta-sub">${t(subKey)}${facts ? ` · ${escape(facts)}` : ` · ${t("hero.allReleases")}`}</span>
-      </a>`;
-  };
-  const setup = enabled.find((a) => a.id === "windows-setup") ?? enabled.find((a) => a.os === "windows");
-  if (setup) buttons.push(button(setup, "hero.forWindows", "hero.subWindows"));
-  for (const mac of enabled.filter((a) => a.os === "macos")) {
-    if (mac.arch === "arm64") buttons.push(button(mac, "hero.forMac", "hero.subMac"));
-    else if (mac.arch === "x64") buttons.push(button(mac, "hero.forMacIntel", "hero.subMacIntel"));
-    else buttons.push(button(mac, "hero.forMac", "hero.subMacUniversal"));
-  }
-  return buttons.join("\n");
+function downloadHref(asset) {
+  return assetInfo(asset)?.url ?? releasesPage();
 }
 
-function renderDownloads() {
-  const enabled = releaseConfig.assets.filter((a) => a.enabled);
+/** The download button for each system; the stylesheet shows the visitor's one only. */
+function renderCta(where) {
+  return systems.map((os) => {
+    const asset = primary[os];
+    const title = os === "windows" ? "hero.forWindows" : asset.arch === "x64" ? "hero.forMacIntel" : "hero.forMac";
+    return `      <a class="cta-btn os-${os}" data-cta="${where}" href="${escape(downloadHref(asset))}">
+        <svg class="cta-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0l-4.5-4.5M12 15l4.5-4.5M5 19h14"/></svg>
+        ${t(title, "span", ' class="cta-title"')}
+      </a>`;
+  }).join("\n");
+}
+
+/** The one grey line under the hero button, per system: version, requirements, other systems, release notes. */
+function renderCtaLine() {
+  return systems.map((os) => {
+    const bits = [];
+    if (release.ok) bits.push(`<span>v${escape(release.version)}</span>`);
+    if (releaseConfig.requirements[os]) bits.push(t(`req.${os}`));
+    bits.push(t("hero.unsigned"));
+    // "Also for macOS" / "Also for Windows": opens the platforms dialog (the release page without script).
+    if (enabled.some((a) => a !== primary[os])) {
+      const other = systems.find((o) => o !== os);
+      bits.push(t(other ? `hero.also.${other}` : "hero.allDownloads", "a", ` class="js-platforms" href="${escape(releasesPage())}"`));
+    }
+    if (release.ok) bits.push(t("hero.notes", "a", ` href="${escape(release.notesUrl)}"`));
+    return `    <p class="cta-line os-${os}">${bits.join('<span class="sep" aria-hidden="true">·</span>')}</p>`;
+  }).join("\n");
+}
+
+function renderHeroSource() {
+  const key = site.links.playerRepo ? "hero.source" : "hero.github";
+  return `      <a class="ghost-btn" href="${escape(github)}">${GITHUB_ICON}${t(key)}</a>`;
+}
+
+/** Every enabled file, opened from "Also for …"; checksums stay on the release page. */
+function renderPlatforms() {
   const lines = [];
-  if (!release.ok) lines.push(`    <p class="fallback">${t("dl.fallback", "span")} <a href="${escape(releaseConfig.releasesPage)}">${t("hero.allReleases")}</a></p>`);
-  lines.push(`    <div class="dl-grid">`);
+  if (!release.ok) lines.push(`    <p class="pf-fallback">${t("dl.fallback")}</p>`);
+  lines.push(`    <ul class="pf-list">`);
   for (const asset of enabled) {
-    const info = assetInfo(asset.id);
-    const value = (text) => (text ? escape(text) : t("dl.unknown"));
-    const sha = info?.sha256
-      ? `<code class="hash">${escape(info.sha256)}</code><button type="button" class="copy js-only" data-copy="${escape(info.sha256)}" data-i18n="dl.copy">${escape(en["dl.copy"])}</button>`
-      : t("dl.unknown");
-    const kindKey = `dl.kind.${asset.kind}`;
-    lines.push(`      <article class="dl-card" data-os="${asset.os}" id="dl-${asset.id}">
-        <h3>${t(asset.os === "windows" ? "dl.windows" : "dl.macos")} <small>${t(kindKey)}${asset.os === "macos" ? ` · ${t(`dl.arch.${asset.arch}`)}` : ""}</small></h3>
-        <dl class="meta">
-          <div><dt data-i18n="dl.version">${escape(en["dl.version"])}</dt><dd>${value(release.ok ? release.version : releaseConfig.fallbackVersion)}</dd></div>
-          <div><dt data-i18n="dl.released">${escape(en["dl.released"])}</dt><dd>${value(release.ok ? release.date : null)}</dd></div>
-          <div><dt data-i18n="dl.size">${escape(en["dl.size"])}</dt><dd>${value(megabytes(info?.size))}</dd></div>
-          <div class="sha"><dt data-i18n="dl.sha">${escape(en["dl.sha"])}</dt><dd>${sha}</dd></div>
-        </dl>
-        <a class="btn" href="${escape(info?.url ?? releasesPage())}"${info ? ` download="${escape(info.name)}"` : ""}>${info ? t("dl.get") : t("hero.allReleases")}</a>
-        <p class="note" data-i18n-html="dl.note.${asset.kind}">${en[`dl.note.${asset.kind}`]}</p>
-      </article>`);
+    const info = assetInfo(asset);
+    const facts = [t(`dl.kind.${asset.kind}`), t(`dl.arch.${asset.arch}`)];
+    if (info?.size) facts.push(`<span>${escape(megabytes(info.size))}</span>`);
+    lines.push(`      <li class="pf-item">
+        <div class="pf-text">
+          <p class="pf-name"><b>${OS_NAMES[asset.os] ?? asset.os}</b> ${facts.join('<span class="sep" aria-hidden="true">·</span>')}</p>
+          ${h(`dl.note.${asset.kind}`, "p", ' class="pf-note"')}
+        </div>
+        <a class="pf-get" href="${escape(downloadHref(asset))}">${info ? t("dl.get") : t("hero.allReleases")}</a>
+      </li>`);
   }
-  lines.push(`    </div>`);
+  lines.push(`    </ul>`);
+  if (systems.some((os) => releaseConfig.requirements[os])) {
+    const req = systems
+      .filter((os) => releaseConfig.requirements[os])
+      .map((os) => t(`req.${os}`))
+      .join('<span class="sep" aria-hidden="true">·</span>');
+    lines.push(`    <p class="pf-req">${req}</p>`);
+  }
+  lines.push(`    <p class="pf-foot"><a href="${escape(releaseConfig.releasesPage)}">${t("ft.releases")} →</a></p>`);
   return lines.join("\n");
 }
 
-function renderRequirements() {
-  const items = Object.keys(releaseConfig.requirements)
-    .map((os) => `        <li><b>${os === "windows" ? "Windows" : "macOS"}</b> ${t(`req.${os}`)}</li>`)
-    .join("\n");
-  return `      <h3 data-i18n="dl.req">${escape(en["dl.req"])}</h3>
-      <ul class="req">
-${items}
-      </ul>
-      <p><a href="${escape(releasesPage())}" data-i18n="dl.all">${escape(en["dl.all"])}</a></p>`;
+// ---- Feature tour: sticky window, steps scroll past ----
+
+function renderStep(slide, i) {
+  const size = `width="${frame.areas[slide.area].width}" height="${frame.areas[slide.area].height}"`;
+  const icon = slide.icon ? `<img class="step-icon" src="${escape(slide.icon)}" width="28" height="28" alt="">` : "";
+  return `      <article class="step${i === 0 ? " is-active" : ""}" data-step="${i}">
+        <p class="step-num" aria-hidden="true">${String(i + 1).padStart(2, "0")}</p>
+        <h3 class="step-title">${icon}${t(`slide.${slide.id}.title`)}</h3>
+        <p class="step-text">${t(`slide.${slide.id}.caption`)}</p>
+        <img class="step-poster" data-src="${escape(slide.poster)}" loading="lazy" decoding="async" ${size} alt="">
+        <noscript><img class="step-poster" src="${escape(slide.poster)}" loading="lazy" decoding="async" ${size} alt=""></noscript>
+      </article>`;
 }
+
+function renderSlide(slide, i) {
+  const first = i === 0;
+  const sources = slide.sources
+    .map((s) => `              <source data-src="${escape(s.src)}" type="${escape(s.type)}">`)
+    .join("\n");
+  return `          <div class="slide${first ? " is-active" : ""}" data-slide="${i}" style="${area(slide)}">
+            <video muted loop playsinline preload="none" data-poster="${escape(slide.poster)}" aria-hidden="true" tabindex="-1">
+${sources}
+            </video>
+          </div>`;
+}
+
+function renderStepDot(slide, i) {
+  return `          <button type="button" class="step-dot" data-go="${i}" data-i18n-attr="aria-label:slide.${slide.id}.title" aria-label="${escape(slide.title.en)}"${i === 0 ? ' aria-current="step"' : ""}></button>`;
+}
+
+// ---- Plugin wall ----
+
+function renderPlugin(plugin) {
+  const icon = plugin.icon
+    ? `<img src="${escape(plugin.icon)}" width="44" height="44" alt="" loading="lazy">`
+    : `<span aria-hidden="true">${escape(Array.from(plugin.name.en)[0] ?? "?")}</span>`;
+  const badge = plugin.kind === "store" ? "pl.badge.store" : "pl.badge.builtin";
+  return `      <li class="plugin reveal" data-kind="${plugin.kind}">
+        <div class="plugin-icon">${icon}</div>
+        <div class="plugin-body">
+          <h3>${t(`plugin.${plugin.id}.name`)}</h3>
+          <p class="plugin-by">${escape(plugin.author)}<span class="sep" aria-hidden="true">·</span>${t(badge, "span", ` class="badge badge-${plugin.kind}"`)}</p>
+          <p class="plugin-text">${t(`plugin.${plugin.id}.text`)}</p>
+        </div>
+      </li>`;
+}
+
+function renderPluginLinks() {
+  const links = [];
+  if (site.links.pluginsRepo) links.push(`<a class="text-link" href="${escape(site.links.pluginsRepo)}">${t("pl.repo")} →</a>`);
+  if (site.links.sdkDocs) links.push(`<a class="text-link" href="${escape(site.links.sdkDocs)}">${t("pl.sdk")} →</a>`);
+  return links.join("\n      ");
+}
+
+// ---- Open source ----
+
+function renderOpenSource() {
+  const blocks = [
+    ["player", site.links.playerRepo, "os.player.link"],
+    ["sdk", site.links.sdkDocs, "os.sdk.link"],
+    ["community", site.links.pluginsRepo, "os.community.link"],
+  ];
+  return blocks.map(([id, href, label]) => `      <li class="os-card reveal">
+        <h3>${t(`os.${id}.title`)}</h3>
+        ${h(`os.${id}.text`, "p")}
+        ${href ? `<a class="text-link" href="${escape(href)}">${t(label)} →</a>` : ""}
+      </li>`).join("\n");
+}
+
+// ---- Footer ----
 
 function renderLinks() {
   const entries = [

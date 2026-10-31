@@ -1,5 +1,6 @@
-// Vestra Player download page: language, download button for the visitor's
-// system, and the feature tour. Plain script, no dependencies.
+// Vestra Player download page: language, the download button for the visitor's
+// system, the feature tour, the plugin filter and the AI workshop mock.
+// Plain script, no dependencies.
 (() => {
   "use strict";
 
@@ -8,7 +9,9 @@
   const data = JSON.parse(document.getElementById("page-data").textContent);
   const $ = (selector, scope = document) => scope.querySelector(selector);
   const $$ = (selector, scope = document) => Array.from(scope.querySelectorAll(selector));
-  const format = (text, args) => text.replace(/\{(\w+)\}/g, (m, key) => (key in args ? args[key] : m));
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const saveData = Boolean(navigator.connection && navigator.connection.saveData);
+  const hasIO = "IntersectionObserver" in window;
 
   // ---- Stored preference (may be unavailable: private mode, blocked storage) ----
 
@@ -22,20 +25,19 @@
     },
   };
 
-  // ---- Visitor's system: one download button on Windows and macOS ----
+  // ---- Visitor's system: macOS gets the macOS button, everyone else Windows ----
 
   function detectOS() {
-    const ua = navigator.userAgent || "";
     const platform = (navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || "";
-    if (/android|iphone|ipad|ipod/i.test(ua)) return "other";
+    const ua = navigator.userAgent || "";
     // iPadOS asks for the desktop site and reports a Mac with touch.
-    if (/mac/i.test(platform) && navigator.maxTouchPoints > 1) return "other";
-    if (/^win/i.test(platform) || /windows nt/i.test(ua)) return "windows";
+    if (/mac/i.test(platform) && navigator.maxTouchPoints > 1) return "windows";
+    if (/iphone|ipad|ipod/i.test(ua)) return "windows";
     if (/mac/i.test(platform) || /mac os x/i.test(ua)) return "macos";
-    return "other";
+    return "windows";
   }
-  const os = detectOS();
-  root.dataset.visitor = $(`.cta-btn[data-os="${os}"]`) ? os : "other";
+  const detected = detectOS();
+  root.dataset.visitor = $(`.cta-btn.os-${detected}`) ? detected : "windows";
 
   // ---- Language ----
 
@@ -50,6 +52,7 @@
   }
   let lang = pickLang();
   const text = (key) => data.i18n[lang][key] ?? data.i18n.en[key] ?? key;
+  const onLang = [];
 
   function applyLang() {
     root.lang = lang;
@@ -61,11 +64,12 @@
         el.setAttribute(attr, text(key));
       }
     }
-    $(".chrome").alt = text("frame.alt");
+    const chrome = $(".chrome");
+    if (chrome) chrome.alt = text("frame.alt");
     document.title = text("meta.title");
     $('meta[name="description"]').content = text("meta.description");
     $("#lang-toggle").lang = lang === "en" ? "zh-Hans" : "en";
-    tour.relabel();
+    for (const fn of onLang) fn();
   }
 
   $("#lang-toggle").addEventListener("click", () => {
@@ -74,35 +78,69 @@
     applyLang();
   });
 
-  // ---- Copy SHA-256 ----
+  // ---- One download entry on screen: the nav button shows only when no other is visible ----
 
-  for (const button of $$(".copy")) {
-    button.addEventListener("click", async () => {
-      try {
-        await navigator.clipboard.writeText(button.dataset.copy);
-        button.textContent = text("dl.copied");
-        setTimeout(() => { button.textContent = text("dl.copy"); }, 1500);
-      } catch { /* clipboard refused: the hash stays selectable */ }
+  (() => {
+    const nav = $("#nav-dl");
+    const buttons = $$(".cta-btn").filter((b) => getComputedStyle(b).display !== "none");
+    if (!nav || !buttons.length) return;
+    nav.href = buttons[0].href;
+    if (!hasIO) {
+      nav.inert = false;
+      root.classList.add("nav-dl-on");
+      return;
+    }
+    // Every download button on the page (the hero's and the closing section's) counts.
+    const seen = new Set();
+    const io = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) seen.add(entry.target);
+        else seen.delete(entry.target);
+      }
+      const show = seen.size === 0;
+      root.classList.toggle("nav-dl-on", show);
+      nav.inert = !show;
+    }, { rootMargin: "-64px 0px 0px 0px" }); // a button under the sticky header counts as gone
+    for (const b of buttons) io.observe(b);
+  })();
+
+  // ---- Other platforms: a dialog (the release page without script) ----
+
+  (() => {
+    const dialog = $("#platforms");
+    if (!dialog || typeof dialog.showModal !== "function") return;
+    for (const opener of $$(".js-platforms")) {
+      opener.addEventListener("click", (event) => {
+        event.preventDefault();
+        dialog.showModal();
+      });
+    }
+    $(".pf-close", dialog).addEventListener("click", () => dialog.close());
+    // A click on the backdrop (outside the box) closes it.
+    dialog.addEventListener("click", (event) => {
+      if (event.target !== dialog) return;
+      const r = dialog.getBoundingClientRect();
+      const inside = event.clientX >= r.left && event.clientX <= r.right && event.clientY >= r.top && event.clientY <= r.bottom;
+      if (!inside) dialog.close();
     });
+  })();
+
+  // ---- Media helper: play only while allowed ----
+
+  const mayMove = () => !reduce.matches && !saveData && !document.hidden;
+  function safePlay(video) {
+    const promise = video.play();
+    if (promise) promise.catch(() => { /* autoplay refused: the poster stays */ });
   }
 
-  // ---- Hero backdrop: plays only while on screen, never with reduced motion or Save-Data ----
+  // ---- Hero backdrop: plays only while on screen ----
 
   (() => {
     const video = $(".backdrop video");
     if (!video) return;
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const saveData = Boolean(navigator.connection && navigator.connection.saveData);
     let visible = true;
-    const update = () => {
-      if (visible && !document.hidden && !reduce.matches && !saveData) {
-        const promise = video.play();
-        if (promise) promise.catch(() => { /* autoplay refused: the poster stays */ });
-      } else {
-        video.pause();
-      }
-    };
-    if ("IntersectionObserver" in window) {
+    const update = () => (visible && mayMove() ? safePlay(video) : video.pause());
+    if (hasIO) {
       new IntersectionObserver((entries) => {
         visible = entries[0].isIntersecting;
         update();
@@ -113,218 +151,171 @@
     update();
   })();
 
-  // ---- Feature tour ----
+  // ---- Feature tour: the window stays pinned, the step under the middle of the screen picks the clip ----
 
-  const tour = (() => {
-    const region = $("#tour");
-    const slides = $$(".slide", region);
+  (() => {
+    const section = $("#features");
+    const stage = $(".tour-stage", section);
+    const slides = $$(".slide", section);
     const videos = slides.map((slide) => $("video", slide));
-    const dots = $$(".dot-btn", region);
-    const caption = $("#tour-caption");
-    const titleEl = $(".slide-title [data-i18n]", caption);
-    const textEl = $(".slide-text [data-i18n]", caption);
-    const iconEl = $(".slide-icon", caption);
-    const pauseButton = $(".pause", region);
-    const clipButton = $(".clip-toggle", region);
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const count = slides.length;
-    const FALLBACK_MS = 8000; // per slide when its video cannot play
-    const broken = new Array(count).fill(false);
-
+    const steps = $$(".step", section);
+    const dots = $$(".step-dot", section);
+    if (!slides.length) return;
     let index = 0;
-    let userPaused = reduce.matches; // reduced motion: nothing moves until asked
-    let hovered = false;
-    let focused = false;
-    let visible = true;
-    let manualClip = false;
-    let timer = 0;
-    let timerStart = 0;
+    let visible = false;
 
-    videos[0].dataset.loaded = "1";
+    // With reduced motion the pinned window is hidden (each step shows its poster): load nothing for it.
+    const shown = () => getComputedStyle(stage).display !== "none";
+
+    function loadPoster(i) {
+      const video = videos[i];
+      if (!video || !video.dataset.poster || !shown()) return;
+      video.poster = video.dataset.poster;
+      video.removeAttribute("data-poster");
+    }
 
     function load(i) {
       const video = videos[i];
-      if (video.dataset.poster) {
-        video.poster = video.dataset.poster;
-        video.removeAttribute("data-poster");
-      }
+      if (!video || !shown()) return;
+      loadPoster(i);
       if (video.dataset.loaded) return;
       video.dataset.loaded = "1";
       for (const source of $$("source[data-src]", video)) {
         source.src = source.dataset.src;
         source.removeAttribute("data-src");
       }
-      video.preload = "auto";
       video.load();
     }
 
-    // Poster of the next slide ahead of time, so the switch shows an image at once.
-    function warm(i) {
-      const video = videos[(i + count) % count];
-      if (video.dataset.poster) {
-        const image = new Image();
-        image.src = video.dataset.poster;
-      }
-    }
-
-    for (const [i, video] of videos.entries()) {
-      video.addEventListener("ended", () => {
-        if (i !== index) return;
-        if (advancing()) go(index + 1);
-        else safePlay(video);
-      });
-      // The last <source> failing means nothing playable: fall back to the poster and a timer.
-      const sources = $$("source", video);
-      sources[sources.length - 1].addEventListener("error", () => {
-        broken[i] = true;
-        if (i === index) sync();
-      });
-    }
-
-    const motion = () => !userPaused && visible;
-    const advancing = () => motion() && !hovered && !focused;
-
-    function safePlay(video) {
-      const promise = video.play();
-      if (promise) promise.catch(() => {
-        // Autoplay refused (e.g. power saving): treat like a missing video.
-        const i = videos.indexOf(video);
-        if (i === index && !manualClip) { broken[i] = true; sync(); }
-      });
-    }
-
     function sync() {
-      const video = videos[index];
-      video.loop = !advancing();
-      clipButton.hidden = !userPaused;
-      if ((motion() && !broken[index]) || manualClip) safePlay(video);
-      else video.pause();
-      clearTimeout(timer);
-      timer = 0;
-      if (advancing() && broken[index]) {
-        timerStart = performance.now();
-        timer = setTimeout(() => go(index + 1), FALLBACK_MS);
-      }
-      pauseButton.setAttribute("aria-pressed", String(userPaused));
-      pauseButton.dataset.i18nAttr = `aria-label:${userPaused ? "tour.play" : "tour.pause"}`;
-      pauseButton.setAttribute("aria-label", text(userPaused ? "tour.play" : "tour.pause"));
-      const clipKey = manualClip && !video.paused ? "tour.pauseClip" : "tour.playClip";
-      clipButton.setAttribute("aria-label", text(clipKey));
-    }
-
-    function go(target, { announce = false } = {}) {
-      const next = (target + count) % count;
-      if (next !== index) {
-        videos[index].pause();
-        slides[index].classList.remove("is-active");
-        index = next;
-        slides[index].classList.add("is-active");
-        load(index);
-        if (videos[index].readyState > 0) videos[index].currentTime = 0;
-      }
-      dots[index].style.setProperty("--p", "0");
-      warm(index + 1);
-      manualClip = false;
-      caption.setAttribute("aria-live", announce ? "polite" : "off");
-      relabel();
-      sync();
-    }
-
-    function relabel() {
-      const id = data.slides[index].id;
-      titleEl.dataset.i18n = `slide.${id}.title`;
-      textEl.dataset.i18n = `slide.${id}.caption`;
-      titleEl.textContent = text(titleEl.dataset.i18n);
-      textEl.textContent = text(textEl.dataset.i18n);
-      const icon = data.slides[index].icon;
-      iconEl.hidden = !icon;
-      if (icon) iconEl.src = icon;
-      dots.forEach((dot, i) => {
-        if (i === index) dot.setAttribute("aria-current", "true");
-        else dot.removeAttribute("aria-current");
-        dot.setAttribute("aria-label", format(text("tour.show"), { n: i + 1, title: text(`slide.${data.slides[i].id}.title`) }));
+      videos.forEach((video, i) => {
+        if (i === index && visible && mayMove()) {
+          load(i);
+          safePlay(video);
+        } else {
+          video.pause();
+        }
       });
     }
 
-    // Progress of the current slide on its dot.
-    function frame() {
-      const video = videos[index];
-      let p = 0;
-      if (timer) p = (performance.now() - timerStart) / FALLBACK_MS;
-      else if (video.duration) p = video.currentTime / video.duration;
-      dots[index].style.setProperty("--p", Math.min(1, p).toFixed(4));
-      requestAnimationFrame(frame);
+    function activate(i) {
+      if (i === index) return;
+      videos[index].pause();
+      index = i;
+      slides.forEach((s, n) => s.classList.toggle("is-active", n === i));
+      steps.forEach((s, n) => s.classList.toggle("is-active", n === i));
+      dots.forEach((d, n) => (n === i ? d.setAttribute("aria-current", "step") : d.removeAttribute("aria-current")));
+      // The poster first, so the switch shows a picture at once; the next poster ahead of time.
+      load(i);
+      loadPoster(i + 1);
+      if (videos[i].readyState > 0) videos[i].currentTime = 0;
+      sync();
     }
 
-    // ---- Input ----
+    dots.forEach((dot, i) => dot.addEventListener("click", () => {
+      if (getComputedStyle(stage).display === "none") return;
+      steps[i].scrollIntoView({ behavior: reduce.matches ? "auto" : "smooth", block: "center" });
+      activate(i);
+    }));
 
-    $(".prev", region).addEventListener("click", () => go(index - 1, { announce: true }));
-    $(".next", region).addEventListener("click", () => go(index + 1, { announce: true }));
-    dots.forEach((dot, i) => dot.addEventListener("click", () => go(i, { announce: true })));
-    pauseButton.addEventListener("click", () => {
-      userPaused = !userPaused;
-      manualClip = false;
-      sync();
-    });
-    clipButton.addEventListener("click", () => {
-      const video = videos[index];
-      manualClip = video.paused;
-      if (manualClip) safePlay(video);
-      else video.pause();
-      sync();
-    });
-    region.addEventListener("keydown", (event) => {
-      if (event.altKey || event.ctrlKey || event.metaKey) return;
-      if (event.key === "ArrowLeft") go(index - 1, { announce: true });
-      else if (event.key === "ArrowRight") go(index + 1, { announce: true });
-      else return;
-      event.preventDefault();
-    });
-
-    const stage = $(".stage", region);
-    stage.addEventListener("pointerenter", (e) => { if (e.pointerType === "mouse") { hovered = true; sync(); } });
-    stage.addEventListener("pointerleave", (e) => { if (e.pointerType === "mouse") { hovered = false; sync(); } });
-    region.addEventListener("focusin", () => { focused = true; sync(); });
-    region.addEventListener("focusout", (e) => {
-      if (!region.contains(e.relatedTarget)) { focused = false; sync(); }
-    });
-
-    // Swipe on touch screens.
-    const frameEl = $(".frame", region);
-    let start = null;
-    frameEl.addEventListener("pointerdown", (e) => {
-      if (e.pointerType !== "mouse") start = { x: e.clientX, y: e.clientY };
-    });
-    frameEl.addEventListener("pointerup", (e) => {
-      if (!start) return;
-      const dx = e.clientX - start.x;
-      const dy = e.clientY - start.y;
-      start = null;
-      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.5) go(index + (dx < 0 ? 1 : -1), { announce: true });
-    });
-    frameEl.addEventListener("pointercancel", () => { start = null; });
-
-    // Nothing plays off screen or in a background tab.
-    if ("IntersectionObserver" in window) {
+    if (hasIO) {
+      // The step crossing a line across the viewport is the active one: the middle beside the
+      // window on wide screens, lower on narrow ones where the window is pinned above the text.
+      const narrow = window.matchMedia("(max-width: 860px)");
+      let stepIO = null;
+      const watchSteps = () => {
+        if (stepIO) stepIO.disconnect();
+        const line = narrow.matches ? 62 : 50;
+        stepIO = new IntersectionObserver((entries) => {
+          for (const entry of entries) if (entry.isIntersecting) activate(steps.indexOf(entry.target));
+        }, { rootMargin: `-${line}% 0px -${100 - line}% 0px` });
+        for (const step of steps) stepIO.observe(step);
+      };
+      watchSteps();
+      narrow.addEventListener?.("change", watchSteps);
+      // The first poster once the window comes near.
+      const near = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) { loadPoster(index); near.disconnect(); }
+      }, { rootMargin: "100% 0px" });
+      near.observe(stage);
+      // Nothing plays while the window is off screen.
       new IntersectionObserver((entries) => {
-        visible = entries[0].isIntersecting && !document.hidden;
+        visible = entries[0].isIntersecting;
         sync();
-      }, { threshold: 0.2 }).observe(frameEl);
-    }
-    document.addEventListener("visibilitychange", () => {
-      visible = !document.hidden;
-      sync();
-    });
-    reduce.addEventListener?.("change", () => {
-      userPaused = reduce.matches;
-      sync();
-    });
+      }, { threshold: 0.25 }).observe($(".frame", stage));
+    } else loadPoster(0);
+    // Reduced motion: each step shows its still instead (no script: a <noscript> copy).
+    const stills = () => {
+      if (!reduce.matches) return;
+      for (const img of $$("img.step-poster[data-src]", section)) {
+        img.src = img.dataset.src;
+        img.removeAttribute("data-src");
+      }
+    };
+    stills();
+    document.addEventListener("visibilitychange", sync);
+    reduce.addEventListener?.("change", () => { stills(); sync(); });
+  })();
 
-    warm(1);
-    requestAnimationFrame(frame);
-    return { relabel() { relabel(); sync(); }, start: sync };
+  // ---- Plugin wall filter ----
+
+  (() => {
+    const buttons = $$(".pl-tabs button");
+    const cards = $$(".plugin");
+    for (const button of buttons) {
+      button.addEventListener("click", () => {
+        const filter = button.dataset.filter;
+        for (const b of buttons) b.setAttribute("aria-pressed", String(b === button));
+        for (const card of cards) card.hidden = filter !== "all" && card.dataset.kind !== filter;
+      });
+    }
+  })();
+
+  // ---- AI workshop mock: types the prompt, then the checks and the install play once ----
+
+  (() => {
+    const section = $("#ai");
+    const typed = $(".typed", section);
+    if (!section || !typed) return;
+    let played = false;
+    let timer = 0;
+
+    function type() {
+      const chars = Array.from(text("ai.prompt"));
+      let n = 0;
+      clearInterval(timer);
+      typed.textContent = "";
+      section.classList.add("is-typing");
+      timer = setInterval(() => {
+        typed.textContent = chars.slice(0, ++n).join("");
+        if (n >= chars.length) {
+          clearInterval(timer);
+          section.classList.remove("is-typing");
+          section.classList.add("is-playing");
+        }
+      }, 45);
+    }
+
+    function finish() {
+      clearInterval(timer);
+      typed.textContent = text("ai.prompt");
+      section.classList.remove("is-typing");
+      section.classList.add("is-playing");
+    }
+
+    onLang.push(() => { if (played) finish(); });
+    if (!hasIO || reduce.matches) { finish(); played = true; return; }
+    section.classList.add("is-waiting");
+    const io = new IntersectionObserver((entries) => {
+      if (!entries[0].isIntersecting || played) return;
+      played = true;
+      io.disconnect();
+      section.classList.remove("is-waiting");
+      if (reduce.matches) finish();
+      else type();
+    }, { threshold: 0.35 });
+    io.observe($(".ai-flow", section));
   })();
 
   applyLang();
-  tour.start();
 })();

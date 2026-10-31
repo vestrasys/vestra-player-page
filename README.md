@@ -1,8 +1,10 @@
 # Vestra Player download page
 
 The single-page website for downloading Vestra Player:
-a hero over a looping backdrop with a download button for the visitor's
-system, a feature tour inside a player window frame, highlights, and the download section. Static output for
+a hero over a looping backdrop with one download button for the visitor's
+system, a feature tour in a pinned player window whose clip follows the text
+steps scrolling past, a plugin wall, the AI plugin workshop (an illustration
+until a recording exists), open source, and a closing download button. Static output for
 Cloudflare Pages; plain HTML, CSS and JavaScript built by a Node script with no
 dependencies. English and Simplified Chinese.
 
@@ -33,7 +35,8 @@ The build prints the size of the HTML, CSS and JS and fails above 150 KiB
 | --- | --- |
 | `src/index.html` | Page template: `{{t:key}}` text, `{{h:key}}` HTML text, `{{var:…}}` values, `{{slot:…}}` sections rendered by the build |
 | `src/i18n.json` | Every string, `en` and `zh-Hans` (the build fails if a key is missing in one) |
-| `src/styles.css`, `src/main.js` | Styles and the page script (language, download button, feature tour) |
+| `src/styles.css`, `src/main.js` | Styles and the page script (language, download buttons, platforms dialog, feature tour, plugin filter, AI workshop mock) |
+| `src/plugins.json` | The plugin wall: name, author, kind (built in or store), one line in `en` and `zh-Hans`, optional icon |
 | `media/slides.json` | The hero backdrop and the feature tour: frame image, slides, posters and video sources |
 | `media/CREDITS.md` | Third-party footage and games shown in the demos; the footer lists its table |
 | `release.config.json` | Where release metadata comes from, asset name patterns, system requirements |
@@ -46,8 +49,9 @@ The build prints the size of the HTML, CSS and JS and fails above 150 KiB
 ## Release metadata
 
 `npm run build` reads the newest release that is not a draft and, unless
-`includePrereleases` is true, not a prerelease. It bakes the version, date,
-file sizes, SHA-256 digests and links into the HTML.
+`includePrereleases` is true, not a prerelease. It bakes the version, file
+sizes and links into the HTML; file names and SHA-256 digests are left to the
+release page, which the footer links.
 
 - **`provider: "github"`** reads `github.owner/repo` through the GitHub REST API.
   Set `GITHUB_TOKEN` to raise the rate limit or to read a private repository.
@@ -57,9 +61,12 @@ file sizes, SHA-256 digests and links into the HTML.
   hosted elsewhere (see below).
 - **`assets`**: one entry per download. `pattern` is a regular expression for
   the file name; `enabled: false` hides the entry (for example `macos-x64` or
-  `macos-universal` until such builds exist). The hero shows one button for
-  Windows and macOS visitors (an Intel button too when `macos-x64` is enabled),
-  and every button for other systems.
+  `macos-universal` until such builds exist). The page shows exactly one
+  download button at a time: the hero's (macOS visitors get the universal,
+  else Apple silicon, else Intel build; everyone else the Windows installer),
+  the closing section's, or, while neither is on screen, a small one in the
+  header. One grey line under the hero button gives the version,
+  requirements and "Also for …", which opens a dialog with every enabled file.
 - **`stableAssetNames: true`** links to `…/releases/latest/download/<stableName>`
   (or `<stableName>` next to the manifest) instead of the versioned file. Turn
   it on only when every release uploads files under those names.
@@ -109,8 +116,12 @@ into `media/slides.json`. Replacing one item is one command plus that edit.
   optional `icon`, a `poster` and `sources` (tried in order; AV1 WebM first,
   H.264 MP4 last). `"hidden": true` leaves a slide out of the page; its files
   need not exist (the `ai` slide waits like this for its recording).
-- Only the current slide's video is loaded. With autoplay the tour moves on
-  when a clip ends; a clip that cannot play shows its poster for 8 seconds.
+- The tour pins the window (`position: sticky`) while one text step per
+  slide scrolls past; the step crossing the middle of the screen (lower on
+  narrow screens) picks the clip. A clip loads when its step is first reached
+  and plays only while the window is on screen; with reduced motion, Save-Data
+  or without script nothing plays (reduced motion and no script also show each
+  step's poster under its text instead of the pinned window).
 
 ### Commands
 
