@@ -77,16 +77,18 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 /* Every system's button shows; the visitor's comes first as the primary one, the other is
    secondary (without script: Windows first). */
-.cta-btn.os-macos, :root[data-visitor="macos"] .cta-btn.os-windows {
+.cta-btn.os-macos, .cta-btn.os-linux,
+:root[data-visitor="macos"] .cta-btn.os-windows, :root[data-visitor="linux"] .cta-btn.os-windows {
   order: 1; background: rgba(255, 255, 255, 0.03); color: var(--text);
   box-shadow: 0 0 0 1px var(--line-2) inset;
 }
-:root[data-visitor="macos"] .cta-btn.os-macos {
+:root[data-visitor="macos"] .cta-btn.os-macos, :root[data-visitor="linux"] .cta-btn.os-linux {
   order: 0; background: var(--button); color: var(--button-ink);
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.18) inset, 0 12px 40px -8px rgba(232, 28, 216, 0.55);
 }
-.cta-btn.os-macos .cta-sub, :root[data-visitor="macos"] .cta-btn.os-windows .cta-sub { color: var(--muted); }
-:root[data-visitor="macos"] .cta-btn.os-macos .cta-sub { color: inherit; }
+.cta-btn.os-macos .cta-sub, .cta-btn.os-linux .cta-sub,
+:root[data-visitor="macos"] .cta-btn.os-windows .cta-sub, :root[data-visitor="linux"] .cta-btn.os-windows .cta-sub { color: var(--muted); }
+:root[data-visitor="macos"] .cta-btn.os-macos .cta-sub, :root[data-visitor="linux"] .cta-btn.os-linux .cta-sub { color: inherit; }
 
 /* ---- Header: fixed over the stage, no blur (it sits over moving pictures) ---- */
 

@@ -17,7 +17,7 @@
 
   const text = (key) => data.strings[key] ?? key;
 
-  // ---- Visitor's system: macOS gets the macOS button, everyone else Windows ----
+  // ---- Visitor's system: its button first (Linux only once it has one), else Windows ----
 
   function detectOS() {
     const platform = (navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || "";
@@ -26,6 +26,7 @@
     if (/mac/i.test(platform) && navigator.maxTouchPoints > 1) return "windows";
     if (/iphone|ipad|ipod/i.test(ua)) return "windows";
     if (/mac/i.test(platform) || /mac os x/i.test(ua)) return "macos";
+    if (/linux/i.test(platform + " " + ua) && !/android|cros/i.test(ua)) return "linux";
     return "windows";
   }
   const detected = detectOS();

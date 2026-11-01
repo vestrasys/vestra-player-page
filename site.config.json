@@ -1,6 +1,12 @@
 {
   "$comment": "Links and facts the page shows. A null link is left out of the page. url: the public address of the site, ending in /; while it is null (unknown) the build writes no canonical, hreflang, og:url or sitemap.xml, and robots.txt has no Sitemap line.",
   "url": null,
+  "downloads": {
+    "$comment": "The download buttons link to https://github.com/<github.owner>/<github.repo from release.config.json>/releases/latest/download/<name>: fixed-name copies every release uploads, so the links never change. null: no button (Linux shows a disabled 'coming soon' entry instead).",
+    "windows": "VestraPlayer-windows-x64-setup.exe",
+    "macos": "VestraPlayer-macos-arm64.dmg",
+    "linux": null
+  },
   "links": {
     "playerRepo": null,
     "pluginsRepo": "https://github.com/vestrasys/vestra-player-plugins",

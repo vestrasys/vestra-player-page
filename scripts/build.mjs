@@ -22,7 +22,7 @@ const SIZES = {
 };
 const BUDGET = 150 * 1024; // HTML + CSS + JS, media and images excluded
 const MAX_FILE = 25 * 1024 * 1024; // Cloudflare Pages per-file limit
-const OS_NAMES = { windows: "Windows", macos: "macOS" };
+const OS_NAMES = { windows: "Windows", macos: "macOS", linux: "Linux" };
 // The GitHub mark (Octicons mark-github, MIT).
 const GITHUB_ICON = '<svg class="gh-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"/></svg>';
 
@@ -69,6 +69,16 @@ const primary = {
 };
 const systems = Object.keys(primary).filter((os) => primary[os]);
 if (!systems.length) fail("release.config.json: no enabled asset for Windows or macOS");
+
+// The buttons: stable "latest" links to fixed asset names (site.config.json downloads), so they work
+// without release metadata and never need a rebuild for a new version.
+const releaseRepo = `${releaseConfig.github.owner}/${releaseConfig.github.repo}`;
+function stableUrl(os) {
+  const name = site.downloads?.[os];
+  return name ? `https://github.com/${releaseRepo}/releases/latest/download/${encodeURIComponent(name)}` : null;
+}
+const buttonSystems = ["windows", "macos", "linux"].filter((os) => stableUrl(os));
+if (!buttonSystems.some((os) => os !== "linux")) fail("site.config.json downloads: no Windows or macOS asset name");
 
 rmSync(dist, { recursive: true, force: true });
 mkdirSync(join(dist, "assets"), { recursive: true });
@@ -133,7 +143,7 @@ function renderPage(lang) {
     lcpSrcset: srcset(frame.image) ?? frame.image,
     lcpSizes: SIZES.hero,
     github,
-    navHref: downloadHref(primary[systems[0]]),
+    navHref: stableUrl(buttonSystems[0]),
     releasesPage: releaseConfig.releasesPage,
     otherLang: other,
     // The other language's page, relative to this one.
@@ -191,13 +201,13 @@ function renderSeo(lang) {
     description: en["meta.description"],
     applicationCategory: "MultimediaApplication",
     applicationSubCategory: "Video player",
-    operatingSystem: systems.map((os) => OS_NAMES[os]).join(", "),
+    operatingSystem: buttonSystems.map((os) => OS_NAMES[os]).join(", "),
     inLanguage: lang,
     isAccessibleForFree: true,
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
     license: site.playerLicense.url,
     ...(release.ok ? { softwareVersion: release.version, datePublished: release.date, releaseNotes: release.notesUrl } : {}),
-    ...(release.ok && primary[systems[0]] && assetInfo(primary[systems[0]]) ? { downloadUrl: systems.map((os) => downloadHref(primary[os])) } : {}),
+    downloadUrl: buttonSystems.map(stableUrl),
     ...(siteUrl ? { url: pageUrl(lang), image: image } : {}),
     ...(site.links.playerRepo ? { sameAs: [site.links.playerRepo] } : {}),
   };
@@ -354,20 +364,20 @@ function downloadHref(asset) {
 }
 
 /**
- * The download buttons: one per system (styles.css puts the visitor's first and makes it the
- * primary one; the others are secondary), and Linux, not built yet, as a disabled entry
- * (no link, not focusable, aria-disabled).
+ * The download buttons: one per configured system, each a direct link to the latest installer
+ * (styles.css puts the visitor's first and makes it the primary one; the others are secondary).
+ * Linux without an asset name is a disabled entry (no link, not focusable, aria-disabled).
  */
 function renderCta(where) {
-  const buttons = systems.map((os) => {
-    const asset = primary[os];
-    const title = os === "windows" ? "hero.forWindows" : asset.arch === "x64" ? "hero.forMacIntel" : "hero.forMac";
-    return `      <a class="cta-btn os-${os}" data-cta="${where}" href="${escape(downloadHref(asset))}">
+  const titles = { windows: "hero.forWindows", macos: /x64|intel/i.test(site.downloads?.macos ?? "") ? "hero.forMacIntel" : "hero.forMac", linux: "hero.forLinux" };
+  const buttons = buttonSystems.map((os) => {
+    const title = titles[os];
+    return `      <a class="cta-btn os-${os}" data-cta="${where}" href="${escape(stableUrl(os))}">
         <svg class="cta-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0l-4.5-4.5M12 15l4.5-4.5M5 19h14"/></svg>
         <span class="cta-text">${t(title, "span", ' class="cta-title"')}${t(`hero.sub.${os}`, "small", ' class="cta-sub"')}</span>
       </a>`;
   });
-  buttons.push(`      <span class="cta-btn cta-soon" role="link" aria-disabled="true">
+  if (!stableUrl("linux")) buttons.push(`      <span class="cta-btn cta-soon" role="link" aria-disabled="true">
         <span class="cta-text">${t("hero.linux", "span", ' class="cta-title"')}${t("hero.linuxSoon", "small", ' class="cta-sub"')}</span>
       </span>`);
   return buttons.join("\n");
@@ -406,7 +416,7 @@ function renderPlatforms() {
         <a class="pf-get" href="${escape(downloadHref(asset))}">${info ? t("dl.get") : t("hero.allReleases")}</a>
       </li>`);
   }
-  lines.push(`      <li class="pf-item pf-soon">
+  if (!stableUrl("linux")) lines.push(`      <li class="pf-item pf-soon">
         <div class="pf-text">
           <p class="pf-name"><b>Linux</b> ${t("hero.linuxSoon")}</p>
         </div>
