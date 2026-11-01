@@ -144,11 +144,10 @@ into `media/slides.json`. Replacing one item is one command plus that edit.
   window, `near` the two slides shown as stills beside it (left, right), and
   `far` two pre-blurred stills for the back row, made with
   `npm run encode -- --far <slide-id>` (the page uses no live blur filter).
-  On wide screens with scroll-driven animations the hero is a tall track: its
-  viewport stays pinned while the fan gathers into the front window; a fine
-  mouse pointer tilts the stage by up to 6°. Phones, browsers without
-  scroll-driven animations and no script get one flat window; reduced motion
-  gets the fan standing still, posters only.
+  On wide screens the hero shows the fan at rest (a short entrance on load)
+  and a fine mouse pointer tilts it by up to 6°; the page scrolls straight on.
+  Phones get one flat window; reduced motion gets the fan without the entrance
+  or tilt, posters only.
 - `frame.image` is the player window around every clip, at `frame.width` ×
   `frame.height` pixels. `frame.areas` are rectangles in that image's pixels:
   `client` is the window's client area, `video` only the video area. Each

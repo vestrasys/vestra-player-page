@@ -207,68 +207,51 @@ a.cta-btn:hover { transform: translateY(-1px); box-shadow: 0 0 0 1px rgba(255, 2
 .pp.is-paused .i-play { display: inline; }
 .pp-hero { position: absolute; z-index: 3; right: max(var(--gutter), calc(50% - var(--wide) / 2 + var(--gutter))); bottom: 22px; }
 
-/* ---- The depth stage (wide screens with scroll-driven animations) ---- */
+/* ---- The depth stage (wide screens): five windows fanned in depth, standing still ---- */
 
-@supports (animation-timeline: view()) {
-  @media (min-width: 861px) {
-    .hero {
-      /* Window width: the gathered front window fills the viewport without touching the header. */
-      --w: min(1120px, 84vw, (100vh - var(--header) - 72px) * 1.597);
-      --h: calc(var(--w) * 0.62613);
-      --s0: 0.54;
-      --y0: 0px;
-    }
-    .stage { max-width: none; height: calc(var(--h) * var(--s0) + 110px); perspective: 1800px; perspective-origin: 50% 35%; }
-    .tilt, .fan { position: absolute; inset: 0; transform-style: preserve-3d; }
-    .tilt {
-      transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
-      transition: transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
-      will-change: transform;
-    }
-    .card {
-      --fx: 0; --fz: 0px; --fr: 0deg;
-      position: absolute; left: 50%; top: 50%; width: var(--w);
-      margin: calc(var(--h) / -2) 0 0 calc(var(--w) / -2);
-      transform: translate3d(calc(var(--w) * var(--fx)), var(--y0), var(--fz)) rotateY(var(--fr)) scale(var(--s0));
-      backface-visibility: hidden;
-    }
-    .card-near, .card-far {
-      --k: 0.5;
-      display: block; width: calc(var(--w) * var(--k));
-      margin: calc(var(--h) * var(--k) / -2) 0 0 calc(var(--w) * var(--k) / -2);
-      transform: translate3d(calc(var(--w) * var(--fx)), var(--y0), var(--fz)) rotateY(var(--fr)) scale(calc(var(--s0) / var(--k)));
-    }
-    .card-near { --fz: -440px; box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06), 0 20px 45px -15px rgba(0, 0, 0, 0.95); }
-    .card-near.card-l { --fx: -0.5; --fr: 36deg; }
-    .card-near.card-r { --fx: 0.5; --fr: -36deg; }
-    .card-far { --fz: -760px; opacity: 0.55; box-shadow: none; }
-    .card-far.card-l { --fx: -0.9; --fr: 46deg; }
-    .card-far.card-r { --fx: 0.9; --fr: -46deg; }
-    /* Side windows sit dimmer: a dark veil (opacity only, no filter). */
-    .card-near::after { content: ""; position: absolute; inset: 0; background: rgba(9, 8, 13, 0.5); }
+@media (min-width: 861px) {
+  .hero {
+    /* The front window's width, as shown: every card is laid out (and rastered) at the size it
+       appears, no scaling. */
+    --w: min(605px, 45vw, (100vh - var(--header) - 72px) * 0.862);
+    --h: calc(var(--w) * 0.62613);
   }
-
-  /* Scroll gathers the fan: the hero is a tall track, its viewport pinned while the windows close
-     in to one front-facing window and the copy lifts away. */
-  @media (min-width: 861px) and (prefers-reduced-motion: no-preference) {
-    /* Inset 0: the default (auto) would take the scroll padding and start the gather early. */
-    .hero { height: 250vh; view-timeline: --stage block; view-timeline-inset: 0px; --y0: 34vh; --s0: 0.5; }
-    .pin { position: sticky; top: 0; height: 100vh; padding: 0; }
-    .hero-copy { position: absolute; left: var(--gutter); right: var(--gutter); top: calc(var(--header) + 5.5vh); animation: lift-away linear both; animation-timeline: --stage; animation-range: contain 0% contain 34%; }
-    .stage { position: absolute; inset: 0; height: auto; margin: 0; }
-    .card { animation: gather linear both; animation-timeline: --stage; animation-range: contain 0% contain 56%; }
-    .card-near { --tz: -90px; --ts: calc(0.97 / var(--k)); --to: 0; }
-    .card-far { --tz: -240px; --ts: calc(0.95 / var(--k)); --to: 0; }
-    .hero .floor { animation: floor-sink linear both; animation-timeline: --stage; animation-range: contain 0% contain 56%; }
+  .stage { max-width: none; height: calc(var(--h) + 70px); perspective: 1800px; perspective-origin: 50% 35%; }
+  .tilt, .fan { position: absolute; inset: 0; transform-style: preserve-3d; }
+  .tilt {
+    transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+    transition: transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+    will-change: transform;
   }
+  .card {
+    --fx: 0; --fz: 0px; --fr: 0deg;
+    position: absolute; left: 50%; top: 50%; width: var(--w);
+    margin: calc(var(--h) / -2) 0 0 calc(var(--w) / -2);
+    transform: translate3d(calc(var(--w) * var(--fx)), 0, var(--fz)) rotateY(var(--fr));
+    backface-visibility: hidden;
+  }
+  .card-near, .card-far { display: block; }
+  .card-near { --fz: -440px; box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06), 0 20px 45px -15px rgba(0, 0, 0, 0.95); }
+  .card-near.card-l { --fx: -0.93; --fr: 36deg; }
+  .card-near.card-r { --fx: 0.93; --fr: -36deg; }
+  .card-far { --fz: -760px; opacity: 0.55; box-shadow: none; }
+  .card-far.card-l { --fx: -1.67; --fr: 46deg; }
+  .card-far.card-r { --fx: 1.67; --fr: -46deg; }
+  /* Side windows sit dimmer: a dark veil (opacity only, no filter). */
+  .card-near::after { content: ""; position: absolute; inset: 0; background: rgba(9, 8, 13, 0.5); }
 }
-@keyframes gather { to { transform: translate3d(0, 0, var(--tz, 0px)) scale(var(--ts, 1)); opacity: var(--to, 1); } }
-@keyframes lift-away { 60% { opacity: 0; } to { opacity: 0; transform: translateY(-62vh); } }
-@keyframes floor-sink { to { opacity: 0.5; transform: perspective(600px) rotateX(66deg); } }
+
+/* A short entrance on load (time-based, transform and opacity only; runs once). */
+@media (min-width: 861px) and (prefers-reduced-motion: no-preference) {
+  .card { animation: fan-in 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+  .card-near { animation-delay: 0.08s; }
+  .card-far { animation-delay: 0.16s; }
+}
+@keyframes fan-in { from { opacity: 0; transform: translate3d(0, 48px, -240px); } }
 
 /* ---- Features: one chapter per recording ---- */
 
-.chapters { max-width: var(--wide); margin: 0 auto; padding: 140px var(--gutter) 60px; }
+.chapters { max-width: var(--wide); margin: 0 auto; padding: 96px var(--gutter) 60px; }
 .chapter { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 8fr); gap: clamp(32px, 5vw, 72px); align-items: center; padding: 56px 0; }
 .chapter.is-flip { grid-template-columns: minmax(0, 8fr) minmax(0, 5fr); }
 .chapter.is-flip .ch-copy { order: 2; }

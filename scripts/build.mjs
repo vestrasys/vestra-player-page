@@ -16,8 +16,8 @@ const PAGES = { en: "", "zh-Hans": "zh-hans/" };
 const OG_LOCALE = { en: "en_US", "zh-Hans": "zh_CN" };
 // Displayed widths (CSS px) for the srcset choice; they follow styles.css.
 const SIZES = {
-  hero: "(max-width: 860px) calc(100vw - 32px), min(1100px, 84vw)",
-  near: "(max-width: 860px) 1px, min(560px, 42vw)",
+  hero: "(max-width: 860px) calc(100vw - 32px), min(605px, 45vw)",
+  near: "(max-width: 860px) 1px, min(605px, 45vw)",
   chapter: "(max-width: 860px) calc(100vw - 32px), min(740px, 58vw)",
 };
 const BUDGET = 150 * 1024; // HTML + CSS + JS, media and images excluded
