@@ -40,12 +40,12 @@
     "$comment": "The hero's depth stage: player windows fanned in 3D. \"center\" is the slide whose clip plays in the front window; \"near\" are shown as stills beside it (left, right): a slide id (its poster) or a screenshot made with `npm run encode -- --still <png> --id <name>`; \"far\" are pre-blurred stills for the back row (left, right), made with `npm run encode -- --far <slide-id | poster path> [--id <name>]`.",
     "center": "menus",
     "near": [
-      "store",
-      "media/posters/ai-still.webp"
+      "media/posters/seek.webp",
+      "nes"
     ],
     "far": [
-      "media/posters/seek-far.webp",
-      "media/posters/nes-far.webp"
+      "media/posters/store-far.webp",
+      "media/posters/ai-far.webp"
     ]
   },
   "slides": [
