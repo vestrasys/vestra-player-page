@@ -16,9 +16,13 @@ Decisions for the next round of recordings. The recordings replace the clips in
 ## Store clip (user ruling 2026-11-01)
 
 - Keep the flow: open the Plugin Store, install VestraTube.
-- Then show VestraTube in full: search "lofi" in its sidebar and play a live
-  stream, so viewers see how capable a plugin can be. No captions explaining
-  it; the picture speaks for itself.
+- Then show VestraTube in full, so viewers see how capable a plugin can be:
+  search for a Blender Studio open movie in its sidebar (for example "Sintel"
+  or "Spring Blender") and play the official Blender Studio upload. No captions
+  explaining it; the picture speaks for itself.
+- Not lofi live streams (user ruling 2026-11-01): their pictures and music
+  belong to the channels. Blender Studio films are CC BY, so they may appear in
+  the clip; credit the film in the page's credits, as for the other footage.
 
 ## Hero stage: the store card
 
