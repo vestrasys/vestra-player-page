@@ -12,6 +12,7 @@
     "pluginsRepo": "https://github.com/vestrasys/vestra-player-plugins",
     "sdkRepo": "https://github.com/vestrasys/vestra-player-sdk",
     "sdkDocs": "https://vestrasys.github.io/vestra-player-sdk/",
+    "sdkPublish": "https://vestrasys.github.io/vestra-player-sdk/documents/Publish_a_plugin.html",
     "pageRepo": "https://github.com/vestrasys/vestra-player-page"
   },
   "playerLicense": {
