@@ -64,6 +64,9 @@
     "os.community.title": "The community",
     "os.community.text": "Third-party plugins are reviewed as pull requests in the plugin repository, and the in-player store reads its signed index.",
     "os.community.link": "Plugin repository",
+    "os.stores.title": "Host your own plugin store",
+    "os.stores.text": "Sharing plugins doesn't need our approval. Anyone can run a plugin store of their own, for example on GitHub Pages from their own GitHub account (any https:// address works). People add that address in the Plugin Store under ⚙ › Repositories… and get its plugins and their updates there. Plugins from such stores are marked Unofficial and come with a warning before installing: nobody at Vestra reviews them, so install from authors you trust.",
+    "os.stores.link": "How plugins are published",
 
     "end.title": "Free, open source, and every feature is yours to shape.",
 
@@ -159,6 +162,9 @@
     "os.community.title": "社区",
     "os.community.text": "第三方插件在插件仓库中以拉取请求的形式接受审核，播放器内的商城读取该仓库带签名的索引。",
     "os.community.link": "插件仓库",
+    "os.stores.title": "自己开一个插件商店",
+    "os.stores.text": "分享插件不必经过我们审核。任何人都可以开一个自己的插件商店，比如用自己的 GitHub 账号放在 GitHub Pages 上（任何 https:// 地址都可以）。用户在插件商城的 ⚙ › 仓库… 里添加这个地址，就能在那里安装其中的插件，并收到它们的更新。这类商店里的插件会标为“非官方”，安装前会有提醒：它们没有经过 Vestra 审核，请只安装你信任的作者的插件。",
+    "os.stores.link": "插件如何发布",
 
     "end.title": "免费、开源，每个功能都由你决定。",
 

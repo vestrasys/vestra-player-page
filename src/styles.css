@@ -22,6 +22,10 @@
   --ok: #7ddca0;
   --button: linear-gradient(100deg, #e0245e 0%, #c8178f 40%, #a41fd8 70%, #7a2cff 100%);
   --button-ink: #ffffff;
+  /* Download buttons: dark surface, white text, a thin brand-gradient border (brighter on hover). */
+  --dl-fill: linear-gradient(var(--ink-2), var(--ink-2)) padding-box;
+  --dl-fill-hover: linear-gradient(#1d1a25, #1d1a25) padding-box;
+  --brand-hi: linear-gradient(100deg, #ffd23a 0%, #ff7a5c 20%, #ff3cc0 45%, #9a46ff 72%, #45c0ff 100%);
   --radius: 16px;
   --win-radius: 10px;
   --gutter: 16px;
@@ -101,8 +105,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .lang { background: transparent; border: 1px solid var(--line-2); border-radius: 999px; padding: 4px 13px; font-size: 0.84rem; white-space: nowrap; color: var(--muted); }
 .lang:hover { color: var(--text); border-color: var(--muted); }
 .nav-dl {
-  padding: 6px 15px; border-radius: 999px; font-size: 0.86rem; font-weight: 650; white-space: nowrap;
-  background: var(--button); color: var(--button-ink); text-decoration: none;
+  padding: 5px 14px; border-radius: 999px; font-size: 0.86rem; font-weight: 650; white-space: nowrap;
+  color: var(--text); text-decoration: none; border: 1.5px solid transparent; background: var(--dl-fill), var(--brand) border-box;
   transition: opacity 0.2s ease, transform 0.2s ease;
 }
 /* Hidden (and inert) while another download button is on screen. It keeps its room, so showing
@@ -159,19 +163,21 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .cta { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 12px; margin-top: 30px; }
 .cta-btn {
   display: inline-flex; align-items: center; gap: 12px; min-height: 58px; padding: 8px 24px 8px 20px; border-radius: 12px;
-  background: var(--button); color: var(--button-ink); text-decoration: none;
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.18) inset, 0 12px 40px -8px rgba(232, 28, 216, 0.55);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  color: var(--text); text-decoration: none; border: 1.5px solid transparent; background: var(--dl-fill), var(--brand) border-box;
+  transition: transform 0.15s ease;
 }
-a.cta-btn:hover { transform: translateY(-1px); box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.3) inset, 0 16px 48px -6px rgba(232, 28, 216, 0.72); }
+a.cta-btn:hover { transform: translateY(-1px); }
+:is(a.cta-btn, .nav-dl, .pf-get):hover { background: var(--dl-fill-hover), var(--brand-hi) border-box; }
+.cta-btn .cta-sub { color: var(--muted); }
 .cta-text { display: flex; flex-direction: column; align-items: flex-start; line-height: 1.2; text-align: left; }
 .cta-sub { margin-top: 3px; font-size: 0.76rem; font-weight: 500; }
 /* Linux: not built yet. A greyed entry, not a link. */
 .cta-btn.cta-soon {
   order: 2; cursor: not-allowed; background: transparent; color: var(--faint);
-  box-shadow: none; border: 1px dashed var(--line-2);
+  box-shadow: none; border: 1.5px dashed var(--line-2);
 }
 .cta-soon .cta-title { font-size: 0.98rem; font-weight: 650; }
+
 .cta-icon { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.3; stroke-linecap: round; stroke-linejoin: round; flex: none; }
 .cta-title { font-weight: 700; font-size: 1.05rem; }
 .ghost-btn {
@@ -339,6 +345,11 @@ a.cta-btn:hover { transform: translateY(-1px); box-shadow: 0 0 0 1px rgba(255, 2
 .os-card h3 { font-size: 1.3rem; letter-spacing: -0.02em; }
 .os-card p { margin: 0; color: var(--muted); font-size: 0.95rem; flex: 1; }
 .os-card p a { color: var(--text); }
+.os-card.os-wide {
+  grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 12px 28px; align-items: start;
+  margin-top: 8px; padding: 28px 0 8px; border-left: 0; border-top: 1px solid var(--line);
+}
+.os-card.os-wide .text-link { grid-column: 2; }
 
 /* ---- Closing: one sentence, one button, the floor again ---- */
 
@@ -378,7 +389,7 @@ a.cta-btn:hover { transform: translateY(-1px); box-shadow: 0 0 0 1px rgba(255, 2
 .pf-name { margin: 0; font-size: 0.95rem; }
 .pf-note { margin: 4px 0 0; font-size: 0.8rem; color: var(--muted); }
 .pf-note b { color: var(--text); font-weight: 600; }
-.pf-get { flex: none; padding: 8px 16px; border-radius: 10px; font-weight: 650; font-size: 0.88rem; background: var(--button); color: var(--button-ink); text-decoration: none; }
+.pf-get { flex: none; padding: 7px 15px; border-radius: 10px; font-weight: 650; font-size: 0.88rem; color: var(--text); text-decoration: none; border: 1.5px solid transparent; background: var(--dl-fill), var(--brand) border-box; }
 .pf-req { margin: 14px 0 0; font-size: 0.82rem; color: var(--muted); }
 .pf-foot { margin: 10px 0 0; font-size: 0.88rem; }
 
@@ -413,6 +424,7 @@ a.cta-btn:hover { transform: translateY(-1px); box-shadow: 0 0 0 1px rgba(255, 2
   .window, .chapter.is-flip .window { align-items: flex-end; }
   .os-grid { grid-template-columns: minmax(0, 1fr); }
   .os-card, .os-card + .os-card { padding: 22px 0; border-left: 0; }
+  .os-card.os-wide { display: flex; margin-top: 0; }
   .os-card + .os-card { border-top: 1px solid var(--line); }
   .pp-hero { position: static; display: flex; margin: 14px 0 0 auto; }
   .floor { height: 46%; }
