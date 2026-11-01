@@ -32,3 +32,6 @@ Decisions for the next round of recordings. The recordings replace the clips in
   VestraBili, VestraNES, RTX Upscale, Auto Frame). Viewers see at a glance that
   features like RTX Upscale exist; no captions explaining them.
 - The current poster is not the Available tab; replace it.
+- The first card on the right shows the AI Workshop: a screenshot of the
+  Workshop (pi) window with a new, empty conversation. No clip is recorded for
+  it; the page's AI Workshop section explains it further down.
