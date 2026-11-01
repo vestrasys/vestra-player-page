@@ -15,6 +15,11 @@ Decisions for the next round of recordings. The recordings replace the clips in
 
 ## Store clip (user ruling 2026-11-01)
 
+- Before recording (user ruling 2026-11-01): uninstall every plugin that isn't
+  built in, so the Available tab lists all hosted plugins (VestraTube,
+  VestraBili, VestraNES, RTX Upscale, Auto Frame). This also applies to the
+  Available-tab screenshot for the hero store card. Hide built-in plugins stays
+  on, as the default.
 - Keep the flow: open the Plugin Store, install VestraTube.
 - Then show VestraTube in full, so viewers see how capable a plugin can be:
   search for a Blender Studio open movie in its sidebar (for example "Sintel"
