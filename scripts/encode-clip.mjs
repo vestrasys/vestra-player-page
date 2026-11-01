@@ -28,6 +28,14 @@
 //   pixels (default: the whole image). Prints the "frame" block for
 //   media/slides.json.
 //
+// Still (a screenshot shown as a window in the hero stage, no clip):
+//
+//   node scripts/encode-clip.mjs --still <screenshot> --id <name> [--crop x,y,w,h]
+//
+//   Writes media/posters/<name>.webp (and its small copy) from the screenshot
+//   cut to --crop, the window's client area. Name it in "stage.near", or pass
+//   it to --far.
+//
 // Small copies (for srcset): every poster and the frame image also get a
 // half-width <name>.sm.webp, which the page offers to 1x screens and phones.
 // The clip and frame commands write it; to make them for existing files:
@@ -36,10 +44,11 @@
 //
 // Far card (the hero stage's back row, a blurred still):
 //
-//   node scripts/encode-clip.mjs --far <slide-id> [--id <name>]
+//   node scripts/encode-clip.mjs --far <slide-id | media/posters/x.webp> [--id <name>]
 //
-//   Writes media/posters/<name>.webp (default <slide-id>-far): the slide's
-//   poster in the frame's client area, scaled to 640 px wide and blurred, so
+//   Writes media/posters/<name>.webp (default <slide-id>-far; --id is needed
+//   for a poster path): the slide's poster, or the still, in the frame's client
+//   area, scaled to 640 px wide and blurred, so
 //   the page needs no live blur filter. Prints the line for "stage.far".
 import { readFileSync, statSync } from "node:fs";
 import { ffmpeg, fail, fromRoot, kib, parseArgs, readJson, webpSize } from "./lib.mjs";
@@ -72,12 +81,16 @@ const report = (file) => console.log(`${rel(file)}: ${kib(statSync(file).size)}`
 
 if (options.frame) encodeFrame(options.frame);
 else if (options.far) encodeFar(options.far);
+else if (options.still) encodeStill(options.still);
 else if (options.small) smallAll();
 else encodeClip(options._[0]);
 
-function encodeFar(slideId) {
+function encodeFar(source) {
   const { frame, slides } = readJson(fromRoot("media/slides.json"));
-  const slide = slides.find((s) => s.id === slideId) ?? fail(`--far: no slide "${slideId}" in media/slides.json`);
+  // A slide id, or a poster path (a still from encode-clip --still) over the client area.
+  const slide = /\.webp$/.test(source)
+    ? { area: "client", poster: source }
+    : (slides.find((s) => s.id === source) ?? fail(`--far: no slide "${source}" in media/slides.json`));
   const a = frame.areas[slide.area];
   const out = fromRoot(`media/posters/${id}.webp`);
   ffmpeg(["-i", fromRoot(frame.image), "-i", fromRoot(slide.poster), "-filter_complex",
@@ -86,6 +99,17 @@ function encodeFar(slideId) {
   report(out);
   console.log(`
 media/slides.json, "stage.far": "media/posters/${id}.webp"`);
+}
+
+function encodeStill(input) {
+  if (input === true || !input) fail("--still <screenshot> is required");
+  const crop = rect("crop");
+  const out = fromRoot(`media/posters/${id}.webp`);
+  ffmpeg(["-i", input, ...(crop ? ["-vf", `crop=${crop.w}:${crop.h}:${crop.x}:${crop.y}`] : []),
+    "-frames:v", "1", "-c:v", "libwebp", "-quality", "82", out]);
+  report(out);
+  small(out);
+  console.log(`\nmedia/slides.json, "stage.near" or --far: "media/posters/${id}.webp"`);
 }
 
 function encodeFrame(input) {

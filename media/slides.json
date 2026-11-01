@@ -37,15 +37,15 @@
     }
   },
   "stage": {
-    "$comment": "The hero's depth stage: player windows fanned in 3D. \"center\" is the slide whose clip plays in the front window; \"near\" are the slides shown as stills beside it (left, right); \"far\" are pre-blurred stills for the back row (left, right), made with `npm run encode -- --far <slide-id>`.",
+    "$comment": "The hero's depth stage: player windows fanned in 3D. \"center\" is the slide whose clip plays in the front window; \"near\" are shown as stills beside it (left, right): a slide id (its poster) or a screenshot made with `npm run encode -- --still <png> --id <name>`; \"far\" are pre-blurred stills for the back row (left, right), made with `npm run encode -- --far <slide-id | poster path> [--id <name>]`.",
     "center": "menus",
     "near": [
       "store",
-      "nes"
+      "media/posters/ai-still.webp"
     ],
     "far": [
-      "media/posters/nes-far.webp",
-      "media/posters/store-far.webp"
+      "media/posters/seek-far.webp",
+      "media/posters/nes-far.webp"
     ]
   },
   "slides": [

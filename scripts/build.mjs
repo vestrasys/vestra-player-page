@@ -276,9 +276,9 @@ function checkManifest({ backdrop, frame, slides, stage }) {
   const files = [frame.image];
   if (!stage?.center || stage.near?.length !== 2 || stage.far?.length !== 2)
     fail('media/slides.json stage: needs "center", two "near" slide ids and two "far" images');
-  for (const id of [stage.center, ...stage.near])
+  for (const id of [stage.center, ...stage.near.filter((n) => !isStill(n))])
     if (!slides.some((s) => s.id === id)) fail(`media/slides.json stage names slide "${id}", which is missing or hidden`);
-  files.push(...stage.far);
+  files.push(...stage.far, ...stage.near.filter(isStill));
   if (backdrop) {
     if (!backdrop.poster || !backdrop.sources?.length) fail("media/slides.json backdrop: needs a poster and sources");
     files.push(backdrop.poster, ...backdrop.sources.map((s) => s.src));
@@ -300,7 +300,7 @@ function checkManifest({ backdrop, frame, slides, stage }) {
 
 /** Copies only the media the manifest names (local paths). */
 function copyMedia() {
-  const files = new Set([manifest.frame.image, ...manifest.stage.far]);
+  const files = new Set([manifest.frame.image, ...manifest.stage.far, ...manifest.stage.near.filter(isStill)]);
   // The backdrop clip ships only while the template shows it.
   if (manifest.backdrop && readFileSync(fromRoot("src/index.html"), "utf8").includes("{{slot:backdrop}}")) {
     files.add(manifest.backdrop.poster);
@@ -439,6 +439,16 @@ function stageSlide(id) {
   return manifest.slides.find((s) => s.id === id) ?? fail(`media/slides.json: no slide "${id}"`);
 }
 
+/** A "near" entry that is an image path (a screenshot over the client area) rather than a slide id. */
+function isStill(entry) {
+  return /\.webp$/.test(entry);
+}
+
+/** A near card's slide, or a stand-in for a still: its image over the client area. */
+function nearSlide(entry) {
+  return isStill(entry) ? { area: "client", poster: entry } : stageSlide(entry);
+}
+
 /** "small.webp 896w, full.webp 1792w" when the half-width copy exists (encode-clip --small), else null. */
 function srcset(path) {
   const smallPath = path.replace(/\.webp$/, ".sm.webp");
@@ -476,7 +486,7 @@ function renderPause(where) {
 /** Five windows fanned in depth; the stylesheet gathers them into the front one as the page scrolls. */
 function renderStage() {
   const st = manifest.stage;
-  const near = st.near.map(stageSlide);
+  const near = st.near.map(nearSlide);
   const farH = Math.round((640 * frame.height) / frame.width);
   const far = (src, side) =>
     `          <div class="card card-far card-${side}" aria-hidden="true"><img src="${escape(src)}" width="640" height="${farH}" loading="lazy" decoding="async" alt=""></div>`;
