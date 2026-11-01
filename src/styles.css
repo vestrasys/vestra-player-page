@@ -75,8 +75,18 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 /* ---- Visitor's system: one download button (main.js sets data-visitor; Windows without script) ---- */
 
-:root:not([data-visitor="macos"]) .os-macos,
-:root[data-visitor="macos"] .os-windows { display: none !important; }
+/* Every system's button shows; the visitor's comes first as the primary one, the other is
+   secondary (without script: Windows first). */
+.cta-btn.os-macos, :root[data-visitor="macos"] .cta-btn.os-windows {
+  order: 1; background: rgba(255, 255, 255, 0.03); color: var(--text);
+  box-shadow: 0 0 0 1px var(--line-2) inset;
+}
+:root[data-visitor="macos"] .cta-btn.os-macos {
+  order: 0; background: var(--button); color: var(--button-ink);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.18) inset, 0 12px 40px -8px rgba(232, 28, 216, 0.55);
+}
+.cta-btn.os-macos .cta-sub, :root[data-visitor="macos"] .cta-btn.os-windows .cta-sub { color: var(--muted); }
+:root[data-visitor="macos"] .cta-btn.os-macos .cta-sub { color: inherit; }
 
 /* ---- Header: fixed over the stage, no blur (it sits over moving pictures) ---- */
 
@@ -111,12 +121,12 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 /* ---- Shared type ---- */
 
-.eyebrow, .kicker {
+.kicker {
   display: inline-flex; align-items: center; gap: 10px; margin: 0 0 18px;
   font: 600 0.74rem/1.2 var(--mono); letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent);
 }
-.eyebrow::before, .kicker::before { content: ""; width: 24px; height: 2px; border-radius: 1px; background: var(--brand); }
-:root[lang="zh-Hans"] .eyebrow, :root[lang="zh-Hans"] .kicker { letter-spacing: 0.08em; }
+.kicker::before { content: ""; width: 24px; height: 2px; border-radius: 1px; background: var(--brand); }
+:root[lang="zh-Hans"] .kicker { letter-spacing: 0.08em; }
 .section-head { max-width: 760px; margin-bottom: 56px; }
 .section-head h2 { font-size: var(--t-h2); }
 .section-lede { margin: 20px 0 0; color: var(--muted); font-size: var(--t-lede); max-width: 640px; }
@@ -153,24 +163,30 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .hero h1 { font-size: var(--t-hero); font-weight: 700; letter-spacing: -0.045em; max-width: 19em; margin: 0 auto; }
 :root[lang="zh-Hans"] .hero h1 { letter-spacing: 0.01em; }
 .hero h1::after { content: ""; display: block; width: 96px; height: 3px; margin: 20px auto 0; border-radius: 2px; background: var(--brand); }
-.lede { max-width: 660px; margin: 22px auto 0; color: var(--muted); font-size: var(--t-lede); }
-
 .cta { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 12px; margin-top: 30px; }
 .cta-btn {
-  display: inline-flex; align-items: center; gap: 10px; min-height: 52px; padding: 0 26px; border-radius: 12px;
+  display: inline-flex; align-items: center; gap: 12px; min-height: 58px; padding: 8px 24px 8px 20px; border-radius: 12px;
   background: var(--button); color: var(--button-ink); text-decoration: none;
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.18) inset, 0 12px 40px -8px rgba(232, 28, 216, 0.55);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
-.cta-btn:hover { transform: translateY(-1px); box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.3) inset, 0 16px 48px -6px rgba(232, 28, 216, 0.72); }
+a.cta-btn:hover { transform: translateY(-1px); box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.3) inset, 0 16px 48px -6px rgba(232, 28, 216, 0.72); }
+.cta-text { display: flex; flex-direction: column; align-items: flex-start; line-height: 1.2; text-align: left; }
+.cta-sub { margin-top: 3px; font-size: 0.76rem; font-weight: 500; }
+/* Linux: not built yet. A greyed entry, not a link. */
+.cta-btn.cta-soon {
+  order: 2; cursor: not-allowed; background: transparent; color: var(--faint);
+  box-shadow: none; border: 1px dashed var(--line-2);
+}
+.cta-soon .cta-title { font-size: 0.98rem; font-weight: 650; }
 .cta-icon { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.3; stroke-linecap: round; stroke-linejoin: round; flex: none; }
 .cta-title { font-weight: 700; font-size: 1.05rem; }
 .ghost-btn {
-  display: inline-flex; align-items: center; gap: 10px; min-height: 52px; padding: 0 22px; border-radius: 12px;
+  order: 3; display: inline-flex; align-items: center; gap: 10px; min-height: 58px; padding: 0 22px; border-radius: 12px;
   border: 1px solid var(--line-2); color: var(--text); text-decoration: none; font-weight: 600; background: rgba(255, 255, 255, 0.02);
 }
 .ghost-btn:hover { border-color: var(--muted); background: rgba(255, 255, 255, 0.05); }
-.cta-line { margin: 16px 0 0; color: var(--faint); font-size: 0.83rem; }
+.cta-line { margin: 18px 0 0; color: var(--faint); font-size: 0.83rem; }
 .cta-line a { color: var(--muted); }
 
 .stage { position: relative; z-index: 1; margin: clamp(40px, 7vh, 72px) auto 0; max-width: 1120px; }
@@ -280,28 +296,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 /* ---- Plugins ---- */
 
-.plugins, .ai, .open { max-width: var(--wide); margin: 0 auto; padding: 120px var(--gutter) 40px; }
-.pl-tabs { display: inline-flex; gap: 4px; padding: 4px; margin-bottom: 28px; border-radius: 999px; background: var(--ink-1); border: 1px solid var(--line); }
-.pl-tabs button { border: 0; background: transparent; padding: 7px 16px; border-radius: 999px; font-size: 0.88rem; color: var(--muted); }
-.pl-tabs button:hover { color: var(--text); }
-.pl-tabs button[aria-pressed="true"] { background: var(--ink-3); color: var(--text); box-shadow: 0 0 0 1px rgba(247, 42, 166, 0.45) inset; }
-.pl-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
-.plugin {
-  display: flex; gap: 16px; padding: 20px; border-radius: var(--radius);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.01)); border: 1px solid var(--line);
-}
-.plugin-icon {
-  flex: none; width: 48px; height: 48px; border-radius: 12px; display: grid; place-items: center; overflow: hidden;
-  background: var(--ink-3); border: 1px solid var(--line-2); font: 700 1.2rem/1 var(--display); color: var(--accent-hi);
-}
-.plugin-icon img { width: 100%; height: 100%; }
-.plugin-body { min-width: 0; }
-.plugin h3 { font-size: 1.08rem; letter-spacing: -0.015em; }
-.plugin-by { margin: 4px 0 0; font-size: 0.78rem; color: var(--faint); }
-.badge { color: var(--muted); }
-.badge-store { color: var(--accent); }
-.plugin-text { margin: 8px 0 0; font-size: 0.9rem; color: var(--muted); }
-.pl-links { display: flex; flex-wrap: wrap; gap: 24px; margin: 28px 0 0; }
+.ai, .open { max-width: var(--wide); margin: 0 auto; padding: 120px var(--gutter) 40px; }
 
 /* ---- AI workshop ---- */
 
@@ -416,10 +411,10 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .win { --tilt: -16deg; }
 .chapter.is-flip .win { --tilt: 16deg; }
 @media (prefers-reduced-motion: no-preference) {
-  .reveals :is(.reveal, .pl-grid, .ai-flow, .os-grid, .ch-copy, .win) {
+  .reveals :is(.reveal, .ai-flow, .os-grid, .ch-copy, .win) {
     transition: opacity 0.7s ease, transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1);
   }
-  .reveals :is(.reveal, .pl-grid, .ai-flow, .os-grid, .ch-copy):not(.in) { opacity: 0; transform: translateY(32px); }
+  .reveals :is(.reveal, .ai-flow, .os-grid, .ch-copy):not(.in) { opacity: 0; transform: translateY(32px); }
   .reveals .win:not(.in) { opacity: 0.35; transform: translateZ(-120px) rotateY(var(--tilt)) rotateX(6deg); }
 }
 
@@ -427,7 +422,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 @media (max-width: 1020px) {
   .nav-links { gap: 18px; }
-  .pl-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .ai-flow { grid-template-columns: minmax(0, 1fr); }
   .ai-step + .ai-step { border-left: 0; border-top: 1px solid var(--line); }
 }
@@ -437,7 +431,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
   .nav-links + .nav-actions { margin-left: auto; position: relative; }
   /* No nav links here: the download button appears in their empty room, so it never moves the others. */
   .nav-dl { position: absolute; right: calc(100% + 10px); }
-  .chapters, .plugins, .ai, .open { padding-top: 88px; }
+  .chapters, .ai, .open { padding-top: 88px; }
   .chapter, .chapter.is-flip { grid-template-columns: minmax(0, 1fr); gap: 22px; padding: 36px 0; }
   .chapter.is-flip .ch-copy { order: 0; }
   .window, .chapter.is-flip .window { align-items: flex-end; }
@@ -450,11 +444,10 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 @media (max-width: 600px) {
   .brand span { display: none; }
-  .eyebrow { letter-spacing: 0.1em; }
-  .eyebrow::before { display: none; }
-  .pl-grid, .foot-grid { grid-template-columns: minmax(0, 1fr); }
+  .foot-grid { grid-template-columns: minmax(0, 1fr); }
   .cta { flex-direction: column; align-items: stretch; }
   .cta-btn, .ghost-btn { justify-content: center; }
+  .cta-text { align-items: center; text-align: center; }
   .section-head { margin-bottom: 36px; }
   .pf-item { flex-direction: column; align-items: stretch; }
   .pf-get { text-align: center; }

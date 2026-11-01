@@ -27,7 +27,6 @@
     </a>
     <nav class="nav-links" aria-label="{{t:nav.label}}">
       <a href="#features">{{t:nav.features}}</a>
-      <a href="#plugins">{{t:nav.plugins}}</a>
       <a href="#ai">{{t:nav.ai}}</a>
       <a href="#open-source">{{t:nav.open}}</a>
     </nav>
@@ -47,9 +46,7 @@
     <div class="pin">
       <div class="floor" aria-hidden="true"></div>
       <div class="hero-copy">
-        <p class="eyebrow">{{t:hero.eyebrow}}</p>
         <h1 id="hero-title">{{t:hero.title}}</h1>
-        <p class="lede">{{t:hero.lede}}</p>
         <div class="cta">
 {{slot:cta}}
 {{slot:heroSource}}
@@ -74,25 +71,6 @@
       <p class="section-lede">{{t:tour.lede}}</p>
     </div>
 {{slot:chapters}}
-  </section>
-
-  <section class="plugins" id="plugins" aria-labelledby="pl-title">
-    <div class="section-head reveal">
-      <p class="kicker">{{t:pl.kicker}}</p>
-      <h2 id="pl-title">{{t:pl.title}}</h2>
-      <p class="section-lede">{{t:pl.lede}}</p>
-    </div>
-    <div class="pl-tabs js-only" role="group" aria-label="{{t:pl.filter}}">
-      <button type="button" data-filter="all" aria-pressed="true">{{t:pl.tab.all}}</button>
-      <button type="button" data-filter="store" aria-pressed="false">{{t:pl.tab.store}}</button>
-      <button type="button" data-filter="builtin" aria-pressed="false">{{t:pl.tab.builtin}}</button>
-    </div>
-    <ul class="pl-grid">
-{{slot:plugins}}
-    </ul>
-    <p class="pl-links">
-      {{slot:pluginLinks}}
-    </p>
   </section>
 
   <section class="ai" id="ai" aria-labelledby="ai-title">

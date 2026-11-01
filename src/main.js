@@ -1,6 +1,6 @@
 // Vestra Player download page: the download button for the visitor's system,
 // the playing windows (stage and feature chapters), the stage parallax, the
-// one-shot reveals, the plugin filter and the AI workshop mock. Each language
+// one-shot reveals and the AI workshop mock. Each language
 // is its own prerendered page, so nothing here translates.
 // Plain script, no dependencies.
 (() => {
@@ -35,9 +35,10 @@
 
   (() => {
     const nav = $("#nav-dl");
-    const buttons = $$(".cta-btn").filter((b) => getComputedStyle(b).display !== "none");
+    // Every real download button (the Linux entry is not a link); the header one leads to the visitor's.
+    const buttons = $$("a.cta-btn");
     if (!nav || !buttons.length) return;
-    nav.href = buttons[0].href;
+    nav.href = ($(`a.cta-btn.os-${root.dataset.visitor}`) ?? buttons[0]).href;
     if (!hasIO) {
       nav.inert = false;
       root.classList.add("nav-dl-on");
@@ -209,7 +210,7 @@
 
   (() => {
     if (!hasIO || reduce.matches) return;
-    const items = $$(".reveal, .pl-grid, .ai-flow, .os-grid, .ch-copy, .win");
+    const items = $$(".reveal, .ai-flow, .os-grid, .ch-copy, .win");
     root.classList.add("reveals");
     const io = new IntersectionObserver((entries) => {
       for (const entry of entries) {
@@ -219,20 +220,6 @@
       }
     }, { rootMargin: "0px 0px -8% 0px" });
     for (const item of items) io.observe(item);
-  })();
-
-  // ---- Plugin wall filter ----
-
-  (() => {
-    const buttons = $$(".pl-tabs button");
-    const cards = $$(".plugin");
-    for (const button of buttons) {
-      button.addEventListener("click", () => {
-        const filter = button.dataset.filter;
-        for (const b of buttons) b.setAttribute("aria-pressed", String(b === button));
-        for (const card of cards) card.hidden = filter !== "all" && card.dataset.kind !== filter;
-      });
-    }
   })();
 
   // ---- AI workshop mock: types the prompt, then the checks and the install play once ----

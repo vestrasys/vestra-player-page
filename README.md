@@ -2,9 +2,9 @@
 
 The single-page website for downloading Vestra Player:
 a hero whose player windows stand fanned in depth and gather into one as the
-page scrolls, with one download button for the visitor's system; one feature
-chapter per recording, a plugin wall, the AI plugin workshop (an illustration
-until a recording exists), open source, and a closing download button. Static output for
+page scrolls, with download buttons (the visitor's system first); one feature
+chapter per recording, the AI plugin workshop (an illustration
+until a recording exists), open source, and the closing download buttons. Static output for
 Cloudflare Pages; plain HTML, CSS and JavaScript built by a Node script with no
 dependencies. English (`/`) and Simplified Chinese (`/zh-hans/`), each a
 prerendered page.
@@ -38,7 +38,6 @@ The build prints the size of the HTML, CSS and JS and fails above 150 KiB
 | `src/index.html` | Page template: `{{t:key}}` text, `{{h:key}}` HTML text, `{{var:…}}` values, `{{slot:…}}` sections rendered by the build |
 | `src/i18n.json` | Every string, `en` and `zh-Hans` (the build fails if a key is missing in one); the build renders one page per language |
 | `src/styles.css`, `src/main.js` | Styles and the page script (language, download buttons, platforms dialog, playing windows, stage parallax, plugin filter, AI workshop mock) |
-| `src/plugins.json` | The plugin wall: name, author, kind (built in or store), one line in `en` and `zh-Hans`, optional icon |
 | `media/slides.json` | The hero stage and the feature chapters: frame image, slides, posters and video sources |
 | `media/CREDITS.md` | Third-party footage and games shown in the demos; the footer lists its table |
 | `release.config.json` | Where release metadata comes from, asset name patterns, system requirements |
@@ -83,12 +82,15 @@ release page, which the footer links.
   hosted elsewhere (see below).
 - **`assets`**: one entry per download. `pattern` is a regular expression for
   the file name; `enabled: false` hides the entry (for example `macos-x64` or
-  `macos-universal` until such builds exist). The page shows exactly one
-  download button at a time: the hero's (macOS visitors get the universal,
-  else Apple silicon, else Intel build; everyone else the Windows installer),
-  the closing section's, or, while neither is on screen, a small one in the
-  header. One grey line under the hero button gives the version,
-  requirements and "Also for …", which opens a dialog with every enabled file.
+  `macos-universal` until such builds exist). The hero and the closing
+  section show a button per system, each with its short requirements: the
+  visitor's system first as the primary button (macOS visitors get the
+  universal, else Apple silicon, else Intel build; everyone else the Windows
+  installer), the other one secondary, and a greyed, disabled Linux entry
+  ("coming soon", not a link). While neither group is on screen a small
+  button in the header leads to the visitor's download. One grey line under
+  the hero buttons gives the version and "All downloads", which opens a dialog
+  with every enabled file and the full requirements.
 - **`stableAssetNames: true`** links to `…/releases/latest/download/<stableName>`
   (or `<stableName>` next to the manifest) instead of the versioned file. Turn
   it on only when every release uploads files under those names.

@@ -1,5 +1,5 @@
 // npm run build: renders src/index.html into dist/ with the release metadata,
-// the slide manifest, the plugin wall and both languages baked in. No dependencies.
+// the slide manifest and both languages baked in. No dependencies.
 //
 // Environment: GITHUB_TOKEN (optional, raises the API rate limit and reads a
 // private release repository), RELEASE_OFFLINE=1 (skip the network; the page
@@ -33,12 +33,10 @@ if (process.env.RELEASE_INCLUDE_PRERELEASES === "1") releaseConfig.includePrerel
 const manifest = readJson(fromRoot("media/slides.json"));
 // Hidden slides (drafts such as a slide whose recording does not exist yet) stay out of the page.
 manifest.slides = (manifest.slides ?? []).filter((slide) => !slide.hidden);
-const plugins = readJson(fromRoot("src/plugins.json")).plugins ?? [];
 const i18n = readJson(fromRoot("src/i18n.json"));
 const credits = parseCredits(readFileSync(fromRoot("media/CREDITS.md"), "utf8"));
 
 checkManifest(manifest);
-checkPlugins(plugins);
 const release = await loadRelease(releaseConfig, { offline: process.env.RELEASE_OFFLINE === "1" });
 if (release.ok) console.log(`release ${release.version} (${release.date}), assets: ${Object.keys(release.assets).join(", ") || "none"}`);
 else console.warn(`warning: no release metadata (${release.reason}); building the fallback`);
@@ -53,10 +51,6 @@ for (const lang of LANGS) {
   for (const slide of manifest.slides) {
     dict[lang][`slide.${slide.id}.title`] = slide.title[lang];
     dict[lang][`slide.${slide.id}.caption`] = slide.caption[lang];
-  }
-  for (const plugin of plugins) {
-    dict[lang][`plugin.${plugin.id}.name`] = plugin.name[lang];
-    dict[lang][`plugin.${plugin.id}.text`] = plugin.text[lang];
   }
   for (const [os, text] of Object.entries(releaseConfig.requirements)) dict[lang][`req.${os}`] = text[lang];
   dict[lang]["frame.alt"] = manifest.frame.alt[lang];
@@ -124,8 +118,6 @@ function renderPage(lang) {
     stage: renderStage(),
     chapters: manifest.slides.map(renderChapter).join("\n"),
     pauseHero: renderPause("hero"),
-    plugins: plugins.map(renderPlugin).join("\n"),
-    pluginLinks: renderPluginLinks(),
     openSource: renderOpenSource(),
     platforms: renderPlatforms(),
     links: renderLinks(),
@@ -296,20 +288,7 @@ function checkManifest({ backdrop, frame, slides, stage }) {
   checkFiles(files, "media/slides.json");
 }
 
-function checkPlugins(list) {
-  const ids = new Set();
-  for (const plugin of list) {
-    const where = `src/plugins.json plugin "${plugin.id}"`;
-    if (!/^[a-z0-9-]+$/.test(plugin.id ?? "") || ids.has(plugin.id)) fail(`${where}: id must be unique [a-z0-9-]`);
-    ids.add(plugin.id);
-    if (!["builtin", "store"].includes(plugin.kind)) fail(`${where}: kind must be "builtin" or "store"`);
-    if (!plugin.author) fail(`${where}: no author`);
-    for (const lang of LANGS) if (!plugin.name?.[lang] || !plugin.text?.[lang]) fail(`${where}: name and text need "${lang}"`);
-  }
-  checkFiles(list.filter((p) => p.icon).map((p) => p.icon), "src/plugins.json");
-}
-
-/** Copies only the media the manifest and the plugin wall name (local paths). */
+/** Copies only the media the manifest names (local paths). */
 function copyMedia() {
   const files = new Set([manifest.frame.image, ...manifest.stage.far]);
   // The backdrop clip ships only while the template shows it.
@@ -322,7 +301,6 @@ function copyMedia() {
     if (s.icon) files.add(s.icon);
     for (const source of s.sources) files.add(source.src);
   }
-  for (const p of plugins) if (p.icon) files.add(p.icon);
   for (const file of [...files]) {
     const smallCopy = file.replace(/\.webp$/, ".sm.webp");
     if (smallCopy !== file && existsSync(fromRoot(smallCopy))) files.add(smallCopy);
@@ -375,33 +353,35 @@ function downloadHref(asset) {
   return assetInfo(asset)?.url ?? releasesPage();
 }
 
-/** The download button for each system; the stylesheet shows the visitor's one only. */
+/**
+ * The download buttons: one per system (styles.css puts the visitor's first and makes it the
+ * primary one; the others are secondary), and Linux, not built yet, as a disabled entry
+ * (no link, not focusable, aria-disabled).
+ */
 function renderCta(where) {
-  return systems.map((os) => {
+  const buttons = systems.map((os) => {
     const asset = primary[os];
     const title = os === "windows" ? "hero.forWindows" : asset.arch === "x64" ? "hero.forMacIntel" : "hero.forMac";
     return `      <a class="cta-btn os-${os}" data-cta="${where}" href="${escape(downloadHref(asset))}">
         <svg class="cta-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0l-4.5-4.5M12 15l4.5-4.5M5 19h14"/></svg>
-        ${t(title, "span", ' class="cta-title"')}
+        <span class="cta-text">${t(title, "span", ' class="cta-title"')}${t(`hero.sub.${os}`, "small", ' class="cta-sub"')}</span>
       </a>`;
-  }).join("\n");
+  });
+  buttons.push(`      <span class="cta-btn cta-soon" role="link" aria-disabled="true">
+        <span class="cta-text">${t("hero.linux", "span", ' class="cta-title"')}${t("hero.linuxSoon", "small", ' class="cta-sub"')}</span>
+      </span>`);
+  return buttons.join("\n");
 }
 
-/** The one grey line under the hero button, per system: version, requirements, other systems, release notes. */
+/** The one grey line under the hero buttons: version, test build, every download (dialog), release notes. */
 function renderCtaLine() {
-  return systems.map((os) => {
-    const bits = [];
-    if (release.ok) bits.push(`<span>v${escape(release.version)}</span>`);
-    if (releaseConfig.requirements[os]) bits.push(t(`req.${os}`));
-    bits.push(t("hero.unsigned"));
-    // "Also for macOS" / "Also for Windows": opens the platforms dialog (the release page without script).
-    if (enabled.some((a) => a !== primary[os])) {
-      const other = systems.find((o) => o !== os);
-      bits.push(t(other ? `hero.also.${other}` : "hero.allDownloads", "a", ` class="js-platforms" href="${escape(releasesPage())}"`));
-    }
-    if (release.ok) bits.push(t("hero.notes", "a", ` href="${escape(release.notesUrl)}"`));
-    return `    <p class="cta-line os-${os}">${bits.join('<span class="sep" aria-hidden="true">·</span>')}</p>`;
-  }).join("\n");
+  const bits = [];
+  if (release.ok) bits.push(`<span>v${escape(release.version)}</span>`);
+  bits.push(t("hero.unsigned"));
+  // Every file (installer, portable zip, disk images) with requirements: the dialog, else the release page.
+  bits.push(t("hero.allDownloads", "a", ` class="js-platforms" href="${escape(releasesPage())}"`));
+  if (release.ok) bits.push(t("hero.notes", "a", ` href="${escape(release.notesUrl)}"`));
+  return `    <p class="cta-line">${bits.join('<span class="sep" aria-hidden="true">·</span>')}</p>`;
 }
 
 function renderHeroSource() {
@@ -409,7 +389,7 @@ function renderHeroSource() {
   return `      <a class="ghost-btn" href="${escape(github)}">${GITHUB_ICON}${t(key)}</a>`;
 }
 
-/** Every enabled file, opened from "Also for …"; checksums stay on the release page. */
+/** Every enabled file, opened from "All downloads"; checksums stay on the release page. Linux: not yet. */
 function renderPlatforms() {
   const lines = [];
   if (!release.ok) lines.push(`    <p class="pf-fallback">${t("dl.fallback")}</p>`);
@@ -426,6 +406,11 @@ function renderPlatforms() {
         <a class="pf-get" href="${escape(downloadHref(asset))}">${info ? t("dl.get") : t("hero.allReleases")}</a>
       </li>`);
   }
+  lines.push(`      <li class="pf-item pf-soon">
+        <div class="pf-text">
+          <p class="pf-name"><b>Linux</b> ${t("hero.linuxSoon")}</p>
+        </div>
+      </li>`);
   lines.push(`    </ul>`);
   if (systems.some((os) => releaseConfig.requirements[os])) {
     const req = systems
@@ -510,30 +495,6 @@ function renderChapter(slide, i) {
           ${renderPause(slide.id)}
         </figure>
       </article>`;
-}
-
-// ---- Plugin wall ----
-
-function renderPlugin(plugin) {
-  const icon = plugin.icon
-    ? `<img src="${escape(plugin.icon)}" width="44" height="44" alt="" loading="lazy">`
-    : `<span aria-hidden="true">${escape(Array.from(plugin.name.en)[0] ?? "?")}</span>`;
-  const badge = plugin.kind === "store" ? "pl.badge.store" : "pl.badge.builtin";
-  return `      <li class="plugin" data-kind="${plugin.kind}">
-        <div class="plugin-icon">${icon}</div>
-        <div class="plugin-body">
-          <h3>${t(`plugin.${plugin.id}.name`)}</h3>
-          <p class="plugin-by">${escape(plugin.author)}<span class="sep" aria-hidden="true">·</span>${t(badge, "span", ` class="badge badge-${plugin.kind}"`)}</p>
-          <p class="plugin-text">${t(`plugin.${plugin.id}.text`)}</p>
-        </div>
-      </li>`;
-}
-
-function renderPluginLinks() {
-  const links = [];
-  if (site.links.pluginsRepo) links.push(`<a class="text-link" href="${escape(site.links.pluginsRepo)}">${t("pl.repo")} →</a>`);
-  if (site.links.sdkDocs) links.push(`<a class="text-link" href="${escape(site.links.sdkDocs)}">${t("pl.sdk")} →</a>`);
-  return links.join("\n      ");
 }
 
 // ---- Open source ----
