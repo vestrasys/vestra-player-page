@@ -15,24 +15,24 @@
   },
   "frame": {
     "image": "media/frame/frame.webp",
-    "width": 2220,
-    "height": 1390,
+    "width": 2560,
+    "height": 1516,
     "alt": {
       "en": "The Vestra Player window",
       "zh-Hans": "Vestra Player 窗口"
     },
     "areas": {
       "client": {
-        "x": 2,
-        "y": 52,
-        "width": 2216,
-        "height": 1336
+        "x": 0,
+        "y": 40,
+        "width": 2560,
+        "height": 1476
       },
       "video": {
-        "x": 2,
-        "y": 52,
-        "width": 1654,
-        "height": 1226
+        "x": 0,
+        "y": 40,
+        "width": 2000,
+        "height": 1368
       }
     }
   },
