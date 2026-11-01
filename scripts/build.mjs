@@ -7,10 +7,19 @@
 import { createHash } from "node:crypto";
 import { copyFileSync, cpSync, existsSync, mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { fail, fromRoot, kib, readJson } from "./lib.mjs";
+import { fail, fromRoot, kib, readJson, webpSize } from "./lib.mjs";
 import { loadRelease } from "./release.mjs";
 
 const LANGS = ["en", "zh-Hans"];
+// One prerendered page per language (crawlable, linked with hreflang): its folder under dist/.
+const PAGES = { en: "", "zh-Hans": "zh-hans/" };
+const OG_LOCALE = { en: "en_US", "zh-Hans": "zh_CN" };
+// Displayed widths (CSS px) for the srcset choice; they follow styles.css.
+const SIZES = {
+  hero: "(max-width: 860px) calc(100vw - 32px), min(1100px, 84vw)",
+  near: "(max-width: 860px) 1px, min(560px, 42vw)",
+  chapter: "(max-width: 860px) calc(100vw - 32px), min(740px, 58vw)",
+};
 const BUDGET = 150 * 1024; // HTML + CSS + JS, media and images excluded
 const MAX_FILE = 25 * 1024 * 1024; // Cloudflare Pages per-file limit
 const OS_NAMES = { windows: "Windows", macos: "macOS" };
@@ -55,7 +64,8 @@ for (const lang of LANGS) {
   const missing = Object.keys(dict.en).filter((key) => !(key in dict[lang]));
   if (missing.length) fail(`${lang} lacks strings: ${missing.join(", ")}`);
 }
-const en = dict.en;
+// The strings of the page being rendered (renderPage switches it per language).
+let en = dict.en;
 
 // Downloads: one primary file per system, every enabled file in the platforms dialog.
 const enabled = releaseConfig.assets.filter((a) => a.enabled);
@@ -75,59 +85,149 @@ const media = copyMedia();
 
 const frame = manifest.frame;
 const github = site.links.playerRepo ?? `https://github.com/${releaseConfig.github.owner}`;
-const slots = {
-  backdrop: renderBackdrop(),
-  cta: renderCta("hero"),
-  ctaLine: renderCtaLine(),
-  ctaEnd: renderCta("end"),
-  heroSource: renderHeroSource(),
-  githubIcon: GITHUB_ICON,
-  stage: renderStage(),
-  chapters: manifest.slides.map(renderChapter).join("\n"),
-  pauseHero: renderPause("hero"),
-  plugins: plugins.map(renderPlugin).join("\n"),
-  pluginLinks: renderPluginLinks(),
-  openSource: renderOpenSource(),
-  platforms: renderPlatforms(),
-  links: renderLinks(),
-  credits: renderCredits(),
-  licence: en["ft.licence"],
-  data: JSON.stringify({
-    langs: LANGS,
-    i18n: dict,
-    slides: manifest.slides.map((s) => s.id),
-  }).replace(/</g, "\\u003c"),
-};
-const vars = {
-  css, js,
-  stagePoster: stageSlide(manifest.stage.center).poster,
-  frameImage: frame.image,
-  frameWidth: frame.width,
-  frameHeight: frame.height,
-  frameRatio: `${frame.width} / ${frame.height}`,
-  frameAlt: en["frame.alt"],
-  github,
-  navHref: downloadHref(primary[systems[0]]),
-  releasesPage: releaseConfig.releasesPage,
-};
+// The site's public address ("https://…/"), if known: canonical, hreflang, og:url and the sitemap need it.
+// SITE_URL overrides site.config.json's url (for example to check the output against a local preview).
+const siteUrlSetting = process.env.SITE_URL || site.url;
+const siteUrl = siteUrlSetting ? String(siteUrlSetting).replace(/\/?$/, "/") : null;
+const template = readFileSync(fromRoot("src/index.html"), "utf8");
+const sizes = { [css]: statSync(join(dist, css)).size, [js]: statSync(join(dist, js)).size };
+for (const lang of LANGS) {
+  const file = `${PAGES[lang]}index.html`;
+  const html = renderPage(lang);
+  mkdirSync(dirname(join(dist, file)), { recursive: true });
+  writeFileSync(join(dist, file), html);
+  sizes[file] = Buffer.byteLength(html);
+}
+writeSeoFiles();
 
-let html = readFileSync(fromRoot("src/index.html"), "utf8");
-html = html.replace(/\{\{(t|h|var|slot):([\w.-]+)\}\}/g, (_, kind, key) => {
-  if (kind === "slot") return key in slots ? slots[key] : fail(`unknown slot ${key}`);
-  if (kind === "var") return key in vars ? escape(String(vars[key])) : fail(`unknown var ${key}`);
-  if (!(key in en)) fail(`unknown string ${key}`);
-  return kind === "h" ? en[key] : escape(en[key]);
-});
-writeFileSync(join(dist, "index.html"), html);
-
-// Budget and size report.
-const sizes = { "index.html": Buffer.byteLength(html), [css]: statSync(join(dist, css)).size, [js]: statSync(join(dist, js)).size };
-const total = Object.values(sizes).reduce((a, b) => a + b, 0);
+// Budget and size report: one page load is one HTML file plus the CSS and JS.
+const largest = Math.max(...LANGS.map((lang) => sizes[`${PAGES[lang]}index.html`]));
+const total = largest + sizes[css] + sizes[js];
 for (const [file, size] of Object.entries(sizes)) console.log(`  ${file.padEnd(28)} ${kib(size)}`);
-console.log(`  HTML/CSS/JS total            ${kib(total)} (budget ${kib(BUDGET)})`);
+console.log(`  HTML/CSS/JS per page         ${kib(total)} (budget ${kib(BUDGET)})`);
 console.log(`  media copied                 ${media.count} files, ${kib(media.bytes)}`);
 if (total > BUDGET) fail("HTML/CSS/JS over budget");
-console.log(`built dist/index.html${release.ok ? "" : " (release fallback)"}`);
+console.log(`built ${LANGS.map((l) => `dist/${PAGES[l]}index.html`).join(", ")}${release.ok ? "" : " (release fallback)"}${siteUrl ? "" : "; no site.url: no canonical, hreflang or sitemap"}`);
+
+function renderPage(lang) {
+  en = dict[lang];
+  const other = LANGS.find((l) => l !== lang);
+  const prefix = "../".repeat(PAGES[lang].split("/").filter(Boolean).length);
+  const slots = {
+    backdrop: renderBackdrop(),
+    seo: renderSeo(lang),
+    cta: renderCta("hero"),
+    ctaLine: renderCtaLine(),
+    ctaEnd: renderCta("end"),
+    heroSource: renderHeroSource(),
+    githubIcon: GITHUB_ICON,
+    stage: renderStage(),
+    chapters: manifest.slides.map(renderChapter).join("\n"),
+    pauseHero: renderPause("hero"),
+    plugins: plugins.map(renderPlugin).join("\n"),
+    pluginLinks: renderPluginLinks(),
+    openSource: renderOpenSource(),
+    platforms: renderPlatforms(),
+    links: renderLinks(),
+    credits: renderCredits(),
+    licence: en["ft.licence"],
+    // Only what the script needs at run time; every other string is in the HTML already.
+    data: JSON.stringify({ strings: Object.fromEntries(["ai.prompt", "media.pause", "media.play"].map((k) => [k, en[k]])) }).replace(/</g, "\\u003c"),
+  };
+  // The front window's frame image is the largest paint (LCP) of the first screen: preloaded at high priority.
+  const vars = {
+    css, js, lang,
+    lcpImage: frame.image,
+    lcpSrcset: srcset(frame.image) ?? frame.image,
+    lcpSizes: SIZES.hero,
+    github,
+    navHref: downloadHref(primary[systems[0]]),
+    releasesPage: releaseConfig.releasesPage,
+    otherLang: other,
+    // The other language's page, relative to this one.
+    otherHref: PAGES[other] ? prefix + PAGES[other] : prefix || "./",
+  };
+  const html = template.replace(/\{\{(t|h|var|slot):([\w.-]+)\}\}/g, (_, kind, key) => {
+    if (kind === "slot") return key in slots ? slots[key] : fail(`unknown slot ${key}`);
+    if (kind === "var") return key in vars ? escape(String(vars[key])) : fail(`unknown var ${key}`);
+    if (!(key in en)) fail(`unknown string ${key}`);
+    return kind === "h" ? en[key] : escape(en[key]);
+  });
+  return prefix ? rebase(html, prefix) : html;
+}
+
+/** Prefixes the page's own relative URLs (assets, media, icons) for a page in a subfolder. */
+function rebase(html, prefix) {
+  const own = (url) => !/^(?:[a-z][a-z0-9+.-]*:|\/|#|\.|\?)/i.test(url) && url !== "";
+  html = html.replace(/(\s(?:src|href|poster|data-src|content)=")([^"]*)"/g, (m, attr, url) =>
+    (attr.includes("content") ? /\.(png|jpe?g|webp)$/.test(url) && own(url) : own(url)) ? `${attr}${prefix}${url}"` : m);
+  return html.replace(/(\s(?:srcset|imagesrcset)=")([^"]*)"/g, (m, attr, list) =>
+    `${attr}${list.split(",").map((part) => { const p = part.trim(); return own(p) ? prefix + p : p; }).join(", ")}"`);
+}
+
+/** <head> lines for search engines and link previews. */
+function renderSeo(lang) {
+  const lines = [];
+  const pageUrl = (l) => siteUrl && siteUrl + PAGES[l];
+  if (siteUrl) {
+    lines.push(`<link rel="canonical" href="${escape(pageUrl(lang))}">`);
+    for (const l of LANGS) lines.push(`<link rel="alternate" hreflang="${l}" href="${escape(pageUrl(l))}">`);
+    lines.push(`<link rel="alternate" hreflang="x-default" href="${escape(pageUrl("en"))}">`);
+  }
+  const image = siteUrl ? `${siteUrl}og-image.png` : "og-image.png";
+  lines.push(
+    `<meta property="og:type" content="website">`,
+    `<meta property="og:site_name" content="Vestra Player">`,
+    `<meta property="og:title" content="${escape(en["meta.title"])}">`,
+    `<meta property="og:description" content="${escape(en["meta.description"])}">`,
+    `<meta property="og:locale" content="${OG_LOCALE[lang]}">`,
+    ...LANGS.filter((l) => l !== lang).map((l) => `<meta property="og:locale:alternate" content="${OG_LOCALE[l]}">`),
+    ...(siteUrl ? [`<meta property="og:url" content="${escape(pageUrl(lang))}">`] : []),
+    `<meta property="og:image" content="${escape(image)}">`,
+    `<meta property="og:image:width" content="1200">`,
+    `<meta property="og:image:height" content="630">`,
+    `<meta property="og:image:alt" content="Vestra Player">`,
+    `<meta name="twitter:card" content="summary_large_image">`,
+    `<meta name="twitter:title" content="${escape(en["meta.title"])}">`,
+    `<meta name="twitter:description" content="${escape(en["meta.description"])}">`,
+  );
+  // schema.org SoftwareApplication: facts only (no ratings or reviews exist, so none are claimed).
+  const app = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "Vestra Player",
+    description: en["meta.description"],
+    applicationCategory: "MultimediaApplication",
+    applicationSubCategory: "Video player",
+    operatingSystem: systems.map((os) => OS_NAMES[os]).join(", "),
+    inLanguage: lang,
+    isAccessibleForFree: true,
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+    license: site.playerLicense.url,
+    ...(release.ok ? { softwareVersion: release.version, datePublished: release.date, releaseNotes: release.notesUrl } : {}),
+    ...(release.ok && primary[systems[0]] && assetInfo(primary[systems[0]]) ? { downloadUrl: systems.map((os) => downloadHref(primary[os])) } : {}),
+    ...(siteUrl ? { url: pageUrl(lang), image: image } : {}),
+    ...(site.links.playerRepo ? { sameAs: [site.links.playerRepo] } : {}),
+  };
+  lines.push(`<script type="application/ld+json">${JSON.stringify(app).replace(/</g, "\\u003c")}</script>`);
+  return lines.join("\n");
+}
+
+/** robots.txt always; sitemap.xml (with hreflang alternates) only when site.url is set. */
+function writeSeoFiles() {
+  const robots = ["User-agent: *", "Allow: /"];
+  if (siteUrl) robots.push("", `Sitemap: ${siteUrl}sitemap.xml`);
+  writeFileSync(join(dist, "robots.txt"), robots.join("\n") + "\n");
+  if (!siteUrl) return;
+  const alternates = LANGS.map((l) => `    <xhtml:link rel="alternate" hreflang="${l}" href="${escape(siteUrl + PAGES[l])}"/>`)
+    .concat(`    <xhtml:link rel="alternate" hreflang="x-default" href="${escape(siteUrl)}"/>`).join("\n");
+  const urls = LANGS.map((l) => `  <url>\n    <loc>${escape(siteUrl + PAGES[l])}</loc>${release.ok ? `\n    <lastmod>${escape(release.date)}</lastmod>` : ""}\n${alternates}\n  </url>`);
+  writeFileSync(join(dist, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+${urls.join("\n")}
+</urlset>
+`);
+}
 
 // ---------------------------------------------------------------------------
 
@@ -143,16 +243,16 @@ function format(template, args) {
   return template.replace(/\{(\w+)\}/g, (match, key) => args[key] ?? match);
 }
 
-/** A text node that the page re-translates: <tag data-i18n="key">English</tag>. */
+/** A string of the page's language as an element: <tag>text</tag>. */
 function t(key, tag = "span", attrs = "") {
   if (!(key in en)) fail(`unknown string ${key}`);
-  return `<${tag} data-i18n="${key}"${attrs}>${escape(en[key])}</${tag}>`;
+  return `<${tag}${attrs}>${escape(en[key])}</${tag}>`;
 }
 
 /** Same, for strings that hold HTML (links, <b>, <code>). */
 function h(key, tag = "span", attrs = "") {
   if (!(key in en)) fail(`unknown string ${key}`);
-  return `<${tag} data-i18n-html="${key}"${attrs}>${en[key]}</${tag}>`;
+  return `<${tag}${attrs}>${en[key]}</${tag}>`;
 }
 
 function hashed(source, name, ext) {
@@ -223,6 +323,10 @@ function copyMedia() {
     for (const source of s.sources) files.add(source.src);
   }
   for (const p of plugins) if (p.icon) files.add(p.icon);
+  for (const file of [...files]) {
+    const smallCopy = file.replace(/\.webp$/, ".sm.webp");
+    if (smallCopy !== file && existsSync(fromRoot(smallCopy))) files.add(smallCopy);
+  }
   let bytes = 0;
   let count = 0;
   for (const file of files) {
@@ -340,20 +444,33 @@ function stageSlide(id) {
   return manifest.slides.find((s) => s.id === id) ?? fail(`media/slides.json: no slide "${id}"`);
 }
 
+/** "small.webp 896w, full.webp 1792w" when the half-width copy exists (encode-clip --small), else null. */
+function srcset(path) {
+  const smallPath = path.replace(/\.webp$/, ".sm.webp");
+  if (smallPath === path || !existsSync(fromRoot(smallPath))) return null;
+  return `${smallPath} ${webpSize(fromRoot(smallPath)).width}w, ${path} ${webpSize(fromRoot(path)).width}w`;
+}
+
+function imgSrc(path, sizesKey) {
+  const set = srcset(path);
+  return set ? `src="${escape(path)}" srcset="${escape(set)}" sizes="${SIZES[sizesKey]}"` : `src="${escape(path)}"`;
+}
+
 function size(slide) {
   return `width="${frame.areas[slide.area].width}" height="${frame.areas[slide.area].height}"`;
 }
 
 /** The clip over the window's client area: the poster underneath, the video on top once it plays (main.js). */
-function renderShot(slide, { lazy }) {
+function renderShot(slide, { lazy, sizes }) {
   const load = lazy ? ' loading="lazy"' : ' fetchpriority="high"';
   const sources = slide.sources.map((s) => `<source data-src="${escape(s.src)}" type="${escape(s.type)}">`).join("");
-  return `<div class="shot" style="${area(slide)}"><img src="${escape(slide.poster)}" ${size(slide)}${load} decoding="async" alt=""><video muted loop playsinline preload="none" aria-hidden="true" tabindex="-1">${sources}</video></div>`;
+  return `<div class="shot" style="${area(slide)}"><img ${imgSrc(slide.poster, sizes)} ${size(slide)}${load} decoding="async" alt=""><video muted loop playsinline preload="none" aria-hidden="true" tabindex="-1">${sources}</video></div>`;
 }
 
-function renderChrome(lazy, alt) {
-  const altAttr = alt ? ` alt="${escape(en["frame.alt"])}" data-i18n-attr="alt:frame.alt"` : ' alt=""';
-  return `<img class="chrome" src="${escape(frame.image)}" width="${frame.width}" height="${frame.height}"${lazy ? ' loading="lazy"' : ""} decoding="async"${altAttr}>`;
+function renderChrome(lazy, alt, sizes) {
+  const altAttr = alt ? ` alt="${escape(en["frame.alt"])}"` : ' alt=""';
+  const load = lazy ? ' loading="lazy"' : alt ? ' fetchpriority="high"' : "";
+  return `<img class="chrome" ${imgSrc(frame.image, sizes)} width="${frame.width}" height="${frame.height}"${load} decoding="async"${altAttr}>`;
 }
 
 /** The pause control beside every playing window (one state for the whole page; main.js shows it). */
@@ -367,15 +484,15 @@ function renderStage() {
   const near = st.near.map(stageSlide);
   const farH = Math.round((640 * frame.height) / frame.width);
   const far = (src, side) =>
-    `          <div class="card card-far card-${side}" aria-hidden="true"><img src="${escape(src)}" width="640" height="${farH}" decoding="async" alt=""></div>`;
+    `          <div class="card card-far card-${side}" aria-hidden="true"><img src="${escape(src)}" width="640" height="${farH}" loading="lazy" decoding="async" alt=""></div>`;
   const side = (slide, s) =>
-    `          <div class="card card-near card-${s}" aria-hidden="true">${renderChrome(false, false)}<div class="shot" style="${area(slide)}"><img src="${escape(slide.poster)}" ${size(slide)} decoding="async" alt=""></div></div>`;
+    `          <div class="card card-near card-${s}" aria-hidden="true">${renderChrome(true, false, "near")}<div class="shot" style="${area(slide)}"><img ${imgSrc(slide.poster, "near")} ${size(slide)} loading="lazy" decoding="async" alt=""></div></div>`;
   return [
     far(st.far[0], "l"),
     far(st.far[1], "r"),
     side(near[0], "l"),
     side(near[1], "r"),
-    `          <div class="card card-main" data-media="hero">${renderChrome(false, true)}${renderShot(stageSlide(st.center), { lazy: false })}</div>`,
+    `          <div class="card card-main" data-media="hero">${renderChrome(false, true, "hero")}${renderShot(stageSlide(st.center), { lazy: false, sizes: "hero" })}</div>`,
   ].join("\n");
 }
 
@@ -389,7 +506,7 @@ function renderChapter(slide, i) {
           <p class="ch-text">${t(`slide.${slide.id}.caption`)}</p>
         </div>
         <figure class="window" data-media="${slide.id}">
-          <div class="win">${renderChrome(true, false)}${renderShot(slide, { lazy: true })}</div>
+          <div class="win">${renderChrome(true, false, "chapter")}${renderShot(slide, { lazy: true, sizes: "chapter" })}</div>
           ${renderPause(slide.id)}
         </figure>
       </article>`;
@@ -402,7 +519,7 @@ function renderPlugin(plugin) {
     ? `<img src="${escape(plugin.icon)}" width="44" height="44" alt="" loading="lazy">`
     : `<span aria-hidden="true">${escape(Array.from(plugin.name.en)[0] ?? "?")}</span>`;
   const badge = plugin.kind === "store" ? "pl.badge.store" : "pl.badge.builtin";
-  return `      <li class="plugin reveal" data-kind="${plugin.kind}">
+  return `      <li class="plugin" data-kind="${plugin.kind}">
         <div class="plugin-icon">${icon}</div>
         <div class="plugin-body">
           <h3>${t(`plugin.${plugin.id}.name`)}</h3>
@@ -427,7 +544,7 @@ function renderOpenSource() {
     ["sdk", site.links.sdkDocs, "os.sdk.link"],
     ["community", site.links.pluginsRepo, "os.community.link"],
   ];
-  return blocks.map(([id, href, label]) => `      <li class="os-card reveal">
+  return blocks.map(([id, href, label]) => `      <li class="os-card">
         <h3>${t(`os.${id}.title`)}</h3>
         ${h(`os.${id}.text`, "p")}
         ${href ? `<a class="text-link" href="${escape(href)}">${t(label)} →</a>` : ""}
@@ -446,7 +563,7 @@ function renderLinks() {
   ];
   return entries
     .filter(([key]) => site.links[key])
-    .map(([key, label]) => `        <li><a href="${escape(site.links[key])}" data-i18n="${label}">${escape(en[label])}</a></li>`)
+    .map(([key, label]) => `        <li><a href="${escape(site.links[key])}">${escape(en[label])}</a></li>`)
     .join("\n");
 }
 

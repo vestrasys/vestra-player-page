@@ -102,7 +102,7 @@
     "ft.releases": "All platforms, checksums, older versions",
     "ft.licence": "Vestra Player is licensed under {player}. The plugin SDK and the plugin repository are licensed under {plugins}.",
     "ft.credits": "Footage and games on this page",
-    "ft.privacy": "No cookies, analytics or trackers. Your language choice is kept only in your browser.",
+    "ft.privacy": "No cookies, analytics, trackers or stored data.",
     "ft.builtWith": "Built on libmpv, Slint and Node.js."
   },
   "zh-Hans": {
@@ -208,7 +208,7 @@
     "ft.releases": "所有平台、校验值和旧版本",
     "ft.licence": "Vestra Player 采用 {player} 许可。插件 SDK 和插件仓库采用 {plugins} 许可。",
     "ft.credits": "本页中的视频与游戏",
-    "ft.privacy": "本站不使用 Cookie、统计分析或任何追踪器。你的语言选择只保存在你自己的浏览器中。",
+    "ft.privacy": "本站不使用 Cookie、统计分析或任何追踪器，也不在你的浏览器中保存任何数据。",
     "ft.builtWith": "基于 libmpv、Slint 和 Node.js 构建。"
   }
 }

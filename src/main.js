@@ -1,6 +1,7 @@
-// Vestra Player download page: language, the download button for the visitor's
-// system, the playing windows (stage and feature chapters), the stage parallax,
-// the plugin filter and the AI workshop mock.
+// Vestra Player download page: the download button for the visitor's system,
+// the playing windows (stage and feature chapters), the stage parallax, the
+// one-shot reveals, the plugin filter and the AI workshop mock. Each language
+// is its own prerendered page, so nothing here translates.
 // Plain script, no dependencies.
 (() => {
   "use strict";
@@ -14,17 +15,7 @@
   const saveData = Boolean(navigator.connection && navigator.connection.saveData);
   const hasIO = "IntersectionObserver" in window;
 
-  // ---- Stored preference (may be unavailable: private mode, blocked storage) ----
-
-  const LANG_KEY = "vestra-page-lang";
-  const stored = {
-    get() {
-      try { return localStorage.getItem(LANG_KEY); } catch { return null; }
-    },
-    set(value) {
-      try { localStorage.setItem(LANG_KEY, value); } catch { /* not kept */ }
-    },
-  };
+  const text = (key) => data.strings[key] ?? key;
 
   // ---- Visitor's system: macOS gets the macOS button, everyone else Windows ----
 
@@ -39,43 +30,6 @@
   }
   const detected = detectOS();
   root.dataset.visitor = $(`.cta-btn.os-${detected}`) ? detected : "windows";
-
-  // ---- Language ----
-
-  function pickLang() {
-    const saved = stored.get();
-    if (data.langs.includes(saved)) return saved;
-    for (const tag of navigator.languages || [navigator.language || "en"]) {
-      if (/^zh\b/i.test(tag)) return "zh-Hans";
-      if (/^en\b/i.test(tag)) return "en";
-    }
-    return "en";
-  }
-  let lang = pickLang();
-  const text = (key) => data.i18n[lang][key] ?? data.i18n.en[key] ?? key;
-  const onLang = [];
-
-  function applyLang() {
-    root.lang = lang;
-    for (const el of $$("[data-i18n]")) el.textContent = text(el.dataset.i18n);
-    for (const el of $$("[data-i18n-html]")) el.innerHTML = text(el.dataset.i18nHtml);
-    for (const el of $$("[data-i18n-attr]")) {
-      for (const pair of el.dataset.i18nAttr.split(";")) {
-        const [attr, key] = pair.split(":");
-        el.setAttribute(attr, text(key));
-      }
-    }
-    document.title = text("meta.title");
-    $('meta[name="description"]').content = text("meta.description");
-    $("#lang-toggle").lang = lang === "en" ? "zh-Hans" : "en";
-    for (const fn of onLang) fn();
-  }
-
-  $("#lang-toggle").addEventListener("click", () => {
-    lang = lang === "en" ? "zh-Hans" : "en";
-    stored.set(lang);
-    applyLang();
-  });
 
   // ---- One download entry on screen: the nav button shows only when no other is visible ----
 
@@ -154,7 +108,17 @@
       u.video.load();
     }
 
+    let ready = document.readyState === "complete";
+    if (!ready) {
+      window.addEventListener("load", () => {
+        const go = () => { ready = true; sync(); };
+        if ("requestIdleCallback" in window) requestIdleCallback(go, { timeout: 1500 });
+        else setTimeout(go, 300);
+      }, { once: true });
+    }
+
     function sync() {
+      if (!ready) return;
       let best = null;
       for (const u of units) if (u.ratio >= 0.35 && (!best || u.ratio > best.ratio)) best = u;
       const allowed = mayMove() && !userPaused;
@@ -169,9 +133,7 @@
     function labels() {
       const key = userPaused ? "media.play" : "media.pause";
       for (const b of buttons) {
-        const label = $("[data-i18n]", b);
-        label.dataset.i18n = key;
-        label.textContent = text(key);
+        $("span", b).textContent = text(key);
         b.classList.toggle("is-paused", userPaused);
       }
     }
@@ -240,6 +202,25 @@
     fine.addEventListener?.("change", reset);
   })();
 
+  // ---- Reveals: each block rises into place once, the first time it comes on screen ----
+  // A one-shot transition (transform and opacity) instead of a scroll-linked animation: no
+  // per-frame style work while scrolling, and the element is a plain static box afterwards.
+  // Without script, IntersectionObserver or with reduced motion everything is simply shown.
+
+  (() => {
+    if (!hasIO || reduce.matches) return;
+    const items = $$(".reveal, .pl-grid, .ai-flow, .os-grid, .ch-copy, .win");
+    root.classList.add("reveals");
+    const io = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        entry.target.classList.add("in");
+        io.unobserve(entry.target);
+      }
+    }, { rootMargin: "0px 0px -8% 0px" });
+    for (const item of items) io.observe(item);
+  })();
+
   // ---- Plugin wall filter ----
 
   (() => {
@@ -286,7 +267,6 @@
       section.classList.add("is-playing");
     }
 
-    onLang.push(() => { if (played) finish(); });
     if (!hasIO || reduce.matches) { finish(); played = true; return; }
     section.classList.add("is-waiting");
     const io = new IntersectionObserver((entries) => {
@@ -300,5 +280,4 @@
     io.observe($(".ai-flow", section));
   })();
 
-  applyLang();
 })();

@@ -10,7 +10,7 @@
   --line-2: rgba(214, 224, 255, 0.16);
   --text: #eef0f6;
   --muted: #9ba2b4;
-  --faint: #6f7689;
+  --faint: #7b8295;
   --lamp: #ffb45c;
   --lamp-hi: #ffd29a;
   --lamp-lo: #f08a3c;
@@ -33,6 +33,11 @@
   --t-lede: clamp(1.02rem, 1.5vw, 1.2rem);
   color-scheme: dark;
 }
+
+/* The stage tilt (main.js): registered and not inherited, so writing them on the tilt layer
+   does not restyle the windows inside it on every pointer move. */
+@property --rx { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+@property --ry { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
 
 *, *::before, *::after { box-sizing: border-box; }
 
@@ -61,7 +66,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .skip { position: absolute; left: var(--gutter); top: -100px; z-index: 50; background: var(--ink-3); padding: 8px 14px; border-radius: 8px; }
 .skip:focus { top: 12px; }
 
-.no-js .js-only, .no-js .lang, .no-js .nav-dl { display: none !important; }
+.no-js .js-only, .no-js .nav-dl { display: none !important; }
 .sep { margin: 0 0.55em; opacity: 0.5; }
 
 /* ---- Visitor's system: one download button (main.js sets data-visitor; Windows without script) ---- */
@@ -90,13 +95,14 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .lang:hover { color: var(--text); border-color: var(--muted); }
 .nav-dl {
   padding: 6px 15px; border-radius: 999px; font-size: 0.86rem; font-weight: 650; white-space: nowrap;
-  background: var(--button); color: var(--button-ink); text-decoration: none; overflow: hidden; max-width: 12em;
-  transition: opacity 0.2s ease, transform 0.2s ease, max-width 0.25s ease, padding 0.25s ease, margin 0.25s ease;
+  background: var(--button); color: var(--button-ink); text-decoration: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
 }
-/* Hidden (and inert) while another download button is on screen; takes no room then. */
+/* Hidden (and inert) while another download button is on screen. It keeps its room, so showing
+   it moves nothing (no layout, no shift); only opacity and transform change. */
 :root:not(.nav-dl-on) .nav-dl {
-  opacity: 0; visibility: hidden; transform: translateY(-6px); max-width: 0; padding-inline: 0; margin-left: -10px;
-  transition: opacity 0.2s ease, transform 0.2s ease, max-width 0.25s ease, padding 0.25s ease, margin 0.25s ease, visibility 0s linear 0.25s;
+  opacity: 0; visibility: hidden; transform: translateY(-6px);
+  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s linear 0.2s;
 }
 
 /* ---- Shared type ---- */
@@ -117,7 +123,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 /* ---- Perspective dot floor (IINA precedent): a dotted plane tipped back toward a horizon ---- */
 
 .floor {
-  position: absolute; left: -40%; right: -40%; bottom: -4%; height: 92%; z-index: 0; pointer-events: none;
+  position: absolute; left: -25%; right: -25%; bottom: -4%; height: 92%; z-index: 0; pointer-events: none;
   background: radial-gradient(circle, rgba(170, 190, 255, 0.42) 1.2px, transparent 1.8px) 50% 100% / 30px 30px;
   transform: perspective(600px) rotateX(58deg); transform-origin: 50% 100%;
   -webkit-mask-image: linear-gradient(to top, #000 0%, rgba(0, 0, 0, 0.55) 35%, transparent 80%);
@@ -165,7 +171,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .card-far, .card-near { display: none; }
 .card {
   position: relative; aspect-ratio: 2220 / 1390; border-radius: var(--win-radius); overflow: hidden; background: var(--ink-2);
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.07), 0 50px 120px -30px rgba(0, 0, 0, 0.9), 0 0 80px -20px rgba(255, 170, 90, 0.18);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.07), 0 40px 80px -30px rgba(0, 0, 0, 0.9), 0 0 60px -20px rgba(255, 170, 90, 0.18);
 }
 .card > img, .win > img, .card-far img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .shot { position: absolute; overflow: hidden; background: #000; }
@@ -211,8 +217,13 @@ button { font: inherit; color: inherit; cursor: pointer; }
       transform: translate3d(calc(var(--w) * var(--fx)), var(--y0), var(--fz)) rotateY(var(--fr)) scale(var(--s0));
       backface-visibility: hidden;
     }
-    .card-near, .card-far { display: block; }
-    .card-near { --fz: -440px; box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06), 0 40px 90px -30px rgba(0, 0, 0, 0.95); }
+    .card-near, .card-far {
+      --k: 0.5;
+      display: block; width: calc(var(--w) * var(--k));
+      margin: calc(var(--h) * var(--k) / -2) 0 0 calc(var(--w) * var(--k) / -2);
+      transform: translate3d(calc(var(--w) * var(--fx)), var(--y0), var(--fz)) rotateY(var(--fr)) scale(calc(var(--s0) / var(--k)));
+    }
+    .card-near { --fz: -440px; box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06), 0 20px 45px -15px rgba(0, 0, 0, 0.95); }
     .card-near.card-l { --fx: -0.5; --fr: 36deg; }
     .card-near.card-r { --fx: 0.5; --fr: -36deg; }
     .card-far { --fz: -760px; opacity: 0.55; box-shadow: none; }
@@ -231,8 +242,8 @@ button { font: inherit; color: inherit; cursor: pointer; }
     .hero-copy { position: absolute; left: var(--gutter); right: var(--gutter); top: calc(var(--header) + 5.5vh); animation: lift-away linear both; animation-timeline: --stage; animation-range: contain 0% contain 34%; }
     .stage { position: absolute; inset: 0; height: auto; margin: 0; }
     .card { animation: gather linear both; animation-timeline: --stage; animation-range: contain 0% contain 56%; }
-    .card-near { --tz: -90px; --ts: 0.97; --to: 0; }
-    .card-far { --tz: -240px; --ts: 0.95; --to: 0; }
+    .card-near { --tz: -90px; --ts: calc(0.97 / var(--k)); --to: 0; }
+    .card-far { --tz: -240px; --ts: calc(0.95 / var(--k)); --to: 0; }
     .hero .floor { animation: floor-sink linear both; animation-timeline: --stage; animation-range: contain 0% contain 56%; }
   }
 }
@@ -391,18 +402,17 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .pf-req { margin: 14px 0 0; font-size: 0.82rem; color: var(--muted); }
 .pf-foot { margin: 10px 0 0; font-size: 0.88rem; }
 
-/* ---- Scroll-driven reveals (transform and opacity only) ---- */
+/* ---- Reveals: each block rises into place once (main.js adds .reveals, then .in per block) ---- */
 
+.win { --tilt: -16deg; }
+.chapter.is-flip .win { --tilt: 16deg; }
 @media (prefers-reduced-motion: no-preference) {
-  @supports (animation-timeline: view()) {
-    .reveal, .plugin, .ai-flow, .os-card { animation: rise linear both; animation-timeline: view(); animation-range: entry 0% cover 20%; }
-    .win { animation: straighten linear both; animation-timeline: view(); animation-range: entry 0% cover 42%; --tilt: -16deg; }
-    .chapter.is-flip .win { --tilt: 16deg; }
-    .ch-copy { animation: rise linear both; animation-timeline: view(); animation-range: entry 10% cover 35%; }
+  .reveals :is(.reveal, .pl-grid, .ai-flow, .os-grid, .ch-copy, .win) {
+    transition: opacity 0.7s ease, transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1);
   }
+  .reveals :is(.reveal, .pl-grid, .ai-flow, .os-grid, .ch-copy):not(.in) { opacity: 0; transform: translateY(32px); }
+  .reveals .win:not(.in) { opacity: 0.35; transform: translateZ(-120px) rotateY(var(--tilt)) rotateX(6deg); }
 }
-@keyframes rise { from { opacity: 0; transform: translateY(32px); } to { opacity: 1; transform: none; } }
-@keyframes straighten { from { opacity: 0.35; transform: translateZ(-120px) rotateY(var(--tilt)) rotateX(6deg); } to { opacity: 1; transform: none; } }
 
 /* ---- Narrow screens: the fan collapses to its front window ---- */
 
@@ -415,7 +425,9 @@ button { font: inherit; color: inherit; cursor: pointer; }
 
 @media (max-width: 860px) {
   .nav-links { display: none; }
-  .nav-links + .nav-actions { margin-left: auto; }
+  .nav-links + .nav-actions { margin-left: auto; position: relative; }
+  /* No nav links here: the download button appears in their empty room, so it never moves the others. */
+  .nav-dl { position: absolute; right: calc(100% + 10px); }
   .chapters, .plugins, .ai, .open { padding-top: 88px; }
   .chapter, .chapter.is-flip { grid-template-columns: minmax(0, 1fr); gap: 22px; padding: 36px 0; }
   .chapter.is-flip .ch-copy { order: 0; }

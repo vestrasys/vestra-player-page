@@ -6,7 +6,8 @@ page scrolls, with one download button for the visitor's system; one feature
 chapter per recording, a plugin wall, the AI plugin workshop (an illustration
 until a recording exists), open source, and a closing download button. Static output for
 Cloudflare Pages; plain HTML, CSS and JavaScript built by a Node script with no
-dependencies. English and Simplified Chinese.
+dependencies. English (`/`) and Simplified Chinese (`/zh-hans/`), each a
+prerendered page.
 
 ## Preview
 
@@ -17,7 +18,8 @@ npm run build            # fetches the latest release, writes dist/
 npm run preview          # serves dist/ at http://127.0.0.1:4173/
 ```
 
-`dist/index.html` also works when opened directly from disk. Builds without
+`dist/index.html` also works when opened directly from disk (the language link
+then opens the folder; use the preview). Builds without
 network access or release metadata still succeed (see below):
 
 ```sh
@@ -34,17 +36,37 @@ The build prints the size of the HTML, CSS and JS and fails above 150 KiB
 | Path | Contents |
 | --- | --- |
 | `src/index.html` | Page template: `{{t:key}}` text, `{{h:key}}` HTML text, `{{var:…}}` values, `{{slot:…}}` sections rendered by the build |
-| `src/i18n.json` | Every string, `en` and `zh-Hans` (the build fails if a key is missing in one) |
+| `src/i18n.json` | Every string, `en` and `zh-Hans` (the build fails if a key is missing in one); the build renders one page per language |
 | `src/styles.css`, `src/main.js` | Styles and the page script (language, download buttons, platforms dialog, playing windows, stage parallax, plugin filter, AI workshop mock) |
 | `src/plugins.json` | The plugin wall: name, author, kind (built in or store), one line in `en` and `zh-Hans`, optional icon |
 | `media/slides.json` | The hero stage and the feature chapters: frame image, slides, posters and video sources |
 | `media/CREDITS.md` | Third-party footage and games shown in the demos; the footer lists its table |
 | `release.config.json` | Where release metadata comes from, asset name patterns, system requirements |
-| `site.config.json` | Footer links and licence names |
+| `site.config.json` | The site's public `url` (see below), footer links and licence names |
 | `public/` | Copied as is: favicons, Open Graph image, `_headers` for Cloudflare Pages |
 | `scripts/build.mjs` | `npm run build` |
 | `scripts/encode-clip.mjs` | Encodes a recording or window screenshot into the page's formats |
 | `scripts/make-assets.mjs` | Regenerates the icons and the placeholder media (needs ffmpeg) |
+
+## Languages and search engines
+
+Each language is its own page, built from the same template: `dist/index.html`
+(English, also `x-default`) and `dist/zh-hans/index.html`. Both carry their
+text, title, description, Open Graph and Twitter tags and a schema.org
+`SoftwareApplication` (JSON-LD: free, Windows and macOS, the version and
+download links when release metadata exists; no ratings, since none exist) in
+the HTML itself, so nothing depends on script to be indexed. The header's
+language link goes to the other page; the page does not redirect by browser
+language.
+
+`url` in `site.config.json` is the public address (ending in `/`). Search
+engines need absolute addresses for canonical links, `hreflang` alternates,
+`og:url` and the sitemap, so the build writes those only when it is set
+(`SITE_URL=… npm run build` overrides it, for example to check the output
+against the local preview). Without it the pages have no canonical or
+`hreflang` links and `dist/robots.txt` (always written) has no `Sitemap`
+line; with it the build also writes `dist/sitemap.xml` with both pages and
+their alternates.
 
 ## Release metadata
 
@@ -157,6 +179,7 @@ npm run encode -- --frame frame-still.png --id frame --crop 2,0,2220,1390 --clie
 npm run encode -- <recording> --id <slide-id> --crop <x,y,w,h> --start <s> --duration <s> --loop-fade 0.5 --poster-at <s>
 npm run encode -- --frame <window-screenshot.png> --id frame --crop <x,y,w,h> --client <x,y,w,h> [--video <x,y,w,h>]
 npm run encode -- --far <slide-id>      # blurred still of that slide for stage.far (after its poster)
+npm run encode -- --small               # half-width .sm.webp copies of the frame and every poster (srcset)
 
 # Backdrop (as committed; the source is kept outside the repository).
 npm run encode -- pexels_aurora_timelapse_28889010_2160p60.mp4 --id aurora --duration 8.4 --loop-fade 1 --crf-av1 36 --crf-h264 26
@@ -171,6 +194,8 @@ Then:
 
 - Use the same crop for the frame screenshot and the slide recordings (same
   window size and scale), so the slides fit `areas.client` exactly.
+- The clip and frame commands also write a half-width `<name>.sm.webp`; the
+  page offers both through `srcset`, so 1× screens and phones fetch the small one.
 - Aim for 2–5 MB per file (raise `--crf-av1` / `--crf-h264` if larger; the
   script warns above 5 MB). `--vp9` adds a VP9 file.
 - Media are cached for a day: give a re-recorded clip a new id (`menus-2`).

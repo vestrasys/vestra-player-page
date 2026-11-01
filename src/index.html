@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" class="no-js">
+<html lang="{{var:lang}}" class="no-js">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,23 +7,17 @@
 <meta name="description" content="{{t:meta.description}}">
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#06070B">
-<meta property="og:type" content="website">
-<meta property="og:title" content="{{t:meta.title}}">
-<meta property="og:description" content="{{t:meta.description}}">
-<meta property="og:image" content="og-image.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta name="twitter:card" content="summary_large_image">
+{{slot:seo}}
 <link rel="icon" href="favicon.ico" sizes="16x16 32x32 48x48">
 <link rel="icon" href="icon-32.png" type="image/png" sizes="32x32">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="site.webmanifest">
 <link rel="stylesheet" href="{{var:css}}">
-<link rel="preload" as="image" href="{{var:stagePoster}}" fetchpriority="high">
+<link rel="preload" as="image" href="{{var:lcpImage}}" imagesrcset="{{var:lcpSrcset}}" imagesizes="{{var:lcpSizes}}" fetchpriority="high">
 <script src="{{var:js}}" defer></script>
 </head>
 <body>
-<a class="skip" href="#main" data-i18n="skip">{{t:skip}}</a>
+<a class="skip" href="#main">{{t:skip}}</a>
 
 <header class="top">
   <div class="top-inner">
@@ -31,16 +25,16 @@
       <img src="logo-80.png" width="28" height="28" alt="">
       <span>Vestra Player</span>
     </a>
-    <nav class="nav-links" data-i18n-attr="aria-label:nav.label" aria-label="{{t:nav.label}}">
-      <a href="#features" data-i18n="nav.features">{{t:nav.features}}</a>
-      <a href="#plugins" data-i18n="nav.plugins">{{t:nav.plugins}}</a>
-      <a href="#ai" data-i18n="nav.ai">{{t:nav.ai}}</a>
-      <a href="#open-source" data-i18n="nav.open">{{t:nav.open}}</a>
+    <nav class="nav-links" aria-label="{{t:nav.label}}">
+      <a href="#features">{{t:nav.features}}</a>
+      <a href="#plugins">{{t:nav.plugins}}</a>
+      <a href="#ai">{{t:nav.ai}}</a>
+      <a href="#open-source">{{t:nav.open}}</a>
     </nav>
     <div class="nav-actions">
       <a class="nav-gh" href="{{var:github}}" aria-label="GitHub">{{slot:githubIcon}}</a>
-      <button type="button" class="lang" id="lang-toggle" lang="zh-Hans" data-i18n="nav.lang" data-i18n-attr="aria-label:nav.langLabel" aria-label="{{t:nav.langLabel}}">{{t:nav.lang}}</button>
-      <a class="nav-dl" id="nav-dl" href="{{var:navHref}}" data-i18n="nav.download" inert>{{t:nav.download}}</a>
+      <a class="lang" id="lang-toggle" href="{{var:otherHref}}" hreflang="{{var:otherLang}}" lang="{{var:otherLang}}" aria-label="{{t:nav.langLabel}}">{{t:nav.lang}}</a>
+      <a class="nav-dl" id="nav-dl" href="{{var:navHref}}" inert>{{t:nav.download}}</a>
     </div>
   </div>
 </header>
@@ -53,9 +47,9 @@
     <div class="pin">
       <div class="floor" aria-hidden="true"></div>
       <div class="hero-copy">
-        <p class="eyebrow" data-i18n="hero.eyebrow">{{t:hero.eyebrow}}</p>
-        <h1 id="hero-title" data-i18n="hero.title">{{t:hero.title}}</h1>
-        <p class="lede" data-i18n="hero.lede">{{t:hero.lede}}</p>
+        <p class="eyebrow">{{t:hero.eyebrow}}</p>
+        <h1 id="hero-title">{{t:hero.title}}</h1>
+        <p class="lede">{{t:hero.lede}}</p>
         <div class="cta">
 {{slot:cta}}
 {{slot:heroSource}}
@@ -75,23 +69,23 @@
 
   <section class="chapters" id="features" aria-labelledby="tour-title">
     <div class="section-head reveal">
-      <p class="kicker" data-i18n="tour.kicker">{{t:tour.kicker}}</p>
-      <h2 id="tour-title" data-i18n="tour.title">{{t:tour.title}}</h2>
-      <p class="section-lede" data-i18n="tour.lede">{{t:tour.lede}}</p>
+      <p class="kicker">{{t:tour.kicker}}</p>
+      <h2 id="tour-title">{{t:tour.title}}</h2>
+      <p class="section-lede">{{t:tour.lede}}</p>
     </div>
 {{slot:chapters}}
   </section>
 
   <section class="plugins" id="plugins" aria-labelledby="pl-title">
     <div class="section-head reveal">
-      <p class="kicker" data-i18n="pl.kicker">{{t:pl.kicker}}</p>
-      <h2 id="pl-title" data-i18n="pl.title">{{t:pl.title}}</h2>
-      <p class="section-lede" data-i18n="pl.lede">{{t:pl.lede}}</p>
+      <p class="kicker">{{t:pl.kicker}}</p>
+      <h2 id="pl-title">{{t:pl.title}}</h2>
+      <p class="section-lede">{{t:pl.lede}}</p>
     </div>
-    <div class="pl-tabs js-only" role="group" data-i18n-attr="aria-label:pl.filter" aria-label="{{t:pl.filter}}">
-      <button type="button" data-filter="all" aria-pressed="true" data-i18n="pl.tab.all">{{t:pl.tab.all}}</button>
-      <button type="button" data-filter="store" aria-pressed="false" data-i18n="pl.tab.store">{{t:pl.tab.store}}</button>
-      <button type="button" data-filter="builtin" aria-pressed="false" data-i18n="pl.tab.builtin">{{t:pl.tab.builtin}}</button>
+    <div class="pl-tabs js-only" role="group" aria-label="{{t:pl.filter}}">
+      <button type="button" data-filter="all" aria-pressed="true">{{t:pl.tab.all}}</button>
+      <button type="button" data-filter="store" aria-pressed="false">{{t:pl.tab.store}}</button>
+      <button type="button" data-filter="builtin" aria-pressed="false">{{t:pl.tab.builtin}}</button>
     </div>
     <ul class="pl-grid">
 {{slot:plugins}}
@@ -103,59 +97,59 @@
 
   <section class="ai" id="ai" aria-labelledby="ai-title">
     <div class="section-head reveal">
-      <p class="kicker"><span data-i18n="ai.kicker">{{t:ai.kicker}}</span> <span class="tag" data-i18n="ai.tag">{{t:ai.tag}}</span></p>
-      <h2 id="ai-title" data-i18n="ai.title">{{t:ai.title}}</h2>
-      <p class="section-lede" data-i18n="ai.lede">{{t:ai.lede}}</p>
+      <p class="kicker"><span>{{t:ai.kicker}}</span> <span class="tag">{{t:ai.tag}}</span></p>
+      <h2 id="ai-title">{{t:ai.title}}</h2>
+      <p class="section-lede">{{t:ai.lede}}</p>
     </div>
     <ol class="ai-flow">
       <li class="ai-step ai-1">
         <p class="ai-num" aria-hidden="true">01</p>
-        <h3 data-i18n="ai.s1.title">{{t:ai.s1.title}}</h3>
-        <p class="ai-text" data-i18n="ai.s1.text">{{t:ai.s1.text}}</p>
+        <h3>{{t:ai.s1.title}}</h3>
+        <p class="ai-text">{{t:ai.s1.text}}</p>
         <div class="mock" aria-hidden="true">
           <div class="mock-bar"><i></i><i></i><i></i><span>Vestra Player AI</span></div>
           <div class="mock-body">
-            <p class="bubble"><span class="typed" data-i18n="ai.prompt">{{t:ai.prompt}}</span><span class="caret"></span></p>
+            <p class="bubble"><span class="typed">{{t:ai.prompt}}</span><span class="caret"></span></p>
           </div>
         </div>
       </li>
       <li class="ai-step ai-2">
         <p class="ai-num" aria-hidden="true">02</p>
-        <h3 data-i18n="ai.s2.title">{{t:ai.s2.title}}</h3>
-        <p class="ai-text" data-i18n="ai.s2.text">{{t:ai.s2.text}}</p>
+        <h3>{{t:ai.s2.title}}</h3>
+        <p class="ai-text">{{t:ai.s2.text}}</p>
         <div class="mock" aria-hidden="true">
           <div class="mock-bar"><i></i><i></i><i></i><span>corner-clock/</span></div>
           <div class="mock-body mono">
             <p class="file f1">manifest.json</p>
             <p class="file f2">main.ts</p>
             <p class="file f3">tests/clock.test.ts</p>
-            <p class="check c1"><b>✓</b> <span data-i18n="ai.check.types">{{t:ai.check.types}}</span></p>
-            <p class="check c2"><b>✓</b> <span data-i18n="ai.check.tests">{{t:ai.check.tests}}</span></p>
-            <p class="check c3"><b>✓</b> <span data-i18n="ai.check.pack">{{t:ai.check.pack}}</span></p>
+            <p class="check c1"><b>✓</b> <span>{{t:ai.check.types}}</span></p>
+            <p class="check c2"><b>✓</b> <span>{{t:ai.check.tests}}</span></p>
+            <p class="check c3"><b>✓</b> <span>{{t:ai.check.pack}}</span></p>
           </div>
         </div>
       </li>
       <li class="ai-step ai-3">
         <p class="ai-num" aria-hidden="true">03</p>
-        <h3 data-i18n="ai.s3.title">{{t:ai.s3.title}}</h3>
-        <p class="ai-text" data-i18n="ai.s3.text">{{t:ai.s3.text}}</p>
+        <h3>{{t:ai.s3.title}}</h3>
+        <p class="ai-text">{{t:ai.s3.text}}</p>
         <div class="mock" aria-hidden="true">
           <div class="mock-video"><span class="clock">12:34</span></div>
           <div class="mock-card">
             <span class="mock-icon">C</span>
-            <span class="mock-name" data-i18n="ai.plugin">{{t:ai.plugin}}</span>
-            <span class="mock-btn"><span class="b-install" data-i18n="ai.install">{{t:ai.install}}</span><span class="b-done" data-i18n="ai.installed">{{t:ai.installed}}</span></span>
+            <span class="mock-name">{{t:ai.plugin}}</span>
+            <span class="mock-btn"><span class="b-install">{{t:ai.install}}</span><span class="b-done">{{t:ai.installed}}</span></span>
           </div>
         </div>
       </li>
     </ol>
-    <p class="ai-note" data-i18n="ai.note">{{t:ai.note}}</p>
+    <p class="ai-note">{{t:ai.note}}</p>
   </section>
 
   <section class="open" id="open-source" aria-labelledby="os-title">
     <div class="section-head reveal">
-      <p class="kicker" data-i18n="os.kicker">{{t:os.kicker}}</p>
-      <h2 id="os-title" data-i18n="os.title">{{t:os.title}}</h2>
+      <p class="kicker">{{t:os.kicker}}</p>
+      <h2 id="os-title">{{t:os.title}}</h2>
     </div>
     <ul class="os-grid">
 {{slot:openSource}}
@@ -164,7 +158,7 @@
 
   <section class="end" aria-labelledby="end-title">
     <div class="floor floor-end" aria-hidden="true"></div>
-    <h2 id="end-title" class="reveal" data-i18n="end.title">{{t:end.title}}</h2>
+    <h2 id="end-title" class="reveal">{{t:end.title}}</h2>
     <div class="cta">
 {{slot:ctaEnd}}
     </div>
@@ -174,26 +168,26 @@
 <footer class="foot">
   <div class="foot-grid">
     <div>
-      <h2 data-i18n="ft.links">{{t:ft.links}}</h2>
+      <h2>{{t:ft.links}}</h2>
       <ul class="foot-links">
 {{slot:links}}
       </ul>
-      <p class="foot-releases"><a href="{{var:releasesPage}}"><span data-i18n="ft.releases">{{t:ft.releases}}</span> →</a></p>
+      <p class="foot-releases"><a href="{{var:releasesPage}}"><span>{{t:ft.releases}}</span> →</a></p>
     </div>
     <div>
-      <h2 data-i18n="ft.credits">{{t:ft.credits}}</h2>
+      <h2>{{t:ft.credits}}</h2>
 {{slot:credits}}
     </div>
   </div>
-  <p class="licence" data-i18n-html="ft.licence">{{slot:licence}}</p>
-  <p data-i18n="ft.builtWith">{{t:ft.builtWith}}</p>
-  <p data-i18n="ft.privacy">{{t:ft.privacy}}</p>
+  <p class="licence">{{slot:licence}}</p>
+  <p>{{t:ft.builtWith}}</p>
+  <p>{{t:ft.privacy}}</p>
 </footer>
 
 <dialog class="platforms" id="platforms" aria-labelledby="pf-title">
   <div class="pf-head">
-    <h2 id="pf-title" data-i18n="pf.title">{{t:pf.title}}</h2>
-    <button type="button" class="pf-close" data-i18n-attr="aria-label:pf.close" aria-label="{{t:pf.close}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <h2 id="pf-title">{{t:pf.title}}</h2>
+    <button type="button" class="pf-close" aria-label="{{t:pf.close}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
   </div>
 {{slot:platforms}}
 </dialog>

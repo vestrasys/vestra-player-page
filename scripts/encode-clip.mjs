@@ -28,6 +28,12 @@
 //   pixels (default: the whole image). Prints the "frame" block for
 //   media/slides.json.
 //
+// Small copies (for srcset): every poster and the frame image also get a
+// half-width <name>.sm.webp, which the page offers to 1x screens and phones.
+// The clip and frame commands write it; to make them for existing files:
+//
+//   node scripts/encode-clip.mjs --small
+//
 // Far card (the hero stage's back row, a blurred still):
 //
 //   node scripts/encode-clip.mjs --far <slide-id> [--id <name>]
@@ -36,11 +42,11 @@
 //   poster in the frame's client area, scaled to 640 px wide and blurred, so
 //   the page needs no live blur filter. Prints the line for "stage.far".
 import { readFileSync, statSync } from "node:fs";
-import { ffmpeg, fail, fromRoot, kib, parseArgs, readJson } from "./lib.mjs";
+import { ffmpeg, fail, fromRoot, kib, parseArgs, readJson, webpSize } from "./lib.mjs";
 
-const options = parseArgs(process.argv.slice(2), ["vp9"]);
+const options = parseArgs(process.argv.slice(2), ["vp9", "small"]);
 const id = options.id ?? (options.frame ? "frame" : typeof options.far === "string" ? `${options.far}-far` : undefined);
-if (!id || !/^[a-z0-9-]+$/.test(id)) fail("--id <name> is required ([a-z0-9-]); see the top of scripts/encode-clip.mjs");
+if (!options.small && (!id || !/^[a-z0-9-]+$/.test(id))) fail("--id <name> is required ([a-z0-9-]); see the top of scripts/encode-clip.mjs");
 
 /** "x,y,w,h" (whole pixels) -> {x, y, w, h}. */
 function rect(name) {
@@ -66,6 +72,7 @@ const report = (file) => console.log(`${rel(file)}: ${kib(statSync(file).size)}`
 
 if (options.frame) encodeFrame(options.frame);
 else if (options.far) encodeFar(options.far);
+else if (options.small) smallAll();
 else encodeClip(options._[0]);
 
 function encodeFar(slideId) {
@@ -88,6 +95,7 @@ function encodeFrame(input) {
   ffmpeg(["-i", input, ...(crop ? ["-vf", `crop=${crop.w}:${crop.h}:${crop.x}:${crop.y}`] : []),
     "-frames:v", "1", "-c:v", "libwebp", "-quality", "90", out]);
   report(out);
+  small(out);
   // The image's size, read back from the file (WebP VP8/VP8L/VP8X headers).
   const { width, height } = webpSize(out);
   const area = (r) => (r ? { x: r.x, y: r.y, width: r.w, height: r.h } : { x: 0, y: 0, width, height });
@@ -99,16 +107,6 @@ function encodeFrame(input) {
   console.log(`\nmedia/slides.json, "frame" (keep "alt"):\n${JSON.stringify(frame, null, 2)}`);
 }
 
-function webpSize(file) {
-  const data = readFileSync(file);
-  const chunk = data.toString("ascii", 12, 16);
-  if (chunk === "VP8X") return { width: 1 + data.readUIntLE(24, 3), height: 1 + data.readUIntLE(27, 3) };
-  if (chunk === "VP8L") {
-    const bits = data.readUInt32LE(21);
-    return { width: (bits & 0x3fff) + 1, height: ((bits >> 14) & 0x3fff) + 1 };
-  }
-  return { width: data.readUInt16LE(26) & 0x3fff, height: data.readUInt16LE(28) & 0x3fff };
-}
 
 function encodeClip(input) {
   if (!input) fail("usage: encode-clip.mjs <recording> --id <name> [options]; see the top of the script");
@@ -155,6 +153,7 @@ function encodeClip(input) {
   ffmpeg(["-ss", String(posterAt), "-i", outputs.h264, "-frames:v", "1", "-c:v", "libwebp", "-quality", "82", outputs.poster]);
 
   for (const key of ["av1", "h264", ...(options.vp9 ? ["vp9"] : []), "poster"]) report(outputs[key]);
+  small(outputs.poster);
   const mb = (file) => statSync(file).size / 1e6;
   if (mb(outputs.av1) > 5 || mb(outputs.h264) > 5)
     console.warn("warning: over 5 MB; raise --crf-av1 / --crf-h264 or shorten the clip");
@@ -165,4 +164,17 @@ function encodeClip(input) {
     { src: `media/clips/${id}.mp4`, type: "video/mp4; codecs=avc1.64002A" },
   ];
   console.log(`\nmedia/slides.json:\n"poster": "media/posters/${id}.webp",\n"sources": ${JSON.stringify(sources, null, 2)}`);
+}
+
+/** <name>.webp -> <name>.sm.webp at half the width (the srcset's 1x copy). */
+function small(file) {
+  const out = file.replace(/\.webp$/, ".sm.webp");
+  ffmpeg(["-i", file, "-vf", "scale=trunc(iw/4)*2:-2:flags=lanczos", "-frames:v", "1", "-c:v", "libwebp", "-quality", "80", out]);
+  report(out);
+}
+
+function smallAll() {
+  const { frame, slides } = readJson(fromRoot("media/slides.json"));
+  small(fromRoot(frame.image));
+  for (const slide of slides.filter((x) => !x.hidden)) small(fromRoot(slide.poster));
 }

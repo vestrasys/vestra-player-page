@@ -1,5 +1,6 @@
 {
-  "$comment": "Links and facts the page shows. A null link is left out of the page.",
+  "$comment": "Links and facts the page shows. A null link is left out of the page. url: the public address of the site, ending in /; while it is null (unknown) the build writes no canonical, hreflang, og:url or sitemap.xml, and robots.txt has no Sitemap line.",
+  "url": null,
   "links": {
     "playerRepo": null,
     "pluginsRepo": "https://github.com/vestrasys/vestra-player-plugins",
