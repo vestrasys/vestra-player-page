@@ -1,5 +1,22 @@
 # Recording plan (page re-recording for player 0.6.0)
 
+## Player README feature images (user ruling 2026-11-01)
+
+Captured together with the page recordings, at the end:
+
+- Top of the player repository's README: one banner, the page's hero (the
+  five-card fan) captured from the page, in `<picture>` so a light variant can
+  be added later.
+- Below it, a two-column table of feature images (about 400 px wide each,
+  one-line caption, each linking to the full image or the page section):
+  picture adjustments, Plugin Store, VestraTube, VestraNES, seek-bar preview,
+  AI Workshop, RTX Upscale, Auto Frame. Capture them from the page with the
+  headless-browser script, so they can be regenerated when the page changes.
+- Optionally one short video (uploaded through GitHub so it plays inline),
+  below the grid or in a `<details>` block.
+- Images live in the player repository under `.github/readme/`, compressed
+  (WebP or PNG). The same images go to Product Hunt.
+
 Decisions for the next round of recordings. The recordings replace the clips in
 `media/` (see `slides.json`); encode them with `npm run encode` as before.
 
