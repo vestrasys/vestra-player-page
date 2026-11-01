@@ -447,7 +447,6 @@ function renderPlatforms() {
       .join('<span class="sep" aria-hidden="true">·</span>');
     lines.push(`    <p class="pf-req">${req}</p>`);
   }
-  lines.push(`    <p class="pf-foot"><a href="${escape(releaseConfig.releasesPage)}">${t("ft.releases")} →</a></p>`);
   return lines.join("\n");
 }
 
@@ -520,12 +519,11 @@ function renderStage() {
 }
 
 function renderChapter(slide, i) {
-  const icon = slide.icon ? `<img class="ch-icon" src="${escape(slide.icon)}" width="40" height="40" alt="">` : "";
   const n = (k) => String(k).padStart(2, "0");
   return `      <article class="chapter${i % 2 ? " is-flip" : ""}">
         <div class="ch-copy">
           <p class="ch-num" aria-hidden="true">${n(i + 1)}<span>/${n(manifest.slides.length)}</span></p>
-          <h3 class="ch-title">${icon}${t(`slide.${slide.id}.title`)}</h3>
+          <h3 class="ch-title">${t(`slide.${slide.id}.title`)}</h3>
           <p class="ch-text">${t(`slide.${slide.id}.caption`)}</p>
         </div>
         <figure class="window" data-media="${slide.id}">

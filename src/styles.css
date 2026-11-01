@@ -267,7 +267,6 @@ a.cta-btn:hover { transform: translateY(-1px); }
 }
 .ch-num span { margin-left: 6px; color: var(--faint); }
 .ch-title { font-size: var(--t-h3); display: flex; flex-direction: column; align-items: flex-start; gap: 16px; }
-.ch-icon { width: 40px; height: 40px; border-radius: 10px; }
 .ch-text { margin: 18px 0 0; color: var(--muted); font-size: 1.04rem; max-width: 30em; }
 .window { position: relative; margin: 0; perspective: 1400px; display: flex; flex-direction: column; align-items: flex-end; gap: 14px; }
 .chapter.is-flip .window { align-items: flex-start; }
@@ -288,7 +287,6 @@ a.cta-btn:hover { transform: translateY(-1px); }
 .ai-num { margin: 0 0 14px; font: 700 0.82rem/1 var(--mono); letter-spacing: 0.14em; color: var(--accent); width: fit-content; }
 .ai-step h3 { font-size: 1.4rem; letter-spacing: -0.025em; }
 .ai-text { margin: 10px 0 22px; color: var(--muted); font-size: 0.93rem; }
-.ai-note { margin: 16px 0 0; color: var(--faint); font-size: 0.82rem; }
 
 .mock { margin-top: auto; border-radius: 12px; overflow: hidden; background: var(--ink); border: 1px solid var(--line-2); min-height: 176px; display: flex; flex-direction: column; }
 .mock-bar { display: flex; align-items: center; gap: 6px; padding: 9px 11px; border-bottom: 1px solid var(--line); font-size: 0.74rem; color: var(--faint); }
@@ -363,8 +361,6 @@ a.cta-btn:hover { transform: translateY(-1px); }
 .foot a { color: var(--muted); }
 .foot a:hover { color: var(--text); }
 .foot p { margin: 6px 0 0; }
-.foot-releases { margin-top: 14px !important; }
-.foot-releases a { color: var(--accent-hi); }
 
 /* ---- Other platforms dialog ---- */
 
@@ -386,7 +382,6 @@ a.cta-btn:hover { transform: translateY(-1px); }
 .pf-note b { color: var(--text); font-weight: 600; }
 .pf-get { flex: none; padding: 7px 15px; border-radius: 10px; font-weight: 650; font-size: 0.88rem; color: var(--text); text-decoration: none; border: 1.5px solid transparent; background: var(--dl-fill), var(--brand) border-box; }
 .pf-req { margin: 14px 0 0; font-size: 0.82rem; color: var(--muted); }
-.pf-foot { margin: 10px 0 0; font-size: 0.88rem; }
 
 /* ---- Reveals: each block rises into place once (main.js adds .reveals, then .in per block) ---- */
 

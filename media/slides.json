@@ -75,7 +75,6 @@
     {
       "id": "store",
       "area": "client",
-      "icon": "media/icons/vestratube.svg",
       "title": {
         "en": "Add features from the Plugin Store",
         "zh-Hans": "从插件商城添加功能"
@@ -99,7 +98,6 @@
     {
       "id": "nes",
       "area": "client",
-      "icon": "media/icons/vestranes.svg",
       "title": {
         "en": "Even games: VestraNES",
         "zh-Hans": "还能玩游戏：VestraNES"

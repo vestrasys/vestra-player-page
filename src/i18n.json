@@ -51,7 +51,6 @@
     "ai.plugin": "Corner Clock",
     "ai.install": "Install",
     "ai.installed": "Installed",
-    "ai.note": "Illustration, not a screen recording.",
 
     "os.kicker": "Open source",
     "os.title": "Open from the engine to the store",
@@ -91,11 +90,8 @@
     "ft.sdk": "Plugin SDK",
     "ft.sdkDocs": "SDK documentation",
     "ft.page": "This website's source",
-    "ft.releases": "All platforms, checksums, older versions",
     "ft.licence": "Vestra Player is licensed under {player}. The plugin SDK and the plugin repository are licensed under {plugins}.",
-    "ft.credits": "Footage and games on this page",
-    "ft.privacy": "No cookies, analytics, trackers or stored data.",
-    "ft.builtWith": "Built on libmpv, Slint and Node.js."
+    "ft.credits": "Footage and games on this page"
   },
   "zh-Hans": {
     "meta.title": "Vestra Player：每个功能都是插件的视频播放器",
@@ -149,7 +145,6 @@
     "ai.plugin": "角落时钟",
     "ai.install": "安装",
     "ai.installed": "已安装",
-    "ai.note": "示意图，并非屏幕录像。",
 
     "os.kicker": "开源",
     "os.title": "从引擎到商城，全部开放",
@@ -189,10 +184,7 @@
     "ft.sdk": "插件 SDK",
     "ft.sdkDocs": "SDK 文档",
     "ft.page": "本网站源代码",
-    "ft.releases": "所有平台、校验值和旧版本",
     "ft.licence": "Vestra Player 采用 {player} 许可。插件 SDK 和插件仓库采用 {plugins} 许可。",
-    "ft.credits": "本页中的视频与游戏",
-    "ft.privacy": "本站不使用 Cookie、统计分析或任何追踪器，也不在你的浏览器中保存任何数据。",
-    "ft.builtWith": "基于 libmpv、Slint 和 Node.js 构建。"
+    "ft.credits": "本页中的视频与游戏"
   }
 }
