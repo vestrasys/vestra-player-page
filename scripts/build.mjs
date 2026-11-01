@@ -3,7 +3,8 @@
 //
 // Environment: GITHUB_TOKEN (optional, raises the API rate limit and reads a
 // private release repository), RELEASE_OFFLINE=1 (skip the network; the page
-// uses its fallback), RELEASE_INCLUDE_PRERELEASES=1 (preview with a prerelease).
+// uses its fallback), RELEASE_INCLUDE_PRERELEASES=1 (preview with a prerelease; github
+// provider), RELEASE_LATEST_JSON=<file> (read this latest.json instead of the release's).
 import { createHash } from "node:crypto";
 import { copyFileSync, cpSync, existsSync, mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -37,8 +38,12 @@ const i18n = readJson(fromRoot("src/i18n.json"));
 const credits = parseCredits(readFileSync(fromRoot("media/CREDITS.md"), "utf8"));
 
 checkManifest(manifest);
-const release = await loadRelease(releaseConfig, { offline: process.env.RELEASE_OFFLINE === "1" });
-if (release.ok) console.log(`release ${release.version} (${release.date}), assets: ${Object.keys(release.assets).join(", ") || "none"}`);
+const release = await loadRelease(releaseConfig, {
+  offline: process.env.RELEASE_OFFLINE === "1",
+  latestFile: process.env.RELEASE_LATEST_JSON || null,
+});
+if (release.fatal) fail(release.reason);
+if (release.ok) console.log(`release ${release.version} (${release.date ?? "no date"}), assets: ${Object.keys(release.assets).join(", ") || "none"}`);
 else console.warn(`warning: no release metadata (${release.reason}); building the fallback`);
 
 // Strings built from configuration join the dictionary, so the page switches them too.
@@ -79,6 +84,19 @@ function stableUrl(os) {
 }
 const buttonSystems = ["windows", "macos", "linux"].filter((os) => stableUrl(os));
 if (!buttonSystems.some((os) => os !== "linux")) fail("site.config.json downloads: no Windows or macOS asset name");
+// The buttons link to fixed names; latest.json says which files the release really has. A name
+// that differs, or a platform latest.json does not list, would be a dead button: fail.
+if (release.ok && release.latest) {
+  for (const os of buttonSystems) {
+    const asset = os === "windows" ? primary.windows : os === "macos" ? primary.macos : enabled.find((a) => a.os === os);
+    const key = asset?.latestKey;
+    if (!key) fail(`release.config.json: no enabled ${os} asset with a latestKey to check site.config.json downloads.${os}`);
+    const listed = release.latest[key];
+    if (!listed) fail(`latest.json lists no "${key}" download, but site.config.json downloads.${os} is set`);
+    if (listed.file !== site.downloads[os])
+      fail(`site.config.json downloads.${os} is "${site.downloads[os]}" but latest.json ${key}.file is "${listed.file}"`);
+  }
+}
 
 rmSync(dist, { recursive: true, force: true });
 mkdirSync(join(dist, "assets"), { recursive: true });
@@ -206,7 +224,7 @@ function renderSeo(lang) {
     isAccessibleForFree: true,
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
     license: site.playerLicense.url,
-    ...(release.ok ? { softwareVersion: release.version, datePublished: release.date, releaseNotes: release.notesUrl } : {}),
+    ...(release.ok ? { softwareVersion: release.version, ...(release.date ? { datePublished: release.date } : {}), releaseNotes: release.notesUrl } : {}),
     downloadUrl: buttonSystems.map(stableUrl),
     ...(siteUrl ? { url: pageUrl(lang), image: image } : {}),
     ...(site.links.playerRepo ? { sameAs: [site.links.playerRepo] } : {}),
@@ -223,7 +241,7 @@ function writeSeoFiles() {
   if (!siteUrl) return;
   const alternates = LANGS.map((l) => `    <xhtml:link rel="alternate" hreflang="${l}" href="${escape(siteUrl + PAGES[l])}"/>`)
     .concat(`    <xhtml:link rel="alternate" hreflang="x-default" href="${escape(siteUrl)}"/>`).join("\n");
-  const urls = LANGS.map((l) => `  <url>\n    <loc>${escape(siteUrl + PAGES[l])}</loc>${release.ok ? `\n    <lastmod>${escape(release.date)}</lastmod>` : ""}\n${alternates}\n  </url>`);
+  const urls = LANGS.map((l) => `  <url>\n    <loc>${escape(siteUrl + PAGES[l])}</loc>${release.ok && release.date ? `\n    <lastmod>${escape(release.date)}</lastmod>` : ""}\n${alternates}\n  </url>`);
   writeFileSync(join(dist, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
 ${urls.join("\n")}

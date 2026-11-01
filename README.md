@@ -69,11 +69,23 @@ their alternates.
 
 ## Release metadata
 
-`npm run build` reads the newest release that is not a draft and, unless
-`includePrereleases` is true, not a prerelease. It bakes the version, file
-sizes and links into the HTML; file names and SHA-256 digests are left to the
-release page, which the footer links.
+`npm run build` reads the latest release (at build time, never in the browser:
+release downloads carry no CORS headers). It bakes the version, date, release
+notes link and file sizes into the HTML; SHA-256 digests are left to the release
+page, which the footer links.
 
+- **`provider: "latest-json"`** (the default) reads the release's
+  `latest.json` at `https://github.com/<github.owner>/<github.repo>/releases/latest/download/latest.json`:
+  `{ "schema": 1, "version", "published", "notes", "downloads": { "windows-x64": { "file", "size", "sha256" }, "macos-arm64": { … } } }`.
+  Unknown fields are ignored; another `schema` major fails the build. Each
+  asset in `release.config.json` names its `downloads` key (`latestKey`).
+  The build checks that `site.config.json` `downloads` (the buttons' fixed
+  file names) equal latest.json's `file` for every button and fails when one
+  differs or is missing, since that button would lead nowhere. When latest.json
+  cannot be fetched (no release yet, a private repository, no network) it only
+  warns and builds the fallback; the buttons still use their fixed links.
+  `RELEASE_LATEST_JSON=path/to/latest.json npm run build` reads a local file
+  instead (also with `build:offline`), to try the checks.
 - **`provider: "github"`** reads `github.owner/repo` through the GitHub REST API.
   Set `GITHUB_TOKEN` to raise the rate limit or to read a private repository.
   Digests come from the API's `digest` field, else from the release's

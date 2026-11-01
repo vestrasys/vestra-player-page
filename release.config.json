@@ -1,6 +1,6 @@
 {
-  "$comment": "Where `npm run build` reads the latest release. See README.md 'Release metadata'.",
-  "provider": "github",
+  "$comment": "Where `npm run build` reads the latest release. See README.md 'Release metadata'. provider: \"latest-json\" (the release's latest.json, default), \"github\" (the releases API) or \"url\".",
+  "provider": "latest-json",
   "github": {
     "owner": "vestrasys",
     "repo": "vestra-player"
@@ -21,7 +21,8 @@
       "kind": "installer",
       "pattern": "^VestraPlayer-.+-windows-x64-setup\\.exe$",
       "stableName": "VestraPlayer-windows-x64-setup.exe",
-      "enabled": true
+      "enabled": true,
+      "latestKey": "windows-x64"
     },
     {
       "id": "windows-portable",
@@ -39,7 +40,8 @@
       "kind": "dmg",
       "pattern": "^VestraPlayer-.+-macos-arm64\\.dmg$",
       "stableName": "VestraPlayer-macos-arm64.dmg",
-      "enabled": true
+      "enabled": true,
+      "latestKey": "macos-arm64"
     },
     {
       "id": "macos-x64",
@@ -48,7 +50,8 @@
       "kind": "dmg",
       "pattern": "^VestraPlayer-.+-macos-x64\\.dmg$",
       "stableName": "VestraPlayer-macos-x64.dmg",
-      "enabled": false
+      "enabled": false,
+      "latestKey": "macos-x64"
     },
     {
       "id": "macos-universal",
@@ -57,7 +60,8 @@
       "kind": "dmg",
       "pattern": "^VestraPlayer-.+-macos-universal\\.dmg$",
       "stableName": "VestraPlayer-macos-universal.dmg",
-      "enabled": false
+      "enabled": false,
+      "latestKey": "macos-universal"
     }
   ],
   "requirements": {
