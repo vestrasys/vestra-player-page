@@ -27,11 +27,19 @@
 //   client area), unscaled. --client and --video are rectangles in the result's
 //   pixels (default: the whole image). Prints the "frame" block for
 //   media/slides.json.
+//
+// Far card (the hero stage's back row, a blurred still):
+//
+//   node scripts/encode-clip.mjs --far <slide-id> [--id <name>]
+//
+//   Writes media/posters/<name>.webp (default <slide-id>-far): the slide's
+//   poster in the frame's client area, scaled to 640 px wide and blurred, so
+//   the page needs no live blur filter. Prints the line for "stage.far".
 import { readFileSync, statSync } from "node:fs";
-import { ffmpeg, fail, fromRoot, kib, parseArgs } from "./lib.mjs";
+import { ffmpeg, fail, fromRoot, kib, parseArgs, readJson } from "./lib.mjs";
 
 const options = parseArgs(process.argv.slice(2), ["vp9"]);
-const id = options.id ?? (options.frame ? "frame" : undefined);
+const id = options.id ?? (options.frame ? "frame" : typeof options.far === "string" ? `${options.far}-far` : undefined);
 if (!id || !/^[a-z0-9-]+$/.test(id)) fail("--id <name> is required ([a-z0-9-]); see the top of scripts/encode-clip.mjs");
 
 /** "x,y,w,h" (whole pixels) -> {x, y, w, h}. */
@@ -57,7 +65,21 @@ const rel = (file) => file.slice(fromRoot().length + 1).replace(/\\/g, "/");
 const report = (file) => console.log(`${rel(file)}: ${kib(statSync(file).size)}`);
 
 if (options.frame) encodeFrame(options.frame);
+else if (options.far) encodeFar(options.far);
 else encodeClip(options._[0]);
+
+function encodeFar(slideId) {
+  const { frame, slides } = readJson(fromRoot("media/slides.json"));
+  const slide = slides.find((s) => s.id === slideId) ?? fail(`--far: no slide "${slideId}" in media/slides.json`);
+  const a = frame.areas[slide.area];
+  const out = fromRoot(`media/posters/${id}.webp`);
+  ffmpeg(["-i", fromRoot(frame.image), "-i", fromRoot(slide.poster), "-filter_complex",
+    `[1:v]scale=${a.width}:${a.height}[p];[0:v][p]overlay=${a.x}:${a.y},scale=640:-2:flags=lanczos,gblur=sigma=4`,
+    "-frames:v", "1", "-c:v", "libwebp", "-quality", "70", out]);
+  report(out);
+  console.log(`
+media/slides.json, "stage.far": "media/posters/${id}.webp"`);
+}
 
 function encodeFrame(input) {
   if (input === true || !input) fail("--frame <screenshot> is required");

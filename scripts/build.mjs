@@ -82,9 +82,9 @@ const slots = {
   ctaEnd: renderCta("end"),
   heroSource: renderHeroSource(),
   githubIcon: GITHUB_ICON,
-  steps: manifest.slides.map(renderStep).join("\n"),
-  slides: manifest.slides.map(renderSlide).join("\n"),
-  stepDots: manifest.slides.map(renderStepDot).join("\n"),
+  stage: renderStage(),
+  chapters: manifest.slides.map(renderChapter).join("\n"),
+  pauseHero: renderPause("hero"),
   plugins: plugins.map(renderPlugin).join("\n"),
   pluginLinks: renderPluginLinks(),
   openSource: renderOpenSource(),
@@ -100,7 +100,7 @@ const slots = {
 };
 const vars = {
   css, js,
-  backdropPoster: manifest.backdrop?.poster ?? manifest.slides[0].poster,
+  stagePoster: stageSlide(manifest.stage.center).poster,
   frameImage: frame.image,
   frameWidth: frame.width,
   frameHeight: frame.height,
@@ -170,8 +170,13 @@ function checkFiles(files, where) {
   }
 }
 
-function checkManifest({ backdrop, frame, slides }) {
+function checkManifest({ backdrop, frame, slides, stage }) {
   const files = [frame.image];
+  if (!stage?.center || stage.near?.length !== 2 || stage.far?.length !== 2)
+    fail('media/slides.json stage: needs "center", two "near" slide ids and two "far" images');
+  for (const id of [stage.center, ...stage.near])
+    if (!slides.some((s) => s.id === id)) fail(`media/slides.json stage names slide "${id}", which is missing or hidden`);
+  files.push(...stage.far);
   if (backdrop) {
     if (!backdrop.poster || !backdrop.sources?.length) fail("media/slides.json backdrop: needs a poster and sources");
     files.push(backdrop.poster, ...backdrop.sources.map((s) => s.src));
@@ -206,8 +211,9 @@ function checkPlugins(list) {
 
 /** Copies only the media the manifest and the plugin wall name (local paths). */
 function copyMedia() {
-  const files = new Set([manifest.frame.image]);
-  if (manifest.backdrop) {
+  const files = new Set([manifest.frame.image, ...manifest.stage.far]);
+  // The backdrop clip ships only while the template shows it.
+  if (manifest.backdrop && readFileSync(fromRoot("src/index.html"), "utf8").includes("{{slot:backdrop}}")) {
     files.add(manifest.backdrop.poster);
     for (const source of manifest.backdrop.sources) files.add(source.src);
   }
@@ -328,34 +334,65 @@ function renderPlatforms() {
   return lines.join("\n");
 }
 
-// ---- Feature tour: sticky window, steps scroll past ----
+// ---- Hero stage and feature chapters: player windows ----
 
-function renderStep(slide, i) {
-  const size = `width="${frame.areas[slide.area].width}" height="${frame.areas[slide.area].height}"`;
-  const icon = slide.icon ? `<img class="step-icon" src="${escape(slide.icon)}" width="28" height="28" alt="">` : "";
-  return `      <article class="step${i === 0 ? " is-active" : ""}" data-step="${i}">
-        <p class="step-num" aria-hidden="true">${String(i + 1).padStart(2, "0")}</p>
-        <h3 class="step-title">${icon}${t(`slide.${slide.id}.title`)}</h3>
-        <p class="step-text">${t(`slide.${slide.id}.caption`)}</p>
-        <img class="step-poster" data-src="${escape(slide.poster)}" loading="lazy" decoding="async" ${size} alt="">
-        <noscript><img class="step-poster" src="${escape(slide.poster)}" loading="lazy" decoding="async" ${size} alt=""></noscript>
+function stageSlide(id) {
+  return manifest.slides.find((s) => s.id === id) ?? fail(`media/slides.json: no slide "${id}"`);
+}
+
+function size(slide) {
+  return `width="${frame.areas[slide.area].width}" height="${frame.areas[slide.area].height}"`;
+}
+
+/** The clip over the window's client area: the poster underneath, the video on top once it plays (main.js). */
+function renderShot(slide, { lazy }) {
+  const load = lazy ? ' loading="lazy"' : ' fetchpriority="high"';
+  const sources = slide.sources.map((s) => `<source data-src="${escape(s.src)}" type="${escape(s.type)}">`).join("");
+  return `<div class="shot" style="${area(slide)}"><img src="${escape(slide.poster)}" ${size(slide)}${load} decoding="async" alt=""><video muted loop playsinline preload="none" aria-hidden="true" tabindex="-1">${sources}</video></div>`;
+}
+
+function renderChrome(lazy, alt) {
+  const altAttr = alt ? ` alt="${escape(en["frame.alt"])}" data-i18n-attr="alt:frame.alt"` : ' alt=""';
+  return `<img class="chrome" src="${escape(frame.image)}" width="${frame.width}" height="${frame.height}"${lazy ? ' loading="lazy"' : ""} decoding="async"${altAttr}>`;
+}
+
+/** The pause control beside every playing window (one state for the whole page; main.js shows it). */
+function renderPause(where) {
+  return `<button type="button" class="pp pp-${where}" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path class="i-pause" d="M8 5v14M16 5v14"/><path class="i-play" d="M7 4.5v15l12-7.5z"/></svg>${t("media.pause")}</button>`;
+}
+
+/** Five windows fanned in depth; the stylesheet gathers them into the front one as the page scrolls. */
+function renderStage() {
+  const st = manifest.stage;
+  const near = st.near.map(stageSlide);
+  const farH = Math.round((640 * frame.height) / frame.width);
+  const far = (src, side) =>
+    `          <div class="card card-far card-${side}" aria-hidden="true"><img src="${escape(src)}" width="640" height="${farH}" decoding="async" alt=""></div>`;
+  const side = (slide, s) =>
+    `          <div class="card card-near card-${s}" aria-hidden="true">${renderChrome(false, false)}<div class="shot" style="${area(slide)}"><img src="${escape(slide.poster)}" ${size(slide)} decoding="async" alt=""></div></div>`;
+  return [
+    far(st.far[0], "l"),
+    far(st.far[1], "r"),
+    side(near[0], "l"),
+    side(near[1], "r"),
+    `          <div class="card card-main" data-media="hero">${renderChrome(false, true)}${renderShot(stageSlide(st.center), { lazy: false })}</div>`,
+  ].join("\n");
+}
+
+function renderChapter(slide, i) {
+  const icon = slide.icon ? `<img class="ch-icon" src="${escape(slide.icon)}" width="40" height="40" alt="">` : "";
+  const n = (k) => String(k).padStart(2, "0");
+  return `      <article class="chapter${i % 2 ? " is-flip" : ""}">
+        <div class="ch-copy">
+          <p class="ch-num" aria-hidden="true">${n(i + 1)}<span>/${n(manifest.slides.length)}</span></p>
+          <h3 class="ch-title">${icon}${t(`slide.${slide.id}.title`)}</h3>
+          <p class="ch-text">${t(`slide.${slide.id}.caption`)}</p>
+        </div>
+        <figure class="window" data-media="${slide.id}">
+          <div class="win">${renderChrome(true, false)}${renderShot(slide, { lazy: true })}</div>
+          ${renderPause(slide.id)}
+        </figure>
       </article>`;
-}
-
-function renderSlide(slide, i) {
-  const first = i === 0;
-  const sources = slide.sources
-    .map((s) => `              <source data-src="${escape(s.src)}" type="${escape(s.type)}">`)
-    .join("\n");
-  return `          <div class="slide${first ? " is-active" : ""}" data-slide="${i}" style="${area(slide)}">
-            <video muted loop playsinline preload="none" data-poster="${escape(slide.poster)}" aria-hidden="true" tabindex="-1">
-${sources}
-            </video>
-          </div>`;
-}
-
-function renderStepDot(slide, i) {
-  return `          <button type="button" class="step-dot" data-go="${i}" data-i18n-attr="aria-label:slide.${slide.id}.title" aria-label="${escape(slide.title.en)}"${i === 0 ? ' aria-current="step"' : ""}></button>`;
 }
 
 // ---- Plugin wall ----
@@ -436,7 +473,9 @@ function inlineMarkdown(text = "") {
 }
 
 function renderCredits() {
-  const rows = credits.filter((row) => row.title);
+  // The footer lists only footage the page shows: the backdrop's row goes when the template has no backdrop.
+  const backdropShown = readFileSync(fromRoot("src/index.html"), "utf8").includes("{{slot:backdrop}}");
+  const rows = credits.filter((row) => row.title && (backdropShown || !/\(hero backdrop\)/i.test(row.title)));
   if (!rows.length) return `      <p>—</p>`;
   const items = rows.map((row) => {
     const bits = [row.title, row.attribution || row.author, row.licence ?? row.license]

@@ -36,6 +36,18 @@
       }
     }
   },
+  "stage": {
+    "$comment": "The hero's depth stage: player windows fanned in 3D. \"center\" is the slide whose clip plays in the front window; \"near\" are the slides shown as stills beside it (left, right); \"far\" are pre-blurred stills for the back row (left, right), made with `npm run encode -- --far <slide-id>`.",
+    "center": "menus",
+    "near": [
+      "store",
+      "nes"
+    ],
+    "far": [
+      "media/posters/nes-far.webp",
+      "media/posters/store-far.webp"
+    ]
+  },
   "slides": [
     {
       "id": "menus",

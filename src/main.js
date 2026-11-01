@@ -1,5 +1,6 @@
 // Vestra Player download page: language, the download button for the visitor's
-// system, the feature tour, the plugin filter and the AI workshop mock.
+// system, the playing windows (stage and feature chapters), the stage parallax,
+// the plugin filter and the AI workshop mock.
 // Plain script, no dependencies.
 (() => {
   "use strict";
@@ -64,8 +65,6 @@
         el.setAttribute(attr, text(key));
       }
     }
-    const chrome = $(".chrome");
-    if (chrome) chrome.alt = text("frame.alt");
     document.title = text("meta.title");
     $('meta[name="description"]').content = text("meta.description");
     $("#lang-toggle").lang = lang === "en" ? "zh-Hans" : "en";
@@ -125,7 +124,11 @@
     });
   })();
 
-  // ---- Media helper: play only while allowed ----
+  // ---- Media: one window plays at a time ----
+  // Every [data-media] window (the stage's front window, each feature chapter) holds a poster
+  // and a muted video. The most visible one plays and every other one is paused, so only one
+  // clip decodes at a time. Nothing loads or plays with reduced motion, Save-Data, a hidden tab
+  // or after the visitor pressed pause (one state for the whole page).
 
   const mayMove = () => !reduce.matches && !saveData && !document.hidden;
   function safePlay(video) {
@@ -133,128 +136,108 @@
     if (promise) promise.catch(() => { /* autoplay refused: the poster stays */ });
   }
 
-  // ---- Hero backdrop: plays only while on screen ----
-
   (() => {
-    const video = $(".backdrop video");
-    if (!video) return;
-    let visible = true;
-    const update = () => (visible && mayMove() ? safePlay(video) : video.pause());
-    if (hasIO) {
-      new IntersectionObserver((entries) => {
-        visible = entries[0].isIntersecting;
-        update();
-      }).observe(video.parentNode);
-    }
-    document.addEventListener("visibilitychange", update);
-    reduce.addEventListener?.("change", update);
-    update();
-  })();
+    const units = $$("[data-media]")
+      .map((el) => ({ el, shot: $(".shot", el), video: $("video", el), ratio: 0 }))
+      .filter((u) => u.video);
+    const buttons = $$(".pp");
+    if (!units.length || !hasIO) return;
+    let userPaused = false;
 
-  // ---- Feature tour: the window stays pinned, the step under the middle of the screen picks the clip ----
-
-  (() => {
-    const section = $("#features");
-    const stage = $(".tour-stage", section);
-    const slides = $$(".slide", section);
-    const videos = slides.map((slide) => $("video", slide));
-    const steps = $$(".step", section);
-    const dots = $$(".step-dot", section);
-    if (!slides.length) return;
-    let index = 0;
-    let visible = false;
-
-    // With reduced motion the pinned window is hidden (each step shows its poster): load nothing for it.
-    const shown = () => getComputedStyle(stage).display !== "none";
-
-    function loadPoster(i) {
-      const video = videos[i];
-      if (!video || !video.dataset.poster || !shown()) return;
-      video.poster = video.dataset.poster;
-      video.removeAttribute("data-poster");
-    }
-
-    function load(i) {
-      const video = videos[i];
-      if (!video || !shown()) return;
-      loadPoster(i);
-      if (video.dataset.loaded) return;
-      video.dataset.loaded = "1";
-      for (const source of $$("source[data-src]", video)) {
+    function load(u) {
+      if (u.video.dataset.loaded) return;
+      u.video.dataset.loaded = "1";
+      for (const source of $$("source[data-src]", u.video)) {
         source.src = source.dataset.src;
         source.removeAttribute("data-src");
       }
-      video.load();
+      u.video.load();
     }
 
     function sync() {
-      videos.forEach((video, i) => {
-        if (i === index && visible && mayMove()) {
-          load(i);
-          safePlay(video);
-        } else {
-          video.pause();
-        }
+      let best = null;
+      for (const u of units) if (u.ratio >= 0.35 && (!best || u.ratio > best.ratio)) best = u;
+      const allowed = mayMove() && !userPaused;
+      for (const u of units) {
+        if (u === best && allowed) {
+          load(u);
+          safePlay(u.video);
+        } else if (!u.video.paused) u.video.pause();
+      }
+    }
+
+    function labels() {
+      const key = userPaused ? "media.play" : "media.pause";
+      for (const b of buttons) {
+        const label = $("[data-i18n]", b);
+        label.dataset.i18n = key;
+        label.textContent = text(key);
+        b.classList.toggle("is-paused", userPaused);
+      }
+    }
+
+    function controls() {
+      // The control exists only while something may play.
+      const show = !reduce.matches && !saveData;
+      for (const b of buttons) b.hidden = !show;
+    }
+
+    for (const u of units) {
+      // The video fades in over its poster once frames arrive.
+      u.video.addEventListener("playing", () => u.shot.classList.add("is-live"));
+    }
+    for (const b of buttons) {
+      b.addEventListener("click", () => {
+        userPaused = !userPaused;
+        labels();
+        sync();
       });
     }
 
-    function activate(i) {
-      if (i === index) return;
-      videos[index].pause();
-      index = i;
-      slides.forEach((s, n) => s.classList.toggle("is-active", n === i));
-      steps.forEach((s, n) => s.classList.toggle("is-active", n === i));
-      dots.forEach((d, n) => (n === i ? d.setAttribute("aria-current", "step") : d.removeAttribute("aria-current")));
-      // The poster first, so the switch shows a picture at once; the next poster ahead of time.
-      load(i);
-      loadPoster(i + 1);
-      if (videos[i].readyState > 0) videos[i].currentTime = 0;
-      sync();
-    }
-
-    dots.forEach((dot, i) => dot.addEventListener("click", () => {
-      if (getComputedStyle(stage).display === "none") return;
-      steps[i].scrollIntoView({ behavior: reduce.matches ? "auto" : "smooth", block: "center" });
-      activate(i);
-    }));
-
-    if (hasIO) {
-      // The step crossing a line across the viewport is the active one: the middle beside the
-      // window on wide screens, lower on narrow ones where the window is pinned above the text.
-      const narrow = window.matchMedia("(max-width: 860px)");
-      let stepIO = null;
-      const watchSteps = () => {
-        if (stepIO) stepIO.disconnect();
-        const line = narrow.matches ? 62 : 50;
-        stepIO = new IntersectionObserver((entries) => {
-          for (const entry of entries) if (entry.isIntersecting) activate(steps.indexOf(entry.target));
-        }, { rootMargin: `-${line}% 0px -${100 - line}% 0px` });
-        for (const step of steps) stepIO.observe(step);
-      };
-      watchSteps();
-      narrow.addEventListener?.("change", watchSteps);
-      // The first poster once the window comes near.
-      const near = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting) { loadPoster(index); near.disconnect(); }
-      }, { rootMargin: "100% 0px" });
-      near.observe(stage);
-      // Nothing plays while the window is off screen.
-      new IntersectionObserver((entries) => {
-        visible = entries[0].isIntersecting;
-        sync();
-      }, { threshold: 0.25 }).observe($(".frame", stage));
-    } else loadPoster(0);
-    // Reduced motion: each step shows its still instead (no script: a <noscript> copy).
-    const stills = () => {
-      if (!reduce.matches) return;
-      for (const img of $$("img.step-poster[data-src]", section)) {
-        img.src = img.dataset.src;
-        img.removeAttribute("data-src");
+    const io = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        const u = units.find((x) => x.el === entry.target);
+        if (u) u.ratio = entry.isIntersecting ? entry.intersectionRatio : 0;
       }
-    };
-    stills();
+      sync();
+    }, { threshold: [0, 0.2, 0.35, 0.5, 0.65, 0.8, 1] });
+    for (const u of units) io.observe(u.el);
+
     document.addEventListener("visibilitychange", sync);
-    reduce.addEventListener?.("change", () => { stills(); sync(); });
+    reduce.addEventListener?.("change", () => { controls(); sync(); });
+    controls();
+  })();
+
+  // ---- Stage parallax: a gentle tilt that follows a mouse (±6°) ----
+  // Only for a fine pointer that hovers, never with reduced motion. The tilt is a separate,
+  // outer element from the one the scroll animation moves, so the two transforms never fight.
+  // Pointer events only record the position; one frame applies it (two custom properties).
+
+  (() => {
+    const pin = $(".hero .pin");
+    const tilt = pin && $(".tilt", pin);
+    if (!tilt) return;
+    const fine = window.matchMedia("(hover: hover) and (pointer: fine)");
+    const MAX = 6;
+    let x = 0;
+    let y = 0;
+    let frame = 0;
+    const apply = () => {
+      frame = 0;
+      tilt.style.setProperty("--ry", `${(x * MAX).toFixed(2)}deg`);
+      tilt.style.setProperty("--rx", `${(-y * MAX).toFixed(2)}deg`);
+    };
+    const queue = () => { if (!frame) frame = requestAnimationFrame(apply); };
+    const reset = () => { x = 0; y = 0; queue(); };
+    pin.addEventListener("pointermove", (event) => {
+      if (event.pointerType !== "mouse" || !fine.matches || reduce.matches) return;
+      x = Math.max(-1, Math.min(1, (event.clientX / window.innerWidth) * 2 - 1));
+      y = Math.max(-1, Math.min(1, (event.clientY / window.innerHeight) * 2 - 1));
+      queue();
+    }, { passive: true });
+    pin.addEventListener("pointerleave", reset);
+    reduce.addEventListener?.("change", reset);
+    fine.addEventListener?.("change", reset);
   })();
 
   // ---- Plugin wall filter ----

@@ -28,6 +28,10 @@
 
     "tour.kicker": "Features",
     "tour.title": "See it in action",
+    "hero.eyebrow": "Free and open source · Windows and macOS",
+    "tour.lede": "Three things it does today, recorded in the player itself.",
+    "media.pause": "Pause video",
+    "media.play": "Play video",
 
     "pl.kicker": "Plugins",
     "pl.title": "Everything is a plugin",
@@ -130,6 +134,10 @@
 
     "tour.kicker": "功能",
     "tour.title": "看看实际效果",
+    "hero.eyebrow": "免费开源 · Windows 与 macOS",
+    "tour.lede": "三段现在就能做到的事，均在播放器中实录。",
+    "media.pause": "暂停视频",
+    "media.play": "播放视频",
 
     "pl.kicker": "插件",
     "pl.title": "一切皆插件",

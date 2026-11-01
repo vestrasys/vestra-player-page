@@ -1,9 +1,9 @@
 # Vestra Player download page
 
 The single-page website for downloading Vestra Player:
-a hero over a looping backdrop with one download button for the visitor's
-system, a feature tour in a pinned player window whose clip follows the text
-steps scrolling past, a plugin wall, the AI plugin workshop (an illustration
+a hero whose player windows stand fanned in depth and gather into one as the
+page scrolls, with one download button for the visitor's system; one feature
+chapter per recording, a plugin wall, the AI plugin workshop (an illustration
 until a recording exists), open source, and a closing download button. Static output for
 Cloudflare Pages; plain HTML, CSS and JavaScript built by a Node script with no
 dependencies. English and Simplified Chinese.
@@ -35,9 +35,9 @@ The build prints the size of the HTML, CSS and JS and fails above 150 KiB
 | --- | --- |
 | `src/index.html` | Page template: `{{t:key}}` text, `{{h:key}}` HTML text, `{{var:…}}` values, `{{slot:…}}` sections rendered by the build |
 | `src/i18n.json` | Every string, `en` and `zh-Hans` (the build fails if a key is missing in one) |
-| `src/styles.css`, `src/main.js` | Styles and the page script (language, download buttons, platforms dialog, feature tour, plugin filter, AI workshop mock) |
+| `src/styles.css`, `src/main.js` | Styles and the page script (language, download buttons, platforms dialog, playing windows, stage parallax, plugin filter, AI workshop mock) |
 | `src/plugins.json` | The plugin wall: name, author, kind (built in or store), one line in `en` and `zh-Hans`, optional icon |
-| `media/slides.json` | The hero backdrop and the feature tour: frame image, slides, posters and video sources |
+| `media/slides.json` | The hero stage and the feature chapters: frame image, slides, posters and video sources |
 | `media/CREDITS.md` | Third-party footage and games shown in the demos; the footer lists its table |
 | `release.config.json` | Where release metadata comes from, asset name patterns, system requirements |
 | `site.config.json` | Footer links and licence names |
@@ -105,10 +105,20 @@ libsvtav1, libx264 and libwebp; `FFMPEG=path` or ffmpeg on `PATH`) turns a raw
 recording or a screenshot into the page's files, and prints the lines to paste
 into `media/slides.json`. Replacing one item is one command plus that edit.
 
-- `backdrop` is the looping clip behind the header and hero text (the aurora).
-  It plays only while visible and never with reduced motion or Save-Data; the
-  poster shows otherwise.
-- `frame.image` is the player window around the tour, at `frame.width` ×
+- `backdrop` is a looping clip (the aurora) for templates that show one behind
+  the hero. This template does not: its files are not copied into `dist/` and
+  its credits row (Title ending in "(hero backdrop)") is left out of the footer
+  while `src/index.html` has no `{{slot:backdrop}}`.
+- `stage` is the hero: `center` names the slide whose clip plays in the front
+  window, `near` the two slides shown as stills beside it (left, right), and
+  `far` two pre-blurred stills for the back row, made with
+  `npm run encode -- --far <slide-id>` (the page uses no live blur filter).
+  On wide screens with scroll-driven animations the hero is a tall track: its
+  viewport stays pinned while the fan gathers into the front window; a fine
+  mouse pointer tilts the stage by up to 6°. Phones, browsers without
+  scroll-driven animations and no script get one flat window; reduced motion
+  gets the fan standing still, posters only.
+- `frame.image` is the player window around every clip, at `frame.width` ×
   `frame.height` pixels. `frame.areas` are rectangles in that image's pixels:
   `client` is the window's client area, `video` only the video area. Each
   slide's `area` names the rectangle its video covers.
@@ -116,12 +126,12 @@ into `media/slides.json`. Replacing one item is one command plus that edit.
   optional `icon`, a `poster` and `sources` (tried in order; AV1 WebM first,
   H.264 MP4 last). `"hidden": true` leaves a slide out of the page; its files
   need not exist (the `ai` slide waits like this for its recording).
-- The tour pins the window (`position: sticky`) while one text step per
-  slide scrolls past; the step crossing the middle of the screen (lower on
-  narrow screens) picks the clip. A clip loads when its step is first reached
-  and plays only while the window is on screen; with reduced motion, Save-Data
-  or without script nothing plays (reduced motion and no script also show each
-  step's poster under its text instead of the pinned window).
+- Each slide is a feature chapter: its text beside its window. Of all the
+  windows on screen (the stage's front window included) only the most visible
+  one plays, so one clip decodes at a time; a clip loads when its window is
+  first chosen. A pause button beside each playing window stops every clip on
+  the page. With reduced motion, Save-Data or without script nothing loads or
+  plays and the posters show.
 
 ### Commands
 
@@ -146,6 +156,7 @@ npm run encode -- --frame frame-still.png --id frame --crop 2,0,2220,1390 --clie
 # In general: crop = the player window's client area in the recording.
 npm run encode -- <recording> --id <slide-id> --crop <x,y,w,h> --start <s> --duration <s> --loop-fade 0.5 --poster-at <s>
 npm run encode -- --frame <window-screenshot.png> --id frame --crop <x,y,w,h> --client <x,y,w,h> [--video <x,y,w,h>]
+npm run encode -- --far <slide-id>      # blurred still of that slide for stage.far (after its poster)
 
 # Backdrop (as committed; the source is kept outside the repository).
 npm run encode -- pexels_aurora_timelapse_28889010_2160p60.mp4 --id aurora --duration 8.4 --loop-fade 1 --crf-av1 36 --crf-h264 26

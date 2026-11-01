@@ -6,7 +6,7 @@
 <title>{{t:meta.title}}</title>
 <meta name="description" content="{{t:meta.description}}">
 <meta name="color-scheme" content="dark">
-<meta name="theme-color" content="#16141C">
+<meta name="theme-color" content="#06070B">
 <meta property="og:type" content="website">
 <meta property="og:title" content="{{t:meta.title}}">
 <meta property="og:description" content="{{t:meta.description}}">
@@ -19,17 +19,16 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="site.webmanifest">
 <link rel="stylesheet" href="{{var:css}}">
-<link rel="preload" as="image" href="{{var:backdropPoster}}" fetchpriority="high">
+<link rel="preload" as="image" href="{{var:stagePoster}}" fetchpriority="high">
 <script src="{{var:js}}" defer></script>
 </head>
 <body>
 <a class="skip" href="#main" data-i18n="skip">{{t:skip}}</a>
-{{slot:backdrop}}
 
 <header class="top">
   <div class="top-inner">
     <a class="brand" href="./" aria-label="Vestra Player">
-      <img src="logo-80.png" width="32" height="32" alt="">
+      <img src="logo-80.png" width="28" height="28" alt="">
       <span>Vestra Player</span>
     </a>
     <nav class="nav-links" data-i18n-attr="aria-label:nav.label" aria-label="{{t:nav.label}}">
@@ -47,35 +46,40 @@
 </header>
 
 <main id="main">
+  <!-- The depth stage: a tall track whose sticky viewport holds the copy and the fanned windows.
+       With scroll-driven animations the fan gathers into one front window; otherwise (and on
+       phones) the copy sits above one flat window. -->
   <section class="hero" aria-labelledby="hero-title">
-    <h1 id="hero-title" data-i18n="hero.title">{{t:hero.title}}</h1>
-    <p class="lede" data-i18n="hero.lede">{{t:hero.lede}}</p>
-    <div class="cta">
+    <div class="pin">
+      <div class="floor" aria-hidden="true"></div>
+      <div class="hero-copy">
+        <p class="eyebrow" data-i18n="hero.eyebrow">{{t:hero.eyebrow}}</p>
+        <h1 id="hero-title" data-i18n="hero.title">{{t:hero.title}}</h1>
+        <p class="lede" data-i18n="hero.lede">{{t:hero.lede}}</p>
+        <div class="cta">
 {{slot:cta}}
 {{slot:heroSource}}
-    </div>
+        </div>
 {{slot:ctaLine}}
+      </div>
+      <div class="stage">
+        <div class="tilt">
+          <div class="fan">
+{{slot:stage}}
+          </div>
+        </div>
+      </div>
+      {{slot:pauseHero}}
+    </div>
   </section>
 
-  <section class="tour" id="features" aria-labelledby="tour-title">
+  <section class="chapters" id="features" aria-labelledby="tour-title">
     <div class="section-head reveal">
       <p class="kicker" data-i18n="tour.kicker">{{t:tour.kicker}}</p>
       <h2 id="tour-title" data-i18n="tour.title">{{t:tour.title}}</h2>
+      <p class="section-lede" data-i18n="tour.lede">{{t:tour.lede}}</p>
     </div>
-    <div class="tour-grid">
-      <div class="tour-stage">
-        <div class="frame" style="aspect-ratio: {{var:frameRatio}}">
-          <img class="chrome" src="{{var:frameImage}}" width="{{var:frameWidth}}" height="{{var:frameHeight}}" loading="lazy" decoding="async" alt="{{var:frameAlt}}">
-{{slot:slides}}
-        </div>
-        <div class="step-dots">
-{{slot:stepDots}}
-        </div>
-      </div>
-      <div class="tour-steps">
-{{slot:steps}}
-      </div>
-    </div>
+{{slot:chapters}}
   </section>
 
   <section class="plugins" id="plugins" aria-labelledby="pl-title">
@@ -159,6 +163,7 @@
   </section>
 
   <section class="end" aria-labelledby="end-title">
+    <div class="floor floor-end" aria-hidden="true"></div>
     <h2 id="end-title" class="reveal" data-i18n="end.title">{{t:end.title}}</h2>
     <div class="cta">
 {{slot:ctaEnd}}
