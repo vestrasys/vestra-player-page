@@ -515,7 +515,7 @@ function renderOpenSource() {
     ["sdk", site.links.sdkDocs, "os.sdk.link"],
     ["community", site.links.pluginsRepo, "os.community.link"],
     // Anyone's own store (a third-party repository in the Plugin Store), as a full-width row.
-    ["stores", site.links.sdkPublish, "os.stores.link", " os-wide"],
+    ["stores", site.links.sdkOwnStore, "os.stores.link", " os-wide"],
   ];
   return blocks.map(([id, href, label, extra = ""]) => `      <li class="os-card${extra}">
         <h3>${t(`os.${id}.title`)}</h3>
