@@ -542,10 +542,10 @@ function renderOpenSource() {
     ["player", site.links.playerRepo, "os.player.link"],
     ["sdk", site.links.sdkDocs, "os.sdk.link"],
     ["community", site.links.pluginsRepo, "os.community.link"],
-    // Anyone's own store (a third-party repository in the Plugin Store), as a full-width row.
-    ["stores", site.links.sdkOwnStore, "os.stores.link", " os-wide"],
+    // Anyone's own store (a third-party repository in the Plugin Store).
+    ["stores", site.links.sdkOwnStore, "os.stores.link"],
   ];
-  return blocks.map(([id, href, label, extra = ""]) => `      <li class="os-card${extra}">
+  return blocks.map(([id, href, label]) => `      <li class="os-card">
         <h3>${t(`os.${id}.title`)}</h3>
         ${h(`os.${id}.text`, "p")}
         ${href ? `<a class="text-link" href="${escape(href)}">${t(label)} →</a>` : ""}

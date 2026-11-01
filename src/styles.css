@@ -339,17 +339,12 @@ a.cta-btn:hover { transform: translateY(-1px); }
 
 /* ---- Open source ---- */
 
-.os-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border-top: 2px solid; border-image: var(--brand) 1; }
+.os-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; border-top: 2px solid; border-image: var(--brand) 1; }
 .os-card { display: flex; flex-direction: column; gap: 12px; padding: 28px 28px 8px 0; }
 .os-card + .os-card { padding-left: 28px; border-left: 1px solid var(--line); }
 .os-card h3 { font-size: 1.3rem; letter-spacing: -0.02em; }
 .os-card p { margin: 0; color: var(--muted); font-size: 0.95rem; flex: 1; }
 .os-card p a { color: var(--text); }
-.os-card.os-wide {
-  grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 12px 28px; align-items: start;
-  margin-top: 8px; padding: 28px 0 8px; border-left: 0; border-top: 1px solid var(--line);
-}
-.os-card.os-wide .text-link { grid-column: 2; }
 
 /* ---- Closing: one sentence, one button, the floor again ---- */
 
@@ -411,6 +406,10 @@ a.cta-btn:hover { transform: translateY(-1px); }
   .nav-links { gap: 18px; }
   .ai-flow { grid-template-columns: minmax(0, 1fr); }
   .ai-step + .ai-step { border-left: 0; border-top: 1px solid var(--line); }
+  /* Two by two: the cards that start a row lose the divider on their left. */
+  .os-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .os-card:nth-child(odd) { padding-left: 0; border-left: 0; }
+  .os-card:nth-child(n + 3) { border-top: 1px solid var(--line); }
 }
 
 @media (max-width: 860px) {
@@ -424,7 +423,6 @@ a.cta-btn:hover { transform: translateY(-1px); }
   .window, .chapter.is-flip .window { align-items: flex-end; }
   .os-grid { grid-template-columns: minmax(0, 1fr); }
   .os-card, .os-card + .os-card { padding: 22px 0; border-left: 0; }
-  .os-card.os-wide { display: flex; margin-top: 0; }
   .os-card + .os-card { border-top: 1px solid var(--line); }
   .pp-hero { position: static; display: flex; margin: 14px 0 0 auto; }
   .floor { height: 46%; }
