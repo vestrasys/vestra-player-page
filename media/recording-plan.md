@@ -37,6 +37,14 @@ Decisions for the next round of recordings. The recordings replace the clips in
   VestraBili, VestraNES, RTX Upscale, Auto Frame). Viewers see at a glance that
   features like RTX Upscale exist; no captions explaining them.
 - The current poster is not the Available tab; replace it.
+- The far-right card keeps the current VestraNES screenshot; its clip stays.
+- The far-left card shows the seek-bar thumbnail preview (user ruling
+  2026-11-01): the pointer hovering over the seek bar with the preview picture
+  and time shown above it. The far cards are small, pre-blurred and fade out
+  when the fan gathers, so make the preview read at that size: capture the
+  player in a smaller window (the preview keeps its size, so it fills more of
+  the frame), pick a colourful frame of an open movie for the preview, and
+  check the card's blurred poster before keeping it.
 - The first card on the right shows the AI Workshop: a screenshot of the
   Workshop (pi) window with a new, empty conversation. No clip is recorded for
   it; the page's AI Workshop section explains it further down.
