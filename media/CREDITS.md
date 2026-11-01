@@ -9,6 +9,7 @@ kept outside the repository (`SOURCES.md` next to them).
 | Title | Author | Licence | Source | Attribution |
 | --- | --- | --- | --- | --- |
 | Big Buck Bunny (in the demo recordings) | Blender Foundation | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | [peach.blender.org](https://peach.blender.org/) | (c) copyright 2008, Blender Foundation / www.bigbuckbunny.org |
+| Spring (in the store recording, played through VestraTube) | Blender Animation Studio | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | [studio.blender.org/films/spring](https://studio.blender.org/films/spring/pages/about) | © Blender Foundation \| cloud.blender.org/spring |
 | Stunning Aurora Borealis in Night Sky Timelapse (hero backdrop) | [Frank Cone](https://www.pexels.com/@frank-cone-140140/) | [Pexels License](https://www.pexels.com/license/) | [Pexels](https://www.pexels.com/video/stunning-aurora-borealis-in-night-sky-timelapse-28889010/) | Video by Frank Cone from Pexels |
 | Concentration Room (NES game) | Damian Yerrick | [GPL-3.0-or-later](https://www.gnu.org/licenses/gpl-3.0.html) | [github.com/pinobatch/croom-nes](https://github.com/pinobatch/croom-nes) | Concentration Room © 2010 Damian Yerrick |
 
