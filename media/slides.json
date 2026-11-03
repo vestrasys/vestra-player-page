@@ -103,8 +103,8 @@
         "zh-Hans": "说出想要的插件，AI 帮你做"
       },
       "caption": {
-        "en": "Vestra Player AI (experimental) writes, type-checks and tests the plugin; you install it with one click. Earlier chats stay in the list. Uses your own AI provider key.",
-        "zh-Hans": "Vestra Player AI（实验性）会编写插件、做类型检查并运行测试，你一键即可安装。以往的对话都保留在列表里。需使用你自己的 AI 服务密钥。"
+        "en": "Vestra Player AI writes, type-checks and tests the plugin; you install it with one click. Earlier chats stay in the list. Uses your own AI provider key.",
+        "zh-Hans": "Vestra Player AI 会编写插件、做类型检查并运行测试，你一键即可安装。以往的对话都保留在列表里。需使用你自己的 AI 服务密钥。"
       },
       "poster": "media/posters/ai.webp",
       "sources": [
