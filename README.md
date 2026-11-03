@@ -151,14 +151,26 @@ into `media/slides.json`. Replacing one item is one command plus that edit.
   the hero. This template does not: its files are not copied into `dist/` and
   its credits row (Title ending in "(hero backdrop)") is left out of the footer
   while `src/index.html` has no `{{slot:backdrop}}`.
-- `stage` is the hero: `center` names the slide whose clip plays in the front
-  window, `near` the two windows beside it (left, right), and `far` two
+- `stage` is the hero: `center` is the front window, whose clip plays,
+  `near` the two windows beside it (left, right), and `far` two
   pre-blurred stills for the back row, made with
   `npm run encode -- --far <slide-id | media/posters/x.webp> [--id <name>]`
-  (the page uses no live blur filter). A `near` entry is either a slide id,
-  whose clip plays there (the slide's own poster and sources, in a `<video>` of
-  its own, so its chapter is unaffected), or a `.webp` path, shown as a still
-  (a slide's poster, or a screenshot made with `--still`). The side clips
+  (the page uses no live blur filter). A `center` or `near` entry is one of:
+  - a slide id: that slide's clip plays there (its poster, sources and area,
+    in a `<video>` of its own, so its chapter is unaffected);
+  - a card of its own, `{ "poster", "sources" }` as `npm run encode` prints
+    them, so the hero can show a cut that differs from the chapter's (the
+    committed `hero-ai` is only the colour-wheels part, smaller). It covers the
+    frame's client area, or the `"area"` it names. A card for a clip cut
+    without the playlist pane adds `"frame"`: a narrowed window made with
+    `npm run encode -- --window <width> --id <name>`, where `<width>` is the
+    frame's client height (1476) times the clip's width / height; the card
+    takes that window's shape and its clip covers everything under the title
+    bar;
+  - (`near` only) a `.webp` path, shown as a still (a slide's poster, or a
+    screenshot made with `--still`).
+
+  The side clips
   load only once the front window's clip is playing, only on wide screens (the
   side windows are hidden on phones, so nothing is downloaded there), and
   pause with the front window (scrolled away, background tab, pause button).
@@ -201,10 +213,22 @@ npm run encode -- store-cut2.mkv --id store --crop 4,52,2216,1336 --start 1 --du
 npm run encode -- nes-raw2.mkv  --id nes   --crop 4,52,2216,1336 --duration 12.5 --loop-fade 0.5 --poster-at 2
 npm run encode -- --frame frame-still.png --id frame --crop 2,0,2220,1390 --client 2,52,2216,1336 --video 2,52,1654,1226
 
+# Hero stage cards (the chapters keep their own clips). Each starts from an
+# intermediate cut with plain ffmpeg, then goes through encode at a smaller size.
+#  hero-ai: wheels-rawC.mkv 101.5-111.8 s and 145.7-148.5 s (0.3 s crossfade), each
+#   cropped to the colour-wheels view 1700x980+100+120 -> ai-wheels.mkv (12.8 s).
+#  hero-nes: nes-raw2.mkv cropped to the client area left of the playlist pane,
+#   1657x1336+4+52, with the 45 px of the VestraNES window that reach into it
+#   painted over by the letterbox beside it -> nes-player.mkv.
+npm run encode -- ai-wheels.mkv  --id hero-ai  --size 1280x800 --duration 12.8 --loop-fade 0.5 --poster-at 9
+npm run encode -- nes-player.mkv --id hero-nes --size 1280x800 --duration 12.5 --loop-fade 0.5 --poster-at 2
+npm run encode -- --window 1831 --id frame-nes    # 1476 x 1657/1336: the NES card's window without the pane
+
 # In general: crop = the player window's client area in the recording.
 npm run encode -- <recording> --id <slide-id> --crop <x,y,w,h> --start <s> --duration <s> --loop-fade 0.5 --poster-at <s>
 npm run encode -- --frame <window-screenshot.png> --id frame --crop <x,y,w,h> --client <x,y,w,h> [--video <x,y,w,h>]
 npm run encode -- --far <slide-id>      # blurred still of that slide for stage.far (after its poster)
+npm run encode -- --window <width> --id <name>   # the frame narrowed to <width> px, for a stage card's "frame"
 npm run encode -- --small               # half-width .sm.webp copies of the frame and every poster (srcset)
 
 # Backdrop (as committed; the source is kept outside the repository).

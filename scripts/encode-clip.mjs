@@ -36,6 +36,16 @@
 //   cut to --crop, the window's client area. Name it in "stage.near", or pass
 //   it to --far.
 //
+// Narrow window (a hero stage card whose clip leaves out the playlist pane):
+//
+//   node scripts/encode-clip.mjs --window <width> --id <name>
+//
+//   Writes media/frame/<name>.webp: the frame image cut to <width> px from the
+//   left, its title bar's window buttons moved to the new right edge. The
+//   card's clip covers everything under the title bar, so pick
+//   <width> = (frame height - title bar) x the clip's width / height. Name it
+//   in the stage card's "frame".
+//
 // Small copies (for srcset): every poster and the frame image also get a
 // half-width <name>.sm.webp, which the page offers to 1x screens and phones.
 // The clip and frame commands write it; to make them for existing files:
@@ -80,6 +90,7 @@ const rel = (file) => file.slice(fromRoot().length + 1).replace(/\\/g, "/");
 const report = (file) => console.log(`${rel(file)}: ${kib(statSync(file).size)}`);
 
 if (options.frame) encodeFrame(options.frame);
+else if (options.window) encodeWindow(options.window);
 else if (options.far) encodeFar(options.far);
 else if (options.still) encodeStill(options.still);
 else if (options.small) smallAll();
@@ -131,6 +142,22 @@ function encodeFrame(input) {
   console.log(`\nmedia/slides.json, "frame" (keep "alt"):\n${JSON.stringify(frame, null, 2)}`);
 }
 
+function encodeWindow(value) {
+  const { frame } = readJson(fromRoot("media/slides.json"));
+  const width = Number(value);
+  // The window buttons: the right end of the title bar (above the client area).
+  const buttons = 300;
+  const bar = frame.areas.client.y;
+  if (!Number.isInteger(width) || width <= buttons || width > frame.width) fail(`--window must be a width in pixels, ${buttons + 1}-${frame.width}`);
+  const out = fromRoot(`media/frame/${id}.webp`);
+  ffmpeg(["-i", fromRoot(frame.image), "-filter_complex",
+    `[0:v]split[a][b];[a]crop=${width}:${frame.height}:0:0[w];[b]crop=${buttons}:${bar}:${frame.width - buttons}:0[t];[w][t]overlay=${width - buttons}:0`,
+    "-frames:v", "1", "-c:v", "libwebp", "-quality", "90", out]);
+  report(out);
+  small(out);
+  console.log(`
+media/slides.json, a stage card's "frame": "media/frame/${id}.webp" (its clip covers ${width}x${frame.height - bar} under the title bar)`);
+}
 
 function encodeClip(input) {
   if (!input) fail("usage: encode-clip.mjs <recording> --id <name> [options]; see the top of the script");

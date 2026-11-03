@@ -293,10 +293,19 @@ function checkFiles(files, where) {
 function checkManifest({ backdrop, frame, slides, stage }) {
   const files = [frame.image];
   if (!stage?.center || stage.near?.length !== 2 || stage.far?.length !== 2)
-    fail('media/slides.json stage: needs "center", two "near" entries (slide ids or .webp stills) and two "far" images');
-  for (const id of [stage.center, ...stage.near.filter((n) => !isStill(n))])
-    if (!slides.some((s) => s.id === id)) fail(`media/slides.json stage names slide "${id}", which is missing or hidden`);
-  files.push(...stage.far, ...stage.near.filter(isStill));
+    fail('media/slides.json stage: needs "center", two "near" entries (slide ids, .webp stills or cards) and two "far" images');
+  for (const entry of [stage.center, ...stage.near]) {
+    if (typeof entry === "string") {
+      if (!isStill(entry) && !slides.some((s) => s.id === entry)) fail(`media/slides.json stage names slide "${entry}", which is missing or hidden`);
+      continue;
+    }
+    const where = `media/slides.json stage card ${JSON.stringify(entry.poster)}`;
+    if (!entry.poster || !entry.sources?.length) fail(`${where}: a card needs a "poster" and "sources"`);
+    if (entry.area && !frame.areas[entry.area]) fail(`${where}: area "${entry.area}" is not in frame.areas`);
+    if (entry.frame && entry.area) fail(`${where}: "frame" and "area" exclude each other (a card frame's clip covers it under the title bar)`);
+  }
+  if (typeof stage.center === "string" && isStill(stage.center)) fail("media/slides.json stage.center must play a clip (a slide id or a card)");
+  files.push(...stage.far, ...stageFiles(stage));
   if (backdrop) {
     if (!backdrop.poster || !backdrop.sources?.length) fail("media/slides.json backdrop: needs a poster and sources");
     files.push(backdrop.poster, ...backdrop.sources.map((s) => s.src));
@@ -318,7 +327,7 @@ function checkManifest({ backdrop, frame, slides, stage }) {
 
 /** Copies only the media the manifest names (local paths). */
 function copyMedia() {
-  const files = new Set([manifest.frame.image, ...manifest.stage.far, ...manifest.stage.near.filter(isStill)]);
+  const files = new Set([manifest.frame.image, ...manifest.stage.far, ...stageFiles(manifest.stage)]);
   // The backdrop clip ships only while the template shows it.
   if (manifest.backdrop && readFileSync(fromRoot("src/index.html"), "utf8").includes("{{slot:backdrop}}")) {
     files.add(manifest.backdrop.poster);
@@ -346,7 +355,9 @@ function copyMedia() {
 }
 
 function area(slide) {
-  const a = manifest.frame.areas[slide.area];
+  const f = slide.frame;
+  const a = f ? { x: 0, y: f.bar, width: f.width, height: f.height - f.bar } : manifest.frame.areas[slide.area];
+  const frame = f ?? manifest.frame;
   const pct = (v, of) => `${((v / of) * 100).toFixed(4)}%`;
   return `left:${pct(a.x, frame.width)};top:${pct(a.y, frame.height)};width:${pct(a.width, frame.width)};height:${pct(a.height, frame.height)}`;
 }
@@ -461,9 +472,25 @@ function isStill(entry) {
   return /\.webp$/.test(entry);
 }
 
-/** A near card's slide, or a stand-in for a still: its image over the client area. */
-function nearSlide(entry) {
-  return isStill(entry) ? { area: "client", poster: entry } : stageSlide(entry);
+/**
+ * A stage window: a slide id (that slide's clip, poster and area), a .webp still (an image over
+ * the client area) or a card of its own: { poster, sources, area? } in the main frame, or
+ * { poster, sources, frame } in a narrowed window (encode-clip --window), its clip under the title bar.
+ */
+function stageCard(entry) {
+  if (typeof entry === "string") return isStill(entry) ? { area: "client", poster: entry } : stageSlide(entry);
+  const card = { area: entry.area ?? "client", poster: entry.poster, sources: entry.sources };
+  if (entry.frame) {
+    const { width, height } = webpSize(fromRoot(entry.frame));
+    card.frame = { image: entry.frame, width, height, bar: manifest.frame.areas.client.y };
+  }
+  return card;
+}
+
+/** The files a stage card names beyond its slide's (slides copy their own). */
+function stageFiles(stage) {
+  return [stage.center, ...stage.near].flatMap((entry) =>
+    typeof entry === "string" ? (isStill(entry) ? [entry] : []) : [entry.poster, ...entry.sources.map((s) => s.src), ...(entry.frame ? [entry.frame] : [])]);
 }
 
 /** "small.webp 896w, full.webp 1792w" when the half-width copy exists (encode-clip --small), else null. */
@@ -479,6 +506,7 @@ function imgSrc(path, sizesKey) {
 }
 
 function size(slide) {
+  if (slide.frame) return `width="${slide.frame.width}" height="${slide.frame.height - slide.frame.bar}"`;
   return `width="${frame.areas[slide.area].width}" height="${frame.areas[slide.area].height}"`;
 }
 
@@ -489,10 +517,15 @@ function renderShot(slide, { lazy, sizes }) {
   return `<div class="shot" style="${area(slide)}"><img ${imgSrc(slide.poster, sizes)} ${size(slide)}${load} decoding="async" alt=""><video muted loop playsinline preload="none" aria-hidden="true" tabindex="-1">${sources}</video></div>`;
 }
 
-function renderChrome(lazy, alt, sizes) {
+function renderChrome(lazy, alt, sizes, f = frame) {
   const altAttr = alt ? ` alt="${escape(en["frame.alt"])}"` : ' alt=""';
   const load = lazy ? ' loading="lazy"' : alt ? ' fetchpriority="high"' : "";
-  return `<img class="chrome" ${imgSrc(frame.image, sizes)} width="${frame.width}" height="${frame.height}"${load} decoding="async"${altAttr}>`;
+  return `<img class="chrome" ${imgSrc(f.image, sizes)} width="${f.width}" height="${f.height}"${load} decoding="async"${altAttr}>`;
+}
+
+/** A card in a narrowed window takes that window's shape (styles.css: --ar). */
+function cardShape(slide) {
+  return slide.frame ? ` style="--ar:${(slide.frame.width / slide.frame.height).toFixed(4)}"` : "";
 }
 
 /** The pause control beside every playing window (one state for the whole page; main.js shows it). */
@@ -503,7 +536,8 @@ function renderPause(where) {
 /** Five windows fanned in depth, standing still (a short entrance on load, a mouse tilt). */
 function renderStage() {
   const st = manifest.stage;
-  const near = st.near.map(nearSlide);
+  const near = st.near.map(stageCard);
+  const center = stageCard(st.center);
   const farH = Math.round((640 * frame.height) / frame.width);
   const far = (src, side) =>
     `          <div class="card card-far card-${side}" aria-hidden="true"><img src="${escape(src)}" width="640" height="${farH}" loading="lazy" decoding="async" alt=""></div>`;
@@ -511,14 +545,14 @@ function renderStage() {
   // its chapter but its own <video>): main.js starts it after the front window's clip, on wide
   // screens only, and pauses it with the front window.
   const side = (slide, s) => slide.sources
-    ? `          <div class="card card-near card-${s}" aria-hidden="true" data-companion="hero">${renderChrome(true, false, "near")}${renderShot(slide, { lazy: true, sizes: "near" })}</div>`
+    ? `          <div class="card card-near card-${s}" aria-hidden="true" data-companion="hero"${cardShape(slide)}>${renderChrome(true, false, "near", slide.frame)}${renderShot(slide, { lazy: true, sizes: "near" })}</div>`
     : `          <div class="card card-near card-${s}" aria-hidden="true">${renderChrome(true, false, "near")}<div class="shot" style="${area(slide)}"><img ${imgSrc(slide.poster, "near")} ${size(slide)} loading="lazy" decoding="async" alt=""></div></div>`;
   return [
     far(st.far[0], "l"),
     far(st.far[1], "r"),
     side(near[0], "l"),
     side(near[1], "r"),
-    `          <div class="card card-main" data-media="hero">${renderChrome(false, true, "hero")}${renderShot(stageSlide(st.center), { lazy: false, sizes: "hero" })}</div>`,
+    `          <div class="card card-main" data-media="hero"${cardShape(center)}>${renderChrome(false, true, "hero", center.frame)}${renderShot(center, { lazy: false, sizes: "hero" })}</div>`,
   ].join("\n");
 }
 

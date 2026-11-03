@@ -187,7 +187,8 @@ a.cta-btn:hover { transform: translateY(-1px); }
 .stage { position: relative; z-index: 1; margin: clamp(40px, 7vh, 72px) auto 0; max-width: 1120px; }
 .card-far, .card-near { display: none; }
 .card {
-  position: relative; aspect-ratio: 2220 / 1390; border-radius: var(--win-radius); overflow: hidden; background: var(--ink-2);
+  /* --ar: a card in a narrowed window (a clip without the playlist pane) takes its shape. */
+  position: relative; aspect-ratio: var(--ar, 2220 / 1390); border-radius: var(--win-radius); overflow: hidden; background: var(--ink-2);
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.07), 0 40px 80px -30px rgba(0, 0, 0, 0.9), 0 0 60px -20px rgba(250, 10, 168, 0.2);
 }
 .card > img, .win > img, .card-far img { display: block; width: 100%; height: 100%; object-fit: cover; }
@@ -226,16 +227,19 @@ a.cta-btn:hover { transform: translateY(-1px); }
     will-change: transform;
   }
   .card {
-    --fx: 0; --fz: 0px; --fr: 0deg;
-    position: absolute; left: 50%; top: 50%; width: var(--w);
-    margin: calc(var(--h) / -2) 0 0 calc(var(--w) / -2);
-    transform: translate3d(calc(var(--w) * var(--fx)), 0, var(--fz)) rotateY(var(--fr));
+    /* Every card is as tall as the front window; a narrower one (--ar) keeps its inner edge
+       where a full-width card's would be (--pull: half the missing width, foreshortened). */
+    --fx: 0; --fz: 0px; --fr: 0deg; --pull: 0;
+    --cw: calc(var(--h) * var(--ar, 2220 / 1390));
+    position: absolute; left: 50%; top: 50%; width: var(--cw);
+    margin: calc(var(--h) / -2) 0 0 calc(var(--cw) / -2);
+    transform: translate3d(calc(var(--w) * var(--fx) + (var(--w) - var(--cw)) * var(--pull)), 0, var(--fz)) rotateY(var(--fr));
     backface-visibility: hidden;
   }
   .card-near, .card-far { display: block; }
   .card-near { --fz: -440px; box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06), 0 20px 45px -15px rgba(0, 0, 0, 0.95); }
-  .card-near.card-l { --fx: -0.93; --fr: 36deg; }
-  .card-near.card-r { --fx: 0.93; --fr: -36deg; }
+  .card-near.card-l { --fx: -0.93; --fr: 36deg; --pull: 0.4; }
+  .card-near.card-r { --fx: 0.93; --fr: -36deg; --pull: -0.4; }
   .card-far { --fz: -760px; opacity: 0.55; box-shadow: none; }
   .card-far.card-l { --fx: -1.67; --fr: 46deg; }
   .card-far.card-r { --fx: 1.67; --fr: -46deg; }
