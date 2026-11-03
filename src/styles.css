@@ -13,13 +13,10 @@
   --muted: #a59fb4;
   --faint: #8a849a;
   /* Brand: the logo's spectrum. accent = Aurora magenta, accent-hi its light tint for link text,
-     cyan = the player's "playing" colour, brand = the player's progress fill (amber → magenta →
-     violet → cyan). */
+     brand = the player's progress fill (amber → magenta → violet → cyan). */
   --accent: #f72aa6;
   --accent-hi: #ff7cc8;
-  --cyan: #2bb6ff;
   --brand: linear-gradient(100deg, #fcc402 0%, #fb5a35 20%, #fa0aa8 45%, #7a0afa 72%, #10a8fc 100%);
-  --ok: #7ddca0;
   --button: linear-gradient(100deg, #e0245e 0%, #c8178f 40%, #a41fd8 70%, #7a2cff 100%);
   --button-ink: #ffffff;
   /* Download buttons: dark surface, white text, a thin brand-gradient border (brighter on hover). */
@@ -127,7 +124,6 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .section-head { max-width: 760px; margin-bottom: 56px; }
 .section-head h2 { font-size: var(--t-h2); }
 .section-lede { margin: 20px 0 0; color: var(--muted); font-size: var(--t-lede); max-width: 640px; }
-.tag { margin-left: 4px; padding: 2px 8px; border-radius: 999px; border: 1px solid currentColor; font-size: 0.66rem; letter-spacing: 0.1em; color: var(--cyan); }
 .text-link { color: var(--accent-hi); text-decoration: none; font-weight: 600; }
 .text-link:hover { text-decoration: underline; }
 
@@ -263,7 +259,7 @@ a.cta-btn:hover { transform: translateY(-1px); }
 .chapter.is-flip .ch-copy { order: 2; }
 .ch-num { margin: 0 0 16px; font: 700 0.82rem/1 var(--mono); letter-spacing: 0.14em; color: var(--accent); width: fit-content; }
 @supports (background-clip: text) or (-webkit-background-clip: text) {
-  .ch-num, .ai-num { background: var(--brand); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .ch-num { background: var(--brand); -webkit-background-clip: text; background-clip: text; color: transparent; }
 }
 .ch-num span { margin-left: 6px; color: var(--faint); }
 .ch-title { font-size: var(--t-h3); display: flex; flex-direction: column; align-items: flex-start; gap: 16px; }
@@ -275,67 +271,10 @@ a.cta-btn:hover { transform: translateY(-1px); }
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.07), 0 40px 100px -30px rgba(0, 0, 0, 0.95), 0 0 70px -24px rgba(250, 10, 168, 0.16);
 }
 
-/* ---- Plugins ---- */
-
-.ai, .open { max-width: var(--wide); margin: 0 auto; padding: 120px var(--gutter) 40px; }
-
-/* ---- AI workshop ---- */
-
-.ai-flow { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border: 1px solid var(--line); border-radius: 20px; overflow: hidden; background: var(--ink-1); }
-.ai-step { display: flex; flex-direction: column; padding: 28px 26px; }
-.ai-step + .ai-step { border-left: 1px solid var(--line); }
-.ai-num { margin: 0 0 14px; font: 700 0.82rem/1 var(--mono); letter-spacing: 0.14em; color: var(--accent); width: fit-content; }
-.ai-step h3 { font-size: 1.4rem; letter-spacing: -0.025em; }
-.ai-text { margin: 10px 0 22px; color: var(--muted); font-size: 0.93rem; }
-
-.mock { margin-top: auto; border-radius: 12px; overflow: hidden; background: var(--ink); border: 1px solid var(--line-2); min-height: 176px; display: flex; flex-direction: column; }
-.mock-bar { display: flex; align-items: center; gap: 6px; padding: 9px 11px; border-bottom: 1px solid var(--line); font-size: 0.74rem; color: var(--faint); }
-.mock-bar i { width: 8px; height: 8px; border-radius: 50%; background: var(--ink-3); }
-.mock-bar span { margin-left: 6px; font-family: var(--mono); }
-.mock-body { padding: 14px; flex: 1; }
-.mock-body p { margin: 0; }
-.mono { font-family: var(--mono); font-size: 0.8rem; }
-.bubble {
-  margin-left: auto !important; max-width: 92%; width: fit-content; padding: 10px 14px; border-radius: 14px 14px 4px 14px;
-  background: linear-gradient(135deg, rgba(250, 10, 168, 0.18), rgba(122, 10, 250, 0.18)); border: 1px solid rgba(250, 10, 168, 0.4); font-size: 0.92rem;
-}
-.caret { display: none; width: 2px; height: 1.05em; margin-left: 2px; vertical-align: -0.15em; background: var(--accent); }
-.file { color: var(--muted); padding: 1px 0; }
-.file::before { content: "+ "; color: var(--ok); }
-.check { margin-top: 6px !important; }
-.check:first-of-type { margin-top: 12px !important; }
-.check b { color: var(--ok); }
-.mock-video { position: relative; flex: 1; min-height: 112px; background: radial-gradient(120% 100% at 70% 10%, #3e2654 0%, #1a1424 55%, #09080d 100%); }
-.clock { position: absolute; right: 10px; top: 10px; padding: 2px 8px; border-radius: 6px; font: 600 0.8rem/1.4 var(--mono); background: rgba(0, 0, 0, 0.6); font-variant-numeric: tabular-nums; }
-.mock-card { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-top: 1px solid var(--line); background: var(--ink-1); }
-.mock-icon { width: 28px; height: 28px; border-radius: 7px; display: grid; place-items: center; font-weight: 800; font-size: 0.85rem; background: var(--button); color: var(--button-ink); }
-.mock-name { flex: 1; font-size: 0.88rem; font-weight: 600; min-width: 0; }
-.mock-btn { display: grid; font-size: 0.78rem; font-weight: 700; }
-.mock-btn > span { grid-area: 1 / 1; padding: 4px 12px; border-radius: 999px; text-align: center; }
-.b-install { background: var(--button); color: var(--button-ink); opacity: 0; }
-.b-done { background: rgba(125, 220, 160, 0.14); color: var(--ok); }
-
-@media (prefers-reduced-motion: no-preference) {
-  .ai.is-waiting .ai-2 .mock-body > *, .ai.is-typing .ai-2 .mock-body > * { opacity: 0; }
-  .ai.is-waiting .b-install, .ai.is-typing .b-install { opacity: 1; }
-  .ai.is-waiting .b-done, .ai.is-typing .b-done, .ai.is-waiting .clock, .ai.is-typing .clock { opacity: 0; }
-  .ai.is-typing .caret { display: inline-block; animation: blink 0.9s steps(1) infinite; }
-  .ai.is-playing .ai-2 .mock-body > * { animation: pop 0.35s ease both; }
-  .ai.is-playing .ai-2 .mock-body > :nth-child(2) { animation-delay: 0.25s; }
-  .ai.is-playing .ai-2 .mock-body > :nth-child(3) { animation-delay: 0.5s; }
-  .ai.is-playing .ai-2 .mock-body > :nth-child(4) { animation-delay: 1s; }
-  .ai.is-playing .ai-2 .mock-body > :nth-child(5) { animation-delay: 1.4s; }
-  .ai.is-playing .ai-2 .mock-body > :nth-child(6) { animation-delay: 1.8s; }
-  .ai.is-playing .b-install { animation: fade-out 0.3s ease 2.6s both; }
-  .ai.is-playing .b-done { animation: fade-in 0.3s ease 2.6s both; }
-  .ai.is-playing .clock { animation: pop 0.4s ease 2.9s both; }
-}
-@keyframes blink { 50% { opacity: 0; } }
-@keyframes pop { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
-@keyframes fade-out { from { opacity: 1; } to { opacity: 0; } }
-
 /* ---- Open source ---- */
+
+.open { max-width: var(--wide); margin: 0 auto; padding: 120px var(--gutter) 40px; }
+
 
 .os-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; border-top: 2px solid; border-image: var(--brand) 1; }
 .os-card { display: flex; flex-direction: column; gap: 12px; padding: 28px 28px 8px 0; }
@@ -388,10 +327,10 @@ a.cta-btn:hover { transform: translateY(-1px); }
 .win { --tilt: -16deg; }
 .chapter.is-flip .win { --tilt: 16deg; }
 @media (prefers-reduced-motion: no-preference) {
-  .reveals :is(.reveal, .ai-flow, .os-grid, .ch-copy, .win) {
+  .reveals :is(.reveal, .os-grid, .ch-copy, .win) {
     transition: opacity 0.7s ease, transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1);
   }
-  .reveals :is(.reveal, .ai-flow, .os-grid, .ch-copy):not(.in) { opacity: 0; transform: translateY(32px); }
+  .reveals :is(.reveal, .os-grid, .ch-copy):not(.in) { opacity: 0; transform: translateY(32px); }
   .reveals .win:not(.in) { opacity: 0.35; transform: translateZ(-120px) rotateY(var(--tilt)) rotateX(6deg); }
 }
 
@@ -399,8 +338,6 @@ a.cta-btn:hover { transform: translateY(-1px); }
 
 @media (max-width: 1020px) {
   .nav-links { gap: 18px; }
-  .ai-flow { grid-template-columns: minmax(0, 1fr); }
-  .ai-step + .ai-step { border-left: 0; border-top: 1px solid var(--line); }
   /* Two by two: the cards that start a row lose the divider on their left. */
   .os-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .os-card:nth-child(odd) { padding-left: 0; border-left: 0; }
@@ -412,7 +349,7 @@ a.cta-btn:hover { transform: translateY(-1px); }
   .nav-links + .nav-actions { margin-left: auto; position: relative; }
   /* No nav links here: the download button appears in their empty room, so it never moves the others. */
   .nav-dl { position: absolute; right: calc(100% + 10px); }
-  .chapters, .ai, .open { padding-top: 88px; }
+  .chapters, .open { padding-top: 88px; }
   .chapter, .chapter.is-flip { grid-template-columns: minmax(0, 1fr); gap: 22px; padding: 36px 0; }
   .chapter.is-flip .ch-copy { order: 0; }
   .window, .chapter.is-flip .window { align-items: flex-end; }

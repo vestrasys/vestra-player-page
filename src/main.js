@@ -1,6 +1,6 @@
 // Vestra Player download page: the download button for the visitor's system,
-// the playing windows (stage and feature chapters), the stage parallax, the
-// one-shot reveals and the AI workshop mock. Each language
+// the playing windows (stage and feature chapters), the stage parallax and
+// the one-shot reveals. Each language
 // is its own prerendered page, so nothing here translates.
 // Plain script, no dependencies.
 (() => {
@@ -211,7 +211,7 @@
 
   (() => {
     if (!hasIO || reduce.matches) return;
-    const items = $$(".reveal, .ai-flow, .os-grid, .ch-copy, .win");
+    const items = $$(".reveal, .os-grid, .ch-copy, .win");
     root.classList.add("reveals");
     const io = new IntersectionObserver((entries) => {
       for (const entry of entries) {
@@ -221,51 +221,6 @@
       }
     }, { rootMargin: "0px 0px -8% 0px" });
     for (const item of items) io.observe(item);
-  })();
-
-  // ---- AI workshop mock: types the prompt, then the checks and the install play once ----
-
-  (() => {
-    const section = $("#ai");
-    const typed = $(".typed", section);
-    if (!section || !typed) return;
-    let played = false;
-    let timer = 0;
-
-    function type() {
-      const chars = Array.from(text("ai.prompt"));
-      let n = 0;
-      clearInterval(timer);
-      typed.textContent = "";
-      section.classList.add("is-typing");
-      timer = setInterval(() => {
-        typed.textContent = chars.slice(0, ++n).join("");
-        if (n >= chars.length) {
-          clearInterval(timer);
-          section.classList.remove("is-typing");
-          section.classList.add("is-playing");
-        }
-      }, 45);
-    }
-
-    function finish() {
-      clearInterval(timer);
-      typed.textContent = text("ai.prompt");
-      section.classList.remove("is-typing");
-      section.classList.add("is-playing");
-    }
-
-    if (!hasIO || reduce.matches) { finish(); played = true; return; }
-    section.classList.add("is-waiting");
-    const io = new IntersectionObserver((entries) => {
-      if (!entries[0].isIntersecting || played) return;
-      played = true;
-      io.disconnect();
-      section.classList.remove("is-waiting");
-      if (reduce.matches) finish();
-      else type();
-    }, { threshold: 0.35 });
-    io.observe($(".ai-flow", section));
   })();
 
 })();

@@ -96,24 +96,24 @@
       ]
     },
     {
-      "id": "upscale",
+      "id": "ai",
       "area": "client",
       "title": {
-        "en": "Advanced picture features, more on the way",
-        "zh-Hans": "高级画面功能，更多正在路上"
+        "en": "Describe a plugin, and AI builds it",
+        "zh-Hans": "说出想要的插件，AI 帮你做"
       },
       "caption": {
-        "en": "AI Upscaling and Auto Frame (crops away empty borders around the picture) are already available as plugins. More exciting features are on the way, driven together with the community.",
-        "zh-Hans": "AI 超分和自动裁边（去掉画面四周的空白边框）已经作为插件提供下载。更多精彩功能正在路上，由社区一起推动。"
+        "en": "Vestra Player AI (experimental) writes, type-checks and tests the plugin; you install it with one click. Earlier chats stay in the list. Uses your own AI provider key.",
+        "zh-Hans": "Vestra Player AI（实验性）会编写插件、做类型检查并运行测试，你一键即可安装。以往的对话都保留在列表里。需使用你自己的 AI 服务密钥。"
       },
-      "poster": "media/posters/upscale.webp",
+      "poster": "media/posters/ai.webp",
       "sources": [
         {
-          "src": "media/clips/upscale.webm",
+          "src": "media/clips/ai.webm",
           "type": "video/webm; codecs=av01.0.09M.08"
         },
         {
-          "src": "media/clips/upscale.mp4",
+          "src": "media/clips/ai.mp4",
           "type": "video/mp4; codecs=avc1.64002A"
         }
       ]
@@ -137,29 +137,6 @@
         },
         {
           "src": "media/clips/nes.mp4",
-          "type": "video/mp4; codecs=avc1.64002A"
-        }
-      ]
-    },
-    {
-      "id": "ai",
-      "area": "client",
-      "title": {
-        "en": "Describe a plugin, and AI builds it",
-        "zh-Hans": "说出想要的插件，AI 帮你做"
-      },
-      "caption": {
-        "en": "Vestra Player AI (experimental) writes, type-checks and tests the plugin; you install it with one click. Earlier chats stay in the list. Uses your own AI provider key.",
-        "zh-Hans": "Vestra Player AI（实验性）会编写插件、做类型检查并运行测试，你一键即可安装。以往的对话都保留在列表里。需使用你自己的 AI 服务密钥。"
-      },
-      "poster": "media/posters/ai.webp",
-      "sources": [
-        {
-          "src": "media/clips/ai.webm",
-          "type": "video/webm; codecs=av01.0.09M.08"
-        },
-        {
-          "src": "media/clips/ai.mp4",
           "type": "video/mp4; codecs=avc1.64002A"
         }
       ]

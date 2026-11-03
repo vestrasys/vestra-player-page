@@ -152,7 +152,7 @@ function renderPage(lang) {
     credits: renderCredits(),
     licence: en["ft.licence"],
     // Only what the script needs at run time; every other string is in the HTML already.
-    data: JSON.stringify({ strings: Object.fromEntries(["ai.prompt", "media.pause", "media.play"].map((k) => [k, en[k]])) }).replace(/</g, "\\u003c"),
+    data: JSON.stringify({ strings: Object.fromEntries(["media.pause", "media.play"].map((k) => [k, en[k]])) }).replace(/</g, "\\u003c"),
   };
   // The front window's frame image is the largest paint (LCP) of the first screen: preloaded at high priority.
   const vars = {

@@ -27,7 +27,6 @@
     </a>
     <nav class="nav-links" aria-label="{{t:nav.label}}">
       <a href="#features">{{t:nav.features}}</a>
-      <a href="#ai">{{t:nav.ai}}</a>
       <a href="#open-source">{{t:nav.open}}</a>
     </nav>
     <div class="nav-actions">
@@ -71,56 +70,6 @@
       <p class="section-lede">{{t:tour.lede}}</p>
     </div>
 {{slot:chapters}}
-  </section>
-
-  <section class="ai" id="ai" aria-labelledby="ai-title">
-    <div class="section-head reveal">
-      <p class="kicker"><span>{{t:ai.kicker}}</span> <span class="tag">{{t:ai.tag}}</span></p>
-      <h2 id="ai-title">{{t:ai.title}}</h2>
-      <p class="section-lede">{{t:ai.lede}}</p>
-    </div>
-    <ol class="ai-flow">
-      <li class="ai-step ai-1">
-        <p class="ai-num" aria-hidden="true">01</p>
-        <h3>{{t:ai.s1.title}}</h3>
-        <p class="ai-text">{{t:ai.s1.text}}</p>
-        <div class="mock" aria-hidden="true">
-          <div class="mock-bar"><i></i><i></i><i></i><span>Vestra Player AI</span></div>
-          <div class="mock-body">
-            <p class="bubble"><span class="typed">{{t:ai.prompt}}</span><span class="caret"></span></p>
-          </div>
-        </div>
-      </li>
-      <li class="ai-step ai-2">
-        <p class="ai-num" aria-hidden="true">02</p>
-        <h3>{{t:ai.s2.title}}</h3>
-        <p class="ai-text">{{t:ai.s2.text}}</p>
-        <div class="mock" aria-hidden="true">
-          <div class="mock-bar"><i></i><i></i><i></i><span>corner-clock/</span></div>
-          <div class="mock-body mono">
-            <p class="file f1">manifest.json</p>
-            <p class="file f2">main.ts</p>
-            <p class="file f3">tests/clock.test.ts</p>
-            <p class="check c1"><b>✓</b> <span>{{t:ai.check.types}}</span></p>
-            <p class="check c2"><b>✓</b> <span>{{t:ai.check.tests}}</span></p>
-            <p class="check c3"><b>✓</b> <span>{{t:ai.check.pack}}</span></p>
-          </div>
-        </div>
-      </li>
-      <li class="ai-step ai-3">
-        <p class="ai-num" aria-hidden="true">03</p>
-        <h3>{{t:ai.s3.title}}</h3>
-        <p class="ai-text">{{t:ai.s3.text}}</p>
-        <div class="mock" aria-hidden="true">
-          <div class="mock-video"><span class="clock">12:34</span></div>
-          <div class="mock-card">
-            <span class="mock-icon">C</span>
-            <span class="mock-name">{{t:ai.plugin}}</span>
-            <span class="mock-btn"><span class="b-install">{{t:ai.install}}</span><span class="b-done">{{t:ai.installed}}</span></span>
-          </div>
-        </div>
-      </li>
-    </ol>
   </section>
 
   <section class="open" id="open-source" aria-labelledby="os-title">

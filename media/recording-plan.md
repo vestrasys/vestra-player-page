@@ -64,4 +64,4 @@ Decisions for the next round of recordings. The recordings replace the clips in
   check the card's blurred poster before keeping it.
 - The first card on the right shows the AI Workshop: a screenshot of the
   Workshop (pi) window with a new, empty conversation. No clip is recorded for
-  it; the page's AI Workshop section explains it further down.
+  it; the AI feature (03) further down shows it playing.

@@ -3,8 +3,7 @@
 The single-page website for downloading Vestra Player:
 a hero whose player windows stand fanned in depth and gather into one as the
 page scrolls, with download buttons (the visitor's system first); one feature
-chapter per recording, the AI plugin workshop (an illustration
-until a recording exists), open source, and the closing download buttons. Static output for
+chapter per recording, open source, and the closing download buttons. Static output for
 Cloudflare Pages; plain HTML, CSS and JavaScript built by a Node script with no
 dependencies. English (`/`) and Simplified Chinese (`/zh-hans/`), each a
 prerendered page.
@@ -37,7 +36,7 @@ The build prints the size of the HTML, CSS and JS and fails above 150 KiB
 | --- | --- |
 | `src/index.html` | Page template: `{{t:key}}` text, `{{h:key}}` HTML text, `{{var:…}}` values, `{{slot:…}}` sections rendered by the build |
 | `src/i18n.json` | Every string, `en` and `zh-Hans` (the build fails if a key is missing in one); the build renders one page per language |
-| `src/styles.css`, `src/main.js` | Styles and the page script (language, download buttons, platforms dialog, playing windows, stage parallax, plugin filter, AI workshop mock) |
+| `src/styles.css`, `src/main.js` | Styles and the page script (language, download buttons, platforms dialog, playing windows, stage parallax, plugin filter) |
 | `media/slides.json` | The hero stage and the feature chapters: frame image, slides, posters and video sources |
 | `media/CREDITS.md` | Third-party footage and games shown in the demos; the footer lists its table |
 | `release.config.json` | Where release metadata comes from, asset name patterns, system requirements |
