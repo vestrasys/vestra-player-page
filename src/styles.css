@@ -228,21 +228,16 @@ a.cta-btn:hover { transform: translateY(-1px); }
   }
   .card {
     /* Every card is as tall as the front window; a narrower one (--ar) keeps its inner edge
-       where a full-width card's would be (--pull: half the missing width, foreshortened), and
-       with a narrower front window (--main-ar) the side cards close up by half the width it
-       lacks (--side: +1 left, -1 right). */
-    --fx: 0; --fz: 0px; --fr: 0deg; --pull: 0; --side: 0;
+       where a full-width card's would be (--pull: half the missing width, foreshortened). */
+    --fx: 0; --fz: 0px; --fr: 0deg; --pull: 0;
     --cw: calc(var(--h) * var(--ar, 2220 / 1390));
-    --main-gap: calc((var(--w) - var(--h) * var(--main-ar, 2220 / 1390)) / 2);
     position: absolute; left: 50%; top: 50%; width: var(--cw);
     margin: calc(var(--h) / -2) 0 0 calc(var(--cw) / -2);
-    transform: translate3d(calc(var(--w) * var(--fx) + (var(--w) - var(--cw)) * var(--pull) + var(--main-gap) * var(--side)), 0, var(--fz)) rotateY(var(--fr));
+    transform: translate3d(calc(var(--w) * var(--fx) + (var(--w) - var(--cw)) * var(--pull)), 0, var(--fz)) rotateY(var(--fr));
     backface-visibility: hidden;
   }
   .card-near, .card-far { display: block; }
   .card-near { --fz: -440px; box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06), 0 20px 45px -15px rgba(0, 0, 0, 0.95); }
-  .card-l { --side: 1; }
-  .card-r { --side: -1; }
   .card-near.card-l { --fx: -0.93; --fr: 36deg; --pull: 0.4; }
   .card-near.card-r { --fx: 0.93; --fr: -36deg; --pull: -0.4; }
   .card-far { --fz: -760px; opacity: 0.55; box-shadow: none; }

@@ -160,14 +160,15 @@ into `media/slides.json`. Replacing one item is one command plus that edit.
     in a `<video>` of its own, so its chapter is unaffected);
   - a card of its own, `{ "poster", "sources" }` as `npm run encode` prints
     them, so the hero can show a cut that differs from the chapter's (the
-    committed center, `hero-menus`, is only the Picture Adjustments part of
-    the menus recording). It covers the frame's client area, or the `"area"`
-    it names. A card for a cut without the playlist pane adds `"frame"`: a
+    committed center, `hero-menus-2`, is a Picture Adjustments take of its
+    own: the full-width player without the playlist pane, saturation down while
+    the butterfly lands, then up and back to Default). It covers the frame's
+    client area, or the `"area"` it names. The center always uses the main
+    frame. A `near` card for a cut without the playlist pane adds `"frame"`: a
     narrowed window made with `npm run encode -- --window <width> --id <name>`,
     where `<width>` is the frame's client height (1476) times the clip's
     width / height; the card takes that window's shape and its picture covers
-    everything under the title bar. A narrower front window draws the side
-    cards in by the width it lacks;
+    everything under the title bar;
   - (`near` only) a still: a `.webp` path (over the frame's client area), or
     a card without `"sources"` (its `"poster"`, and `"frame"` if any). The
     committed side windows are the posters of the hero cuts `hero-ai` (the
@@ -216,10 +217,11 @@ npm run encode -- store-cut2.mkv --id store --crop 4,52,2216,1336 --start 1 --du
 npm run encode -- nes-raw2.mkv  --id nes   --crop 4,52,2216,1336 --duration 12.5 --loop-fade 0.5 --poster-at 2
 npm run encode -- --frame frame-still.png --id frame --crop 2,0,2220,1390 --client 2,52,2216,1336 --video 2,52,1654,1226
 
-# Hero stage cards (the chapters keep their own clips). hero-menus is a plain
-# encode of the raw: the Picture Adjustments part, left of the playlist pane.
-npm run encode -- menus-max-raw.mp4 --id hero-menus --crop 0,40,2000,1476 --start 6.35 --duration 8.55 --loop-fade 0.5 --poster-at 1 --size 1600x1200
-npm run encode -- --window 2000 --id frame-menus   # 1476 x 2000/1476
+# Hero stage cards (the chapters keep their own clips). hero-menus-2 is a plain
+# encode of its own take (maximized player, no playlist pane, 2560x1516 like the
+# frame): the client area, from just before the Saturation drag to just after
+# Default (the fade blends the end into the colour frames before the drag).
+npm run encode -- hero-pa-raw2.mkv --id hero-menus-2 --crop 0,40,2560,1476 --start 4.9 --duration 10.4 --loop-fade 0.5 --poster-at 3 --crf-h264 24
 # The side windows show only the hero-ai and hero-nes posters. Each cut starts
 # from an intermediate cut with plain ffmpeg, then goes through encode at a smaller size.
 #  hero-ai: wheels-rawC.mkv 101.5-111.8 s and 145.7-148.5 s (0.3 s crossfade), each

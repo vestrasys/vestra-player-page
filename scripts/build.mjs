@@ -106,9 +106,6 @@ const js = hashed("src/main.js", "site", "js");
 const media = copyMedia();
 
 const frame = manifest.frame;
-// The front window's frame: the main one, or the center card's own (a narrowed window).
-const heroFrame = stageCard(manifest.stage.center).frame ?? frame;
-
 const github = site.links.playerRepo ?? `https://github.com/${releaseConfig.github.owner}`;
 // The site's public address ("https://…/"), if known: canonical, hreflang, og:url and the sitemap need it.
 // SITE_URL overrides site.config.json's url (for example to check the output against a local preview).
@@ -160,8 +157,8 @@ function renderPage(lang) {
   // The front window's frame image is the largest paint (LCP) of the first screen: preloaded at high priority.
   const vars = {
     css, js, lang,
-    lcpImage: heroFrame.image,
-    lcpSrcset: srcset(heroFrame.image) ?? heroFrame.image,
+    lcpImage: frame.image,
+    lcpSrcset: srcset(frame.image) ?? frame.image,
     lcpSizes: SIZES.hero,
     github,
     navHref: stableUrl(buttonSystems[0]),
@@ -305,6 +302,7 @@ function checkManifest({ backdrop, frame, slides, stage }) {
     const where = `media/slides.json stage card ${JSON.stringify(entry.poster)}`;
     if (!entry.poster) fail(`${where}: a card needs a "poster"`);
     if (entry === stage.center && !entry.sources?.length) fail(`${where}: the center card needs "sources"`);
+    if (entry === stage.center && entry.frame) fail(`${where}: the center card uses the main frame ("frame" is for near cards)`);
     if (entry.area && !frame.areas[entry.area]) fail(`${where}: area "${entry.area}" is not in frame.areas`);
     if (entry.frame && entry.area) fail(`${where}: "frame" and "area" exclude each other (a card frame's clip covers it under the title bar)`);
   }
@@ -528,14 +526,9 @@ function renderChrome(lazy, alt, sizes, f = frame) {
   return `<img class="chrome" ${imgSrc(f.image, sizes)} width="${f.width}" height="${f.height}"${load} decoding="async"${altAttr}>`;
 }
 
-/**
- * A card in a narrowed window takes that window's shape (styles.css: --ar); with a narrowed front
- * window the side cards move in by the width it lacks (--main-ar).
- */
-function cardShape(slide, main) {
-  const ar = (f) => (f.width / f.height).toFixed(4);
-  const decls = [...(slide?.frame ? [`--ar:${ar(slide.frame)}`] : []), ...(main?.frame ? [`--main-ar:${ar(main.frame)}`] : [])];
-  return decls.length ? ` style="${decls.join(";")}"` : "";
+/** A card in a narrowed window takes that window's shape (styles.css: --ar). */
+function cardShape(slide) {
+  return slide.frame ? ` style="--ar:${(slide.frame.width / slide.frame.height).toFixed(4)}"` : "";
 }
 
 /** The pause control beside every playing window (one state for the whole page; main.js shows it). */
@@ -550,13 +543,13 @@ function renderStage() {
   const center = stageCard(st.center);
   const farH = Math.round((640 * frame.height) / frame.width);
   const far = (src, side) =>
-    `          <div class="card card-far card-${side}" aria-hidden="true"${cardShape(null, center)}><img src="${escape(src)}" width="640" height="${farH}" loading="lazy" decoding="async" alt=""></div>`;
+    `          <div class="card card-far card-${side}" aria-hidden="true"><img src="${escape(src)}" width="640" height="${farH}" loading="lazy" decoding="async" alt=""></div>`;
   // A still is its image only. A slide plays its clip (its poster and sources, the same files as
   // its chapter but its own <video>): main.js starts it after the front window's clip, on wide
   // screens only, and pauses it with the front window.
   const side = (slide, s) => slide.sources
-    ? `          <div class="card card-near card-${s}" aria-hidden="true" data-companion="hero"${cardShape(slide, center)}>${renderChrome(true, false, "near", slide.frame)}${renderShot(slide, { lazy: true, sizes: "near" })}</div>`
-    : `          <div class="card card-near card-${s}" aria-hidden="true"${cardShape(slide, center)}>${renderChrome(true, false, "near", slide.frame)}<div class="shot" style="${area(slide)}"><img ${imgSrc(slide.poster, "near")} ${size(slide)} loading="lazy" decoding="async" alt=""></div></div>`;
+    ? `          <div class="card card-near card-${s}" aria-hidden="true" data-companion="hero"${cardShape(slide)}>${renderChrome(true, false, "near", slide.frame)}${renderShot(slide, { lazy: true, sizes: "near" })}</div>`
+    : `          <div class="card card-near card-${s}" aria-hidden="true"${cardShape(slide)}>${renderChrome(true, false, "near", slide.frame)}<div class="shot" style="${area(slide)}"><img ${imgSrc(slide.poster, "near")} ${size(slide)} loading="lazy" decoding="async" alt=""></div></div>`;
   return [
     far(st.far[0], "l"),
     far(st.far[1], "r"),
