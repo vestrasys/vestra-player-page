@@ -83,8 +83,11 @@
   // ---- Media: one window plays at a time ----
   // Every [data-media] window (the stage's front window, each feature chapter) holds a poster
   // and a muted video. The most visible one plays and every other one is paused, so only one
-  // clip decodes at a time. Nothing loads or plays with reduced motion, Save-Data, a hidden tab
-  // or after the visitor pressed pause (one state for the whole page).
+  // window decodes at a time. Its companions ([data-companion] cards, the stage's side windows)
+  // play with it: they load only once its own clip is playing, and only while they are shown
+  // (wide screens; the cards are display: none below). Nothing loads or plays with reduced
+  // motion, Save-Data, a hidden tab or after the visitor pressed pause (one state for the whole
+  // page).
 
   const mayMove = () => !reduce.matches && !saveData && !document.hidden;
   function safePlay(video) {
@@ -94,8 +97,15 @@
 
   (() => {
     const units = $$("[data-media]")
-      .map((el) => ({ el, shot: $(".shot", el), video: $("video", el), ratio: 0 }))
+      .map((el) => ({
+        el, shot: $(".shot", el), video: $("video", el), ratio: 0, started: false,
+        companions: $$(`[data-companion="${el.dataset.media}"]`)
+          .map((card) => ({ shot: $(".shot", card), video: $("video", card) }))
+          .filter((c) => c.video),
+      }))
       .filter((u) => u.video);
+    // The stage's side windows are shown from this width on (styles.css).
+    const wide = window.matchMedia("(min-width: 861px)");
     const buttons = $$(".pp");
     if (!units.length || !hasIO) return;
     let userPaused = false;
@@ -125,10 +135,17 @@
       for (const u of units) if (u.ratio >= 0.35 && (!best || u.ratio > best.ratio)) best = u;
       const allowed = mayMove() && !userPaused;
       for (const u of units) {
-        if (u === best && allowed) {
+        const on = u === best && allowed;
+        if (on) {
           load(u);
           safePlay(u.video);
         } else if (!u.video.paused) u.video.pause();
+        for (const c of u.companions) {
+          if (on && u.started && wide.matches) {
+            load(c);
+            safePlay(c.video);
+          } else if (!c.video.paused) c.video.pause();
+        }
       }
     }
 
@@ -149,6 +166,15 @@
     for (const u of units) {
       // The video fades in over its poster once frames arrive.
       u.video.addEventListener("playing", () => u.shot.classList.add("is-live"));
+      for (const c of u.companions) c.video.addEventListener("playing", () => c.shot.classList.add("is-live"));
+      // The companions start once the window's own clip plays (it loads first).
+      if (u.companions.length) {
+        u.video.addEventListener("playing", () => {
+          if (u.started) return;
+          u.started = true;
+          sync();
+        });
+      }
     }
     for (const b of buttons) {
       b.addEventListener("click", () => {
@@ -169,6 +195,7 @@
 
     document.addEventListener("visibilitychange", sync);
     reduce.addEventListener?.("change", () => { controls(); sync(); });
+    wide.addEventListener?.("change", sync);
     controls();
   })();
 

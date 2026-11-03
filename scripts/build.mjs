@@ -293,7 +293,7 @@ function checkFiles(files, where) {
 function checkManifest({ backdrop, frame, slides, stage }) {
   const files = [frame.image];
   if (!stage?.center || stage.near?.length !== 2 || stage.far?.length !== 2)
-    fail('media/slides.json stage: needs "center", two "near" slide ids and two "far" images');
+    fail('media/slides.json stage: needs "center", two "near" entries (slide ids or .webp stills) and two "far" images');
   for (const id of [stage.center, ...stage.near.filter((n) => !isStill(n))])
     if (!slides.some((s) => s.id === id)) fail(`media/slides.json stage names slide "${id}", which is missing or hidden`);
   files.push(...stage.far, ...stage.near.filter(isStill));
@@ -500,15 +500,19 @@ function renderPause(where) {
   return `<button type="button" class="pp pp-${where}" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path class="i-pause" d="M8 5v14M16 5v14"/><path class="i-play" d="M7 4.5v15l12-7.5z"/></svg>${t("media.pause")}</button>`;
 }
 
-/** Five windows fanned in depth; the stylesheet gathers them into the front one as the page scrolls. */
+/** Five windows fanned in depth, standing still (a short entrance on load, a mouse tilt). */
 function renderStage() {
   const st = manifest.stage;
   const near = st.near.map(nearSlide);
   const farH = Math.round((640 * frame.height) / frame.width);
   const far = (src, side) =>
     `          <div class="card card-far card-${side}" aria-hidden="true"><img src="${escape(src)}" width="640" height="${farH}" loading="lazy" decoding="async" alt=""></div>`;
-  const side = (slide, s) =>
-    `          <div class="card card-near card-${s}" aria-hidden="true">${renderChrome(true, false, "near")}<div class="shot" style="${area(slide)}"><img ${imgSrc(slide.poster, "near")} ${size(slide)} loading="lazy" decoding="async" alt=""></div></div>`;
+  // A still is its image only. A slide plays its clip (its poster and sources, the same files as
+  // its chapter but its own <video>): main.js starts it after the front window's clip, on wide
+  // screens only, and pauses it with the front window.
+  const side = (slide, s) => slide.sources
+    ? `          <div class="card card-near card-${s}" aria-hidden="true" data-companion="hero">${renderChrome(true, false, "near")}${renderShot(slide, { lazy: true, sizes: "near" })}</div>`
+    : `          <div class="card card-near card-${s}" aria-hidden="true">${renderChrome(true, false, "near")}<div class="shot" style="${area(slide)}"><img ${imgSrc(slide.poster, "near")} ${size(slide)} loading="lazy" decoding="async" alt=""></div></div>`;
   return [
     far(st.far[0], "l"),
     far(st.far[1], "r"),

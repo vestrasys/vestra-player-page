@@ -37,14 +37,14 @@
     }
   },
   "stage": {
-    "$comment": "The hero's depth stage: player windows fanned in 3D. \"center\" is the slide whose clip plays in the front window; \"near\" are shown as stills beside it (left, right): a slide id (its poster) or a screenshot made with `npm run encode -- --still <png> --id <name>`; \"far\" are pre-blurred stills for the back row (left, right), made with `npm run encode -- --far <slide-id | poster path> [--id <name>]`.",
+    "$comment": "The hero's depth stage: player windows fanned in 3D. \"center\" is the slide whose clip plays in the front window; \"near\" are the windows beside it (left, right): a slide id plays that slide's clip (its poster and sources; it starts once the front window's clip plays, on wide screens only, and shows the poster only with reduced motion or Save-Data), or a .webp path shows that still (a slide's poster, or a screenshot made with `npm run encode -- --still <png> --id <name>`); \"far\" are pre-blurred stills for the back row (left, right), made with `npm run encode -- --far <slide-id | poster path> [--id <name>]`.",
     "center": "menus",
     "near": [
-      "media/posters/seek.webp",
+      "ai",
       "nes"
     ],
     "far": [
-      "media/posters/store-far.webp",
+      "media/posters/seek-far.webp",
       "media/posters/ai-far.webp"
     ]
   },
@@ -103,8 +103,8 @@
         "zh-Hans": "说出想要的插件，AI 帮你做"
       },
       "caption": {
-        "en": "One sentence asks for a colour-grading plugin with three wheels; Vestra Player AI writes and tests it, one click installs it, and dragging the wheels grades the picture live. Earlier chats stay in the list. Uses your own AI provider key.",
-        "zh-Hans": "一句话要一个带三个色轮的调色插件：Vestra Player AI 编写并测试，一键安装，拖动色轮即可实时为画面调色。以往的对话都保留在列表里。需使用你自己的 AI 服务密钥。"
+        "en": "Tell Vestra Player AI what you want in plain words. It writes and tests the plugin, and one click installs it. Works with your own AI provider key.",
+        "zh-Hans": "用一句话告诉 Vestra Player AI 你想要什么，它会编写并测试插件，一键即可安装。使用你自己的 AI 服务密钥。"
       },
       "poster": "media/posters/ai.webp",
       "sources": [

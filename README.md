@@ -152,9 +152,16 @@ into `media/slides.json`. Replacing one item is one command plus that edit.
   its credits row (Title ending in "(hero backdrop)") is left out of the footer
   while `src/index.html` has no `{{slot:backdrop}}`.
 - `stage` is the hero: `center` names the slide whose clip plays in the front
-  window, `near` the two slides shown as stills beside it (left, right), and
-  `far` two pre-blurred stills for the back row, made with
-  `npm run encode -- --far <slide-id>` (the page uses no live blur filter).
+  window, `near` the two windows beside it (left, right), and `far` two
+  pre-blurred stills for the back row, made with
+  `npm run encode -- --far <slide-id | media/posters/x.webp> [--id <name>]`
+  (the page uses no live blur filter). A `near` entry is either a slide id,
+  whose clip plays there (the slide's own poster and sources, in a `<video>` of
+  its own, so its chapter is unaffected), or a `.webp` path, shown as a still
+  (a slide's poster, or a screenshot made with `--still`). The side clips
+  load only once the front window's clip is playing, only on wide screens (the
+  side windows are hidden on phones, so nothing is downloaded there), and
+  pause with the front window (scrolled away, background tab, pause button).
   On wide screens the hero shows the fan at rest (a short entrance on load)
   and a fine mouse pointer tilts it by up to 6°; the page scrolls straight on.
   Phones get one flat window; reduced motion gets the fan without the entrance
@@ -169,8 +176,8 @@ into `media/slides.json`. Replacing one item is one command plus that edit.
   need not exist.
 - Each slide is a feature chapter: its text beside its window. Of all the
   windows on screen (the stage's front window included) only the most visible
-  one plays, so one clip decodes at a time; a clip loads when its window is
-  first chosen. A pause button beside each playing window stops every clip on
+  one plays (with the stage's side clips when it is the front window); a clip
+  loads when its window is first chosen. A pause button beside each playing window stops every clip on
   the page. With reduced motion, Save-Data or without script nothing loads or
   plays and the posters show.
 
