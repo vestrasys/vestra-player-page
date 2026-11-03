@@ -37,40 +37,31 @@
     }
   },
   "stage": {
-    "$comment": "The hero's depth stage: player windows fanned in 3D. \"center\" is the front window, whose clip plays; \"near\" are the windows beside it (left, right); \"far\" are pre-blurred stills for the back row (left, right), made with `npm run encode -- --far <slide-id | poster path> [--id <name>]`. A center or near entry is a slide id (that slide's clip, poster and area), a card of its own ({\"poster\", \"sources\"} from `npm run encode`, over the frame's client area or the \"area\" it names; or with \"frame\": a narrowed window from `npm run encode -- --window <width> --id <name>`, its clip under the title bar, for a clip cut without the playlist pane), or (near only) a .webp still (a poster, or a screenshot made with `npm run encode -- --still <png> --id <name>`). Near clips start once the front window's clip plays, on wide screens only; reduced motion or Save-Data shows the posters only.",
-    "center": "menus",
+    "$comment": "The hero's depth stage: player windows fanned in 3D. \"center\" is the front window, whose clip plays; \"near\" are the windows beside it (left, right); \"far\" are pre-blurred stills for the back row (left, right), made with `npm run encode -- --far <slide-id | poster path> [--id <name>]`. A center or near entry is a slide id (that slide's clip, poster and area), a card of its own ({\"poster\", \"sources\"} from `npm run encode`, over the frame's client area or the \"area\" it names; or with \"frame\": a narrowed window from `npm run encode -- --window <width> --id <name>`, its picture under the title bar, for a cut without the playlist pane), or (near only) a still: a .webp path, or a card without \"sources\". Near clips start once the front window's clip plays, on wide screens only; reduced motion or Save-Data shows the posters only.",
+    "center": {
+      "poster": "media/posters/hero-menus.webp",
+      "sources": [
+        {
+          "src": "media/clips/hero-menus.webm",
+          "type": "video/webm; codecs=av01.0.09M.08"
+        },
+        {
+          "src": "media/clips/hero-menus.mp4",
+          "type": "video/mp4; codecs=avc1.64002A"
+        }
+      ],
+      "frame": "media/frame/frame-menus.webp"
+    },
     "near": [
-      {
-        "poster": "media/posters/hero-ai.webp",
-        "sources": [
-          {
-            "src": "media/clips/hero-ai.webm",
-            "type": "video/webm; codecs=av01.0.09M.08"
-          },
-          {
-            "src": "media/clips/hero-ai.mp4",
-            "type": "video/mp4; codecs=avc1.64002A"
-          }
-        ]
-      },
+      "media/posters/hero-ai.webp",
       {
         "poster": "media/posters/hero-nes.webp",
-        "sources": [
-          {
-            "src": "media/clips/hero-nes.webm",
-            "type": "video/webm; codecs=av01.0.09M.08"
-          },
-          {
-            "src": "media/clips/hero-nes.mp4",
-            "type": "video/mp4; codecs=avc1.64002A"
-          }
-        ],
         "frame": "media/frame/frame-nes.webp"
       }
     ],
     "far": [
       "media/posters/seek-far.webp",
-      "media/posters/ai-far.webp"
+      "media/posters/store-far.webp"
     ]
   },
   "slides": [
