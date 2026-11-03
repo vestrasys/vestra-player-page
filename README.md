@@ -167,7 +167,7 @@ into `media/slides.json`. Replacing one item is one command plus that edit.
 - Each slide has an `id`, `title` and `caption` in `en` and `zh-Hans`, an
   optional `icon`, a `poster` and `sources` (tried in order; AV1 WebM first,
   H.264 MP4 last). `"hidden": true` leaves a slide out of the page; its files
-  need not exist (the `ai` slide waits like this for its recording).
+  need not exist.
 - Each slide is a feature chapter: its text beside its window. Of all the
   windows on screen (the stage's front window included) only the most visible
   one plays, so one clip decodes at a time; a clip loads when its window is
