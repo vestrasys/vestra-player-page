@@ -139,7 +139,6 @@ function renderPage(lang) {
     backdrop: renderBackdrop(),
     seo: renderSeo(lang),
     cta: renderCta("hero"),
-    ctaLine: renderCtaLine(),
     ctaEnd: renderCta("end"),
     heroSource: renderHeroSource(),
     githubIcon: GITHUB_ICON,
@@ -163,6 +162,8 @@ function renderPage(lang) {
     github,
     navHref: stableUrl(buttonSystems[0]),
     releasesPage: releaseConfig.releasesPage,
+    // "All downloads" in the nav: the platforms dialog with script, else the release page.
+    allDownloadsHref: releasesPage(),
     otherLang: other,
     // The other language's page, relative to this one.
     otherHref: PAGES[other] ? prefix + PAGES[other] : prefix || "./",
@@ -412,17 +413,6 @@ function renderCta(where) {
         <span class="cta-text">${t("hero.linux", "span", ' class="cta-title"')}${t("hero.linuxSoon", "small", ' class="cta-sub"')}</span>
       </span>`);
   return buttons.join("\n");
-}
-
-/** The one grey line under the hero buttons: version, test build, every download (dialog), release notes. */
-function renderCtaLine() {
-  const bits = [];
-  if (release.ok) bits.push(`<span>v${escape(release.version)}</span>`);
-  bits.push(t("hero.unsigned"));
-  // Every file (installer, portable zip, disk images) with requirements: the dialog, else the release page.
-  bits.push(t("hero.allDownloads", "a", ` class="js-platforms" href="${escape(releasesPage())}"`));
-  if (release.ok) bits.push(t("hero.notes", "a", ` href="${escape(release.notesUrl)}"`));
-  return `    <p class="cta-line">${bits.join('<span class="sep" aria-hidden="true">·</span>')}</p>`;
 }
 
 function renderHeroSource() {

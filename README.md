@@ -99,16 +99,16 @@ page, which the footer links.
   universal, else Apple silicon, else Intel build; everyone else the Windows
   installer), the other one secondary, and a greyed, disabled Linux entry
   ("coming soon", not a link). While neither group is on screen a small
-  button in the header leads to the visitor's download. One grey line under
-  the hero buttons gives the version and "All downloads", which opens a dialog
-  with every enabled file and the full requirements.
+  button in the header leads to the visitor's download. "All downloads" in the
+  header nav (kept on narrow screens, where the section links are hidden) opens
+  a dialog with every enabled file and the full requirements.
 - **The buttons** link straight to the latest installer, independent of the
   metadata: `https://github.com/<github.owner>/<github.repo>/releases/latest/download/<name>`,
   with the fixed names in `site.config.json` `downloads` (`windows`, `macos`,
   `linux`; every release must upload copies under these names). `linux: null`
   shows the disabled "coming soon" entry instead of a button. The metadata only
-  adds the version and release notes to the line under the buttons and the
-  versioned files to the "All downloads" dialog.
+  adds the versioned files to the "All downloads" dialog (and the version to
+  the structured data).
 - **`stableAssetNames: true`** links to `…/releases/latest/download/<stableName>`
   (or `<stableName>` next to the manifest) instead of the versioned file. Turn
   it on only when every release uploads files under those names.

@@ -28,6 +28,7 @@
     <nav class="nav-links" aria-label="{{t:nav.label}}">
       <a href="#features">{{t:nav.features}}</a>
       <a href="#open-source">{{t:nav.open}}</a>
+      <a class="nav-all js-platforms" href="{{var:allDownloadsHref}}">{{t:nav.allDownloads}}</a>
     </nav>
     <div class="nav-actions">
       <a class="nav-gh" href="{{var:github}}" aria-label="GitHub">{{slot:githubIcon}}</a>
@@ -50,7 +51,6 @@
 {{slot:cta}}
 {{slot:heroSource}}
         </div>
-{{slot:ctaLine}}
       </div>
       <div class="stage">
         <div class="tilt">
