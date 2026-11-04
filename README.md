@@ -219,6 +219,16 @@ npm run encode -- menus-raw.mkv --id menus --crop 4,52,2216,1336 --duration 13.9
 # zoom camera (bottom-bar button, store, list, permission dialog, sidebar),
 # scaled to 1874x1080, 14.9 s, no loop fade; same encoder settings and poster
 # frame rule as encode (poster at 2.62 s: the list with VestraTube selected).
+# ai-2 (the AI slide) is an edit of the same kind from maximized-player takes
+# (client area 0,40,2560,1476): wheels-rawA.mkv 19.5-25.6 s (prompt, first
+# 3.5 s at 2x) and 37.1-39.2 s (sent), wheels-rawC.mkv 17.1-24.6 s (answer,
+# Install; 19.2-23.4 s at 2x, "~15 min later" caption), 107.65-111.8 s (Colour
+# Wheels window, highlights drag) and 145.7-148.5 s (Film Look), 0.3 s
+# crossfades, eased camera (chat top, input box, answer + Install, wheels
+# window, full view), scaled to 1874x1080, 17.6 s, no loop fade. The take's
+# only shadows drag (103.1-105.6 s) plays over sky, so it is left out; the
+# window opens with shadows already set.
+npm run encode -- ai-cut.mp4 --id ai-2 --size 1874x1080 --crf-av1 41 --crf-h264 30 --poster-at 14.38
 # nes-2 (Twin Dragons): nes-td-user.mkv is a 2240x1408 desktop capture from
 # (0,0) with a variable frame rate and no seek index, so the try is cut first
 # with decode-accurate trimming (input seeking lands on the wrong frames):

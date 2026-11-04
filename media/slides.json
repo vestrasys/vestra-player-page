@@ -121,14 +121,14 @@
         "en": "Tell Vestra Player AI what you want in plain words. It writes and tests the plugin, and one click installs it. Works with your own AI provider key.",
         "zh-Hans": "用一句话告诉 Vestra Player AI 你想要什么，它会编写并测试插件，一键即可安装。使用你自己的 AI 服务密钥。"
       },
-      "poster": "media/posters/ai.webp",
+      "poster": "media/posters/ai-2.webp",
       "sources": [
         {
-          "src": "media/clips/ai.webm",
+          "src": "media/clips/ai-2.webm",
           "type": "video/webm; codecs=av01.0.09M.08"
         },
         {
-          "src": "media/clips/ai.mp4",
+          "src": "media/clips/ai-2.mp4",
           "type": "video/mp4; codecs=avc1.64002A"
         }
       ]
