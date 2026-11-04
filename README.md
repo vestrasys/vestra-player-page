@@ -229,16 +229,18 @@ npm run encode -- menus-raw.mkv --id menus --crop 4,52,2216,1336 --duration 13.9
 # only shadows drag (103.1-105.6 s) plays over sky, so it is left out; the
 # window opens with shadows already set.
 npm run encode -- ai-cut.mp4 --id ai-2 --size 1874x1080 --crf-av1 41 --crf-h264 30 --poster-at 14.38
-# nes-2 (Twin Dragons): nes-td-user.mkv is a 2240x1408 desktop capture from
+# nes-3 (Twin Dragons): nes-td-user.mkv is a 2240x1408 desktop capture from
 # (0,0) with a variable frame rate and no seek index, so the try is cut first
 # with decode-accurate trimming (input seeking lands on the wrong frames):
 #   ffmpeg -i nes-td-user.mkv -vf "trim=start=26.333:end=41.5,setpts=PTS-STARTPTS,fps=60" -an -c:v libx264 -qp 0 nes-td-cut.mkv
 # 26.333 s is the first castle (respawn) frame, 41.5 s is 1 s after the death in
 # the spike pit (the respawn and a terminal window follow). Window border at
 # x 10-11 and 2212-2213, title bar to row 51, bottom border at rows 1380-1381,
-# so the client area is 12,52,2200,1328; the poster is the dragon on the crates
-# breathing fire at a slime.
-npm run encode -- nes-td-cut.mkv --id nes-2 --crop 12,52,2200,1328 --duration 15.167 --loop-fade 0.5 --poster-at 10.35
+# so the client area is 12,52,2200,1328. The clip skips the idle start: it
+# begins at 3.25 s in the cut (raw 29.583 s), 0.1 s before the dragon's first
+# jump, and keeps the same out point; the poster is the dragon on the crates
+# breathing fire at a slime (10.35 s in the cut).
+npm run encode -- nes-td-cut.mkv --id nes-3 --crop 12,52,2200,1328 --start 3.25 --duration 11.917 --loop-fade 0.5 --poster-at 7.1
 npm run encode -- --frame frame-still.png --id frame --crop 2,0,2220,1390 --client 2,52,2216,1336 --video 2,52,1654,1226
 
 # Hero stage cards (the chapters keep their own clips). hero-menus-2 is a plain

@@ -41,8 +41,8 @@ Notes:
   zlib licence (https://github.com/Garydos/twin-dragons-nes), graphics under
   CC BY 3.0 (https://opengameart.org/content/twin-dragons). It is not the
   commercial game of the same name by Broke Studio, and Vestra Player is not
-  affiliated with its authors. The VestraNES recording (`nes-2`; a still of
-  it is the hero card `hero-nes-2`) shows about 15 s of play, cropped to the
+  affiliated with its authors. The VestraNES recording (`nes-3`; a still of
+  it is the hero card `hero-nes-2`) shows about 12 s of play, cropped to the
   player window and scaled; the ROM itself is not distributed with the page.
 - Remove a row when its footage does not appear in any published recording;
   add one when it does.
