@@ -72,7 +72,9 @@
     "ft.sdkDocs": "SDK documentation",
     "ft.page": "This website's source",
     "ft.licence": "Vestra Player is licensed under {player}. The plugin SDK and the plugin repository are licensed under {plugins}.",
-    "ft.credits": "Footage and games on this page"
+    "ft.credits": "Footage and games on this page",
+    "ft.creditsNote": "The films are short excerpts shown playing inside Vestra Player, some recoloured, cropped or sped up. Vestra Player is not affiliated with or endorsed by the Blender Foundation.",
+    "ft.trademark": "YouTube is a trademark of Google LLC. Vestra Player is not affiliated with YouTube or Google."
   },
   "zh-Hans": {
     "meta.title": "Vestra Player：每个功能都是插件的视频播放器",
@@ -147,6 +149,8 @@
     "ft.sdkDocs": "SDK 文档",
     "ft.page": "本网站源代码",
     "ft.licence": "Vestra Player 采用 {player} 许可。插件 SDK 和插件仓库采用 {plugins} 许可。",
-    "ft.credits": "本页中的视频与游戏"
+    "ft.credits": "本页中的视频与游戏",
+    "ft.creditsNote": "影片均为在 Vestra Player 中播放的简短片段，部分经过调色、裁切或加速。Vestra Player 与 Blender 基金会无关联，也未获其认可。",
+    "ft.trademark": "YouTube 是 Google LLC 的商标。Vestra Player 与 YouTube 和 Google 均无关联。"
   }
 }

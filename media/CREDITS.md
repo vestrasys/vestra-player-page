@@ -8,13 +8,34 @@ kept outside the repository (`SOURCES.md` next to them).
 
 | Title | Author | Licence | Source | Attribution |
 | --- | --- | --- | --- | --- |
-| Big Buck Bunny (in the demo recordings) | Blender Foundation | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | [peach.blender.org](https://peach.blender.org/) | (c) copyright 2008, Blender Foundation / www.bigbuckbunny.org |
-| Spring (in the store recording, played through VestraTube) | Blender Animation Studio | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | [studio.blender.org/films/spring](https://studio.blender.org/films/spring/pages/about) | © Blender Foundation \| cloud.blender.org/spring |
+| Big Buck Bunny (in the hero, menus and AI recordings and the window stills) | Blender Foundation | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | [peach.blender.org](https://peach.blender.org/about/) | (c) copyright 2008, Blender Foundation / www.bigbuckbunny.org |
+| Spring (at the end of the Plugin Store recording, played through VestraTube) | Blender Animation Studio | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | [studio.blender.org/films/spring](https://studio.blender.org/films/spring/pages/about/) | © Blender Foundation \| cloud.blender.org/spring |
 | Stunning Aurora Borealis in Night Sky Timelapse (hero backdrop) | [Frank Cone](https://www.pexels.com/@frank-cone-140140/) | [Pexels License](https://www.pexels.com/license/) | [Pexels](https://www.pexels.com/video/stunning-aurora-borealis-in-night-sky-timelapse-28889010/) | Video by Frank Cone from Pexels |
 | Concentration Room (NES game) | Damian Yerrick | [GPL-3.0-or-later](https://www.gnu.org/licenses/gpl-3.0.html) | [github.com/pinobatch/croom-nes](https://github.com/pinobatch/croom-nes) | Concentration Room © 2010 Damian Yerrick |
 
 Notes:
 
+- Both films appear only as short excerpts shown playing inside Vestra
+  Player, never as the film on its own:
+  - Big Buck Bunny (the 60 fps 2160p "sunflower" render,
+    `bbb_sunflower_2160p_60fps_normal.mp4`): the hero centre clip
+    (`hero-menus-2`), the menus and AI recordings and their posters, the
+    window frame stills, the playlist thumbnail in the NES recording, and the
+    blurred back-row stills. Recoloured on screen (Picture Adjustments turns
+    it grey and back; Colour Wheels grade it in the AI clip), cropped to the
+    player window, scaled and cut; not sped up.
+  - Spring: the last seconds of the Plugin Store recording (`store-2`), the
+    official Blender Studio upload played through VestraTube, about 25 s into
+    the film. Zoomed and cropped with the recording, which is cut and sped up
+    in places; not recoloured.
+- Licence sources (checked 2026-11-04): Big Buck Bunny,
+  https://peach.blender.org/about/ (CC BY 3.0; for reused parts of the movie
+  the credit "(c) copyright 2008, Blender Foundation / www.bigbuckbunny.org").
+  Spring, https://studio.blender.org/films/spring/pages/about/ (CC BY 4.0;
+  the credit "© Blender Foundation | cloud.blender.org/spring").
+- Vestra Player is not affiliated with or endorsed by the Blender Foundation.
+  The footer says so under this table, with the excerpt note, in both
+  languages (`ft.creditsNote` in `src/i18n.json`).
 - Remove a row when its footage does not appear in any published recording;
   add one when it does (for example Thwaite, github.com/pinobatch/thwaite-nes,
   GPL-3.0-or-later, Thwaite © 2011, 2012, 2018 Damian Yerrick, if a recording
