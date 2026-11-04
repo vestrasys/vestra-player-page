@@ -172,7 +172,7 @@ into `media/slides.json`. Replacing one item is one command plus that edit.
   - (`near` only) a still: a `.webp` path (over the frame's client area), or
     a card without `"sources"` (its `"poster"`, and `"frame"` if any). The
     committed side windows are the posters of the hero cuts `hero-ai` (the
-    colour wheels) and `hero-nes` (narrow window, no playlist pane).
+    colour wheels) and `hero-nes-2` (narrow window, no playlist pane).
 
   Side clips (a near slide id or card with sources; none as committed)
   load only once the front window's clip is playing, only on wide screens (the
@@ -219,7 +219,16 @@ npm run encode -- menus-raw.mkv --id menus --crop 4,52,2216,1336 --duration 13.9
 # zoom camera (bottom-bar button, store, list, permission dialog, sidebar),
 # scaled to 1874x1080, 14.9 s, no loop fade; same encoder settings and poster
 # frame rule as encode (poster at 2.62 s: the list with VestraTube selected).
-npm run encode -- nes-raw2.mkv  --id nes   --crop 4,52,2216,1336 --duration 12.5 --loop-fade 0.5 --poster-at 2
+# nes-2 (Twin Dragons): nes-td-user.mkv is a 2240x1408 desktop capture from
+# (0,0) with a variable frame rate and no seek index, so the try is cut first
+# with decode-accurate trimming (input seeking lands on the wrong frames):
+#   ffmpeg -i nes-td-user.mkv -vf "trim=start=26.333:end=41.5,setpts=PTS-STARTPTS,fps=60" -an -c:v libx264 -qp 0 nes-td-cut.mkv
+# 26.333 s is the first castle (respawn) frame, 41.5 s is 1 s after the death in
+# the spike pit (the respawn and a terminal window follow). Window border at
+# x 10-11 and 2212-2213, title bar to row 51, bottom border at rows 1380-1381,
+# so the client area is 12,52,2200,1328; the poster is the dragon on the crates
+# breathing fire at a slime.
+npm run encode -- nes-td-cut.mkv --id nes-2 --crop 12,52,2200,1328 --duration 15.167 --loop-fade 0.5 --poster-at 10.35
 npm run encode -- --frame frame-still.png --id frame --crop 2,0,2220,1390 --client 2,52,2216,1336 --video 2,52,1654,1226
 
 # Hero stage cards (the chapters keep their own clips). hero-menus-2 is a plain
@@ -227,16 +236,17 @@ npm run encode -- --frame frame-still.png --id frame --crop 2,0,2220,1390 --clie
 # frame): the client area, from just before the Saturation drag to just after
 # Default (the fade blends the end into the colour frames before the drag).
 npm run encode -- hero-pa-raw2.mkv --id hero-menus-2 --crop 0,40,2560,1476 --start 4.9 --duration 10.4 --loop-fade 0.5 --poster-at 3 --crf-h264 24
-# The side windows show only the hero-ai and hero-nes posters. Each cut starts
+# The side windows show only the hero-ai and hero-nes-2 posters. Each cut starts
 # from an intermediate cut with plain ffmpeg, then goes through encode at a smaller size.
 #  hero-ai: wheels-rawC.mkv 101.5-111.8 s and 145.7-148.5 s (0.3 s crossfade), each
 #   cropped to the colour-wheels view 1700x980+100+120 -> ai-wheels.mkv (12.8 s).
-#  hero-nes: nes-raw2.mkv cropped to the client area left of the playlist pane,
-#   1657x1336+4+52, with the 45 px of the VestraNES window that reach into it
-#   painted over by the letterbox beside it -> nes-player.mkv.
+#  hero-nes-2: nes-td-cut.mkv cropped to the client area left of the playlist
+#   pane (splitter at x 1652-1656), 1640x1328+12+52; the VestraNES window sits
+#   right of the splitter in this take, so nothing needs painting over (only
+#   the poster is used; the clip files are not committed).
 npm run encode -- ai-wheels.mkv  --id hero-ai  --size 1280x800 --duration 12.8 --loop-fade 0.5 --poster-at 9
-npm run encode -- nes-player.mkv --id hero-nes --size 1280x800 --duration 12.5 --loop-fade 0.5 --poster-at 2
-npm run encode -- --window 1831 --id frame-nes    # 1476 x 1657/1336: the NES card's window without the pane
+npm run encode -- nes-td-cut.mkv --id hero-nes-2 --crop 12,52,1640,1328 --size 1280x800 --duration 15.167 --loop-fade 0.5 --poster-at 10.35
+npm run encode -- --window 1823 --id frame-nes-2  # 1476 x 1640/1328: the NES card's window without the pane
 
 # In general: crop = the player window's client area in the recording.
 npm run encode -- <recording> --id <slide-id> --crop <x,y,w,h> --start <s> --duration <s> --loop-fade 0.5 --poster-at <s>

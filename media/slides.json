@@ -54,8 +54,8 @@
     "near": [
       "media/posters/hero-ai.webp",
       {
-        "poster": "media/posters/hero-nes.webp",
-        "frame": "media/frame/frame-nes.webp"
+        "poster": "media/posters/hero-nes-2.webp",
+        "frame": "media/frame/frame-nes-2.webp"
       }
     ],
     "far": [
@@ -134,7 +134,7 @@
       ]
     },
     {
-      "id": "nes",
+      "id": "nes-2",
       "area": "client",
       "title": {
         "en": "Even games: VestraNES",
@@ -144,14 +144,14 @@
         "en": "A plugin can be a whole emulator. Load a ROM from the Games menu and play with the keyboard.",
         "zh-Hans": "插件甚至可以是一个完整的模拟器。从“游戏”菜单加载 ROM，用键盘就能玩。"
       },
-      "poster": "media/posters/nes.webp",
+      "poster": "media/posters/nes-2.webp",
       "sources": [
         {
-          "src": "media/clips/nes.webm",
+          "src": "media/clips/nes-2.webm",
           "type": "video/webm; codecs=av01.0.09M.08"
         },
         {
-          "src": "media/clips/nes.mp4",
+          "src": "media/clips/nes-2.mp4",
           "type": "video/mp4; codecs=avc1.64002A"
         }
       ]
