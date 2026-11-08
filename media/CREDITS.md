@@ -24,7 +24,7 @@ Notes:
   - Big Buck Bunny (the 60 fps 2160p "sunflower" render,
     `bbb_sunflower_2160p_60fps_normal.mp4`, in the playlist recording under
     the display name `Big Buck Bunny (2008).mp4`): the hero centre clip
-    (`hero-menus-2`), the adjustments, playlist, store and AI recordings and
+    (`hero-adjust`), the adjustments, playlist, store and AI recordings and
     their posters, the window frame stills, and the blurred back-row stills.
     Recoloured on screen (the Picture panel turns it grey and back; Colour
     Wheels grade it in the AI clip `ai-3`), cropped to the player window or shown

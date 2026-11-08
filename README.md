@@ -160,9 +160,10 @@ into `media/slides.json`. Replacing one item is one command plus that edit.
     in a `<video>` of its own, so its chapter is unaffected);
   - a card of its own, `{ "poster", "sources" }` as `npm run encode` prints
     them, so the hero can show a cut that differs from the chapter's (the
-    committed center, `hero-menus-2`, is a Picture Adjustments take of its
-    own: the full-width player without the playlist pane, saturation down while
-    the butterfly lands, then up and back to Default). It covers the frame's
+    committed center, `hero-adjust`, is a player 0.7.6 take of its own: the
+    maximized window without the sidebar, the Adjustments and Effects column
+    opened from the bottom bar's right side, saturation down to grey, Colour
+    Original, column closed). It covers the frame's
     client area, or the `"area"` it names. The center always uses the main
     frame. A `near` card for a cut without the playlist pane adds `"frame"`: a
     narrowed window made with `npm run encode -- --window <width> --id <name>`,
@@ -221,8 +222,9 @@ export FFMPEG=/path/to/ffmpeg        # PowerShell: $env:FFMPEG = 'C:\path\to\ffm
 # equalizer presets at 1.5x, the Subtitles and Playback tabs at 1.7x, the
 # Command Palette "reset pic" + Enter at 1x) to 19.05 s, then:
 npm run encode -- adjust-2-cut.mp4 --id adjust --duration 19.05 --loop-fade 0.5 --poster-at 4.6 --crf-av1 39 --crf-h264 27
-# playlist (the open films with thumbnails, thumbnails hidden and shown again):
-npm run encode -- playlist-0776-rawA.mkv --id playlist --start 0.4 --duration 11.6 --loop-fade 0.5 --poster-at 2.0
+# playlist (player 0.7.6, sidebar widened, the five open films with thumbnails; rows selected in turn, thumbnails
+# hidden and shown again; camera pushes in on the list): C:/vestra/rec/specs/playlist-2.json -> playlist-2-cut.mp4
+npm run encode -- playlist-2-cut.mp4 --id playlist --duration 11.37 --loop-fade 0.3 --poster-at 2.2
 # store-3: store-0776-rawB.mkv cut by specs/store-3.json (the store-2 rhythm:
 # waits at 1.4-2.5x, the playback wait cut, the same camera keys), 14.87 s:
 npm run encode -- store-3-cut.mp4 --id store-3 --size 1874x1080 --crf-av1 41 --crf-h264 30 --poster-at 3.3
@@ -262,11 +264,11 @@ npm run encode -- ai-cut.mp4 --id ai-2 --size 1874x1080 --crf-av1 41 --crf-h264 
 npm run encode -- nes-td-cut.mkv --id nes-3 --crop 12,52,2200,1328 --start 3.25 --duration 11.917 --loop-fade 0.5 --poster-at 7.1
 npm run encode -- --frame frame-still.png --id frame --crop 2,0,2220,1390 --client 2,52,2216,1336 --video 2,52,1654,1226
 
-# Hero stage cards (the chapters keep their own clips). hero-menus-2 is a plain
-# encode of its own take (maximized player, no playlist pane, 2560x1516 like the
-# frame): the client area, from just before the Saturation drag to just after
-# Default (the fade blends the end into the colour frames before the drag).
-npm run encode -- hero-pa-raw2.mkv --id hero-menus-2 --crop 0,40,2560,1476 --start 4.9 --duration 10.4 --loop-fade 0.5 --poster-at 3 --crf-h264 24
+# Hero stage cards (the chapters keep their own clips). hero-adjust is a plain
+# encode of its own take (player 0.7.6, maximized, no sidebar, 2560x1516 like the
+# frame, captured as the client area 2560x1476): column opened, Saturation
+# dragged to grey, Colour > Original, column closed; the fade joins the loop.
+npm run encode -- hero-adjust-rawB.mkv --id hero-adjust --start 1.3 --duration 10.3 --loop-fade 0.4 --poster-at 2.3
 # The side windows show only the hero-ai and hero-nes-2 posters. Each cut starts
 # from an intermediate cut with plain ffmpeg, then goes through encode at a smaller size.
 #  hero-ai: wheels-rawC.mkv 101.5-111.8 s and 145.7-148.5 s (0.3 s crossfade), each
