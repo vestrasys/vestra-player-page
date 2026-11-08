@@ -275,6 +275,8 @@ a.cta-btn:hover { transform: translateY(-1px); }
   position: relative; width: 100%; aspect-ratio: 2220 / 1390; border-radius: var(--win-radius); overflow: hidden; background: var(--ink-2);
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.07), 0 40px 100px -30px rgba(0, 0, 0, 0.95), 0 0 70px -24px rgba(250, 10, 168, 0.16);
 }
+/* A fullscreen recording: the player's whole screen, no window frame; --ar is the recording's aspect ratio. */
+.win.is-full { aspect-ratio: var(--ar, 16 / 10); }
 
 /* ---- Open source ---- */
 

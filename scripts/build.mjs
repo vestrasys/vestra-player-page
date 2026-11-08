@@ -319,7 +319,10 @@ function checkManifest({ backdrop, frame, slides, stage }) {
     const where = `media/slides.json slide "${slide.id}"`;
     if (!/^[a-z0-9-]+$/.test(slide.id ?? "") || ids.has(slide.id)) fail(`${where}: id must be unique [a-z0-9-]`);
     ids.add(slide.id);
-    if (!frame.areas[slide.area]) fail(`${where}: area "${slide.area}" is not in frame.areas`);
+    // A fullscreen slide (the player's whole screen, no window frame) names its recording's size instead of an area.
+    if (slide.fullscreen) {
+      if (!(slide.fullscreen.width > 0 && slide.fullscreen.height > 0)) fail(`${where}: "fullscreen" needs { "width", "height" } of the recording`);
+    } else if (!frame.areas[slide.area]) fail(`${where}: area "${slide.area}" is not in frame.areas`);
     for (const lang of LANGS)
       if (!slide.title?.[lang] || !slide.caption?.[lang]) fail(`${where}: title and caption need "${lang}"`);
     if (!slide.sources?.length) fail(`${where}: no sources`);
@@ -358,6 +361,7 @@ function copyMedia() {
 }
 
 function area(slide) {
+  if (slide.fullscreen) return "left:0;top:0;width:100%;height:100%";
   const f = slide.frame;
   const a = f ? { x: 0, y: f.bar, width: f.width, height: f.height - f.bar } : manifest.frame.areas[slide.area];
   const frame = f ?? manifest.frame;
@@ -499,6 +503,7 @@ function imgSrc(path, sizesKey) {
 }
 
 function size(slide) {
+  if (slide.fullscreen) return `width="${slide.fullscreen.width}" height="${slide.fullscreen.height}"`;
   if (slide.frame) return `width="${slide.frame.width}" height="${slide.frame.height - slide.frame.bar}"`;
   return `width="${frame.areas[slide.area].width}" height="${frame.areas[slide.area].height}"`;
 }
@@ -558,7 +563,7 @@ function renderChapter(slide, i) {
           <p class="ch-text">${t(`slide.${slide.id}.caption`)}</p>
         </div>
         <figure class="window" data-media="${slide.id}">
-          <div class="win">${renderChrome(true, false, "chapter")}${renderShot(slide, { lazy: true, sizes: "chapter" })}</div>
+          <div class="win${slide.fullscreen ? " is-full" : ""}"${slide.fullscreen ? ` style="--ar:${(slide.fullscreen.width / slide.fullscreen.height).toFixed(4)}"` : ""}>${slide.fullscreen ? "" : renderChrome(true, false, "chapter")}${renderShot(slide, { lazy: true, sizes: "chapter" })}</div>
           ${renderPause(slide.id)}
         </figure>
       </article>`;

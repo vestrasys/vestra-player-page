@@ -209,16 +209,35 @@ not loop by themselves (the result is that much shorter; needs `--duration`).
 ```sh
 export FFMPEG=/path/to/ffmpeg        # PowerShell: $env:FFMPEG = 'C:\path\to\ffmpeg.exe'
 
-# As committed: recordings of a 2224x1392 rectangle around the window (2 px
-# border, title bar rows 2-51), so the client area is 4,52,2216,1336 in every
-# recording and 2,52,2216,1336 in the frame cut at 2,0,2220,1390.
-npm run encode -- menus-raw.mkv --id menus --crop 4,52,2216,1336 --duration 13.9 --loop-fade 0.5 --poster-at 4.5
-# store-2 (the store slide) is an edit, not a plain encode: a maximized-player
-# take (store073-raw.mkv, player 0.7.3, 2560x1516, client area 0,40,2560,1476)
-# cut into speed segments (waits at 2-4x, the playback wait cut) with an eased
-# zoom camera (bottom-bar button, store, list, permission dialog, sidebar),
-# scaled to 1874x1080, 14.9 s, no loop fade; same encoder settings and poster
-# frame rule as encode (poster at 2.62 s: the list with VestraTube selected).
+# Player 0.7.6 takes (2026-11-08): the player's client area is 2560x1476 at
+# (0,40) on the 2560x1600 screen, recorded with ddagrab (60 fps, cursor drawn,
+# C:\vestra\rec\rec0776.ps1 Start-Capture); fullscreen takes are the whole
+# 2560x1600 screen. Speed-segment edits with an eased camera are made by
+# C:\vestra\rec\tools\edit.mjs from a spec in C:\vestra\rec\specs\ (the
+# intermediate H.264 then goes through encode as below).
+# adjust (the first slide, a fullscreen take: "fullscreen": {2560x1600} in the
+# slide instead of "area", so the page shows it without the window frame):
+# adjust-0776-rawC2.mkv cut by specs/adjust-2.json (the colour drag at 1x, the
+# equalizer presets at 1.5x, the Subtitles and Playback tabs at 1.7x, the
+# Command Palette "reset pic" + Enter at 1x) to 19.05 s, then:
+npm run encode -- adjust-2-cut.mp4 --id adjust --duration 19.05 --loop-fade 0.5 --poster-at 4.6 --crf-av1 39 --crf-h264 27
+# playlist (the open films with thumbnails, thumbnails hidden and shown again):
+npm run encode -- playlist-0776-rawA.mkv --id playlist --start 0.4 --duration 11.6 --loop-fade 0.5 --poster-at 2.0
+# store-3: store-0776-rawB.mkv cut by specs/store-3.json (the store-2 rhythm:
+# waits at 1.4-2.5x, the playback wait cut, the same camera keys), 14.87 s:
+npm run encode -- store-3-cut.mp4 --id store-3 --size 1874x1080 --crf-av1 41 --crf-h264 30 --poster-at 3.3
+# ai-3 (the AI slide, player 0.7.6 / SDK 1.7.2 docs): three client-area takes
+# cut by specs/ai-3.json: ai-0776-rawA3.mkv (new chat, the Colour Wheels prompt
+# typed at 6x, sent), ai-0776-rawE2.mkv (the answer, Install at 4x, "Installed
+# Colour Wheels 0.1.1"), ai-0776-rawF.mkv (the wheels: highlights to orange,
+# shadows to teal); 0.3 s crossfades, eased camera (chat, input box, answer +
+# Install, wheels window, full view), 17.6 s like ai-2:
+npm run encode -- ai-3-cut.mp4 --id ai-3 --size 1874x1080 --crf-av1 41 --crf-h264 30 --poster-at 17.0
+# The earlier takes, for the record: menus (player 0.5, recordings of a
+# 2224x1392 rectangle around the window, client area 4,52,2216,1336):
+#   npm run encode -- menus-raw.mkv --id menus --crop 4,52,2216,1336 --duration 13.9 --loop-fade 0.5 --poster-at 4.5
+# store-2 (player 0.7.3, store073-raw.mkv) was the same kind of edit as store-3
+# (waits at 2-4x, poster at 2.62 s).
 # ai-2 (the AI slide) is an edit of the same kind from maximized-player takes
 # (client area 0,40,2560,1476): wheels-rawA.mkv 19.5-25.6 s (prompt, first
 # 3.5 s at 2x) and 37.1-39.2 s (sent), wheels-rawC.mkv 17.1-24.6 s (answer,

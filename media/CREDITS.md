@@ -8,26 +8,38 @@ kept outside the repository (`SOURCES.md` next to them).
 
 | Title | Author | Licence | Source | Attribution |
 | --- | --- | --- | --- | --- |
-| Big Buck Bunny (in the hero, menus and AI recordings and the window stills) | Blender Foundation | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | [peach.blender.org](https://peach.blender.org/about/) | (c) copyright 2008, Blender Foundation / www.bigbuckbunny.org |
+| Big Buck Bunny (in the hero, adjustments, playlist, store and AI recordings and the window stills) | Blender Foundation | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | [peach.blender.org](https://peach.blender.org/about/) | (c) copyright 2008, Blender Foundation / www.bigbuckbunny.org |
 | Spring (at the end of the Plugin Store recording, played through VestraTube) | Blender Animation Studio | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | [studio.blender.org/films/spring](https://studio.blender.org/films/spring/pages/about/) | © Blender Foundation \| cloud.blender.org/spring |
+| Elephants Dream (a playlist row and its thumbnail in the playlist recording) | Blender Foundation | [CC BY 2.5](https://creativecommons.org/licenses/by/2.5/) | [orange.blender.org](https://orange.blender.org/) | (c) copyright 2006, Blender Foundation / Netherlands Media Art Institute / www.elephantsdream.org |
+| Sintel (a playlist row and its thumbnail in the playlist recording) | Blender Foundation | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | [durian.blender.org](https://durian.blender.org/sharing/) | (c) copyright Blender Foundation \| durian.blender.org |
+| Tears of Steel (a playlist row and its thumbnail in the playlist recording) | Blender Foundation | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | [mango.blender.org](https://mango.blender.org/sharing/) | (CC) Blender Foundation \| mango.blender.org |
+| Caminandes 2: Gran Dillama (a playlist row and its thumbnail in the playlist recording) | Blender Institute | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | [studio.blender.org/films/caminandes-2](https://studio.blender.org/films/caminandes-2/) | (CC) Blender Foundation \| www.caminandes.com |
 | Stunning Aurora Borealis in Night Sky Timelapse (hero backdrop) | [Frank Cone](https://www.pexels.com/@frank-cone-140140/) | [Pexels License](https://www.pexels.com/license/) | [Pexels](https://www.pexels.com/video/stunning-aurora-borealis-in-night-sky-timelapse-28889010/) | Video by Frank Cone from Pexels |
 | Twin Dragons (open-source NES homebrew, in the VestraNES recording) | Garydos (music and design), surt (art), Shiru (SFX) | [zlib](https://zlib.net/zlib_license.html) (code), [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) (graphics) | [github.com/Garydos/twin-dragons-nes](https://github.com/Garydos/twin-dragons-nes), graphics: [opengameart.org/content/twin-dragons](https://opengameart.org/content/twin-dragons) | |
 
 Notes:
 
-- Both films appear only as short excerpts shown playing inside Vestra
+- The films appear only as short excerpts shown playing inside Vestra
   Player, never as the film on its own:
   - Big Buck Bunny (the 60 fps 2160p "sunflower" render,
-    `bbb_sunflower_2160p_60fps_normal.mp4`): the hero centre clip
-    (`hero-menus-2`), the menus and AI recordings and their posters, the
-    window frame stills, and the blurred back-row stills. Recoloured on
-    screen (Picture Adjustments turns it grey and back; Colour Wheels grade it
-    in the AI clip), cropped to the player window, scaled and cut; not sped
-    up.
-  - Spring: the last seconds of the Plugin Store recording (`store-2`), the
-    official Blender Studio upload played through VestraTube, about 25 s into
-    the film. Zoomed and cropped with the recording, which is cut and sped up
-    in places; not recoloured.
+    `bbb_sunflower_2160p_60fps_normal.mp4`, in the playlist recording under
+    the display name `Big Buck Bunny (2008).mp4`): the hero centre clip
+    (`hero-menus-2`), the adjustments, playlist, store and AI recordings and
+    their posters, the window frame stills, and the blurred back-row stills.
+    Recoloured on screen (the Picture panel turns it grey and back; Colour
+    Wheels grade it in the AI clip `ai-3`), cropped to the player window or shown
+    fullscreen, scaled and cut; sped up in places (the adjustments and store
+    recordings).
+  - Spring: the last seconds of the Plugin Store recording (`store-3`), the
+    official Blender Studio upload played through VestraTube, the first
+    seconds of the film. Zoomed and cropped with the recording, which is cut
+    and sped up in places; not recoloured.
+  - Elephants Dream, Sintel, Tears of Steel and Caminandes 2: in the playlist
+    recording (`playlist`) only as playlist rows, each with a small thumbnail
+    (one frame near the start of the film, made by the player) and its
+    duration; none of them plays. The files are the official downloads from
+    download.blender.org (see `C:\vestra\testmedia\blender-open-movies\CREDITS.md`
+    outside the repository for the exact files and digests).
 - Licence sources (checked 2026-11-04): Big Buck Bunny,
   https://peach.blender.org/about/ (CC BY 3.0; for reused parts of the movie
   the credit "(c) copyright 2008, Blender Foundation / www.bigbuckbunny.org").
