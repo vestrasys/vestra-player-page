@@ -65,3 +65,16 @@ Decisions for the next round of recordings. The recordings replace the clips in
 - The first card on the right shows the AI Workshop: a screenshot of the
   Workshop (pi) window with a new, empty conversation. No clip is recorded for
   it; the AI feature (03) further down shows it playing.
+
+## Re-recording after player 0.7.6 (user rulings 2026-11-08, late evening)
+
+Trigger: the user says "开始" (start); nothing is recorded before that.
+
+- **Slogan stays** ("The open-source video player that grows with its community — and with AI"). No "best": the user asked, the coordinator explained that superlatives do not help SEO or GEO; facts and structure do.
+- **Copy style**: keep the page's current (poetic) voice; change only what the product change forces.
+- **Clip lengths and zoom timing stay as they are** in the current clips, so the page's rhythm does not change.
+- **Adjustments clip** (replaces "menus"): shot in **fullscreen**. First frame: the video alone. The pointer slides to the right edge; the Adjustments and Effects column appears (viewers learn the gesture). Colour sliders first (clear picture change, loop back with Reset), then the other panels: Audio with a few equalizer presets switched, then Subtitles / Playback briefly.
+- **New clip: Playlist** (its own slide). Shows the playlist with thumbnails ("独此一家"). Same video family as the other clips: download several open films (Blender Studio, CC BY) into one folder with related names so the list looks good; the item played is the same video the other clips use.
+- **Store clip**: re-record (list changed: no RTX Upscale, Shader Upscale present); flow unchanged.
+- **AI clip**: keep, but re-run the same Colour Wheels prompt against the new SDK 1.7.2 docs and record it; the user set the AI key in the locally installed player (real profile: back up `%APPDATA%\Vestra` first, launch with no file argument, or copy the key to the recording profile if the secret store allows).
+- **Promo video (marketing/video)**: same shots re-recorded (s4 adjustments, s5 store, s7 panel cut); the RTX upscale comparison footage stays, only its label changes to "AI Upscaling".
