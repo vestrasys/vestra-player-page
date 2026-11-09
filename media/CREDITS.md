@@ -1,10 +1,35 @@
 # Media credits
 
 Third-party footage and games visible on this page: the hero backdrop and the
-demo recordings. The footer lists this table (`npm run build` reads it): Title, Author, Licence and
-Source, with Attribution shown in place of Author when present. Markdown links
-are kept; write a literal `|` as `\|`. Raw files and their provenance notes are
-kept outside the repository (`SOURCES.md` next to them).
+demo recordings.
+
+## Footer
+
+The English page footer shows only the lines below (`npm run build` reads this
+section): one line per source family, each work linked to its source, with
+its author and licence (CC BY needs all three). Markdown links are kept. A
+line containing "(hero backdrop)" is left out while the template shows no
+backdrop; the marker itself is never shown. Keep this list in step with the
+record table.
+
+- [Big Buck Bunny](https://peach.blender.org/about/), [Sintel](https://durian.blender.org/sharing/), [Tears of Steel](https://mango.blender.org/sharing/) and [Caminandes 2](https://studio.blender.org/films/caminandes-2/) © Blender Foundation, [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/); [Elephants Dream](https://orange.blender.org/) © 2006 Blender Foundation / Netherlands Media Art Institute, [CC BY 2.5](https://creativecommons.org/licenses/by/2.5/); [Spring](https://studio.blender.org/films/spring/pages/about/) © Blender Foundation, [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+- [Twin Dragons](https://github.com/Garydos/twin-dragons-nes) by Garydos, surt and Shiru: code under [zlib](https://zlib.net/zlib_license.html), [graphics](https://opengameart.org/content/twin-dragons) under [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/).
+- (hero backdrop) [Aurora timelapse](https://www.pexels.com/video/stunning-aurora-borealis-in-night-sky-timelapse-28889010/) by [Frank Cone](https://www.pexels.com/@frank-cone-140140/) on Pexels.
+
+## Footer (zh-Hans)
+
+The same lines for the Chinese page: titles, names and licence names stay as
+they are; only the connecting words are Chinese.
+
+- [Big Buck Bunny](https://peach.blender.org/about/)、[Sintel](https://durian.blender.org/sharing/)、[Tears of Steel](https://mango.blender.org/sharing/) 和 [Caminandes 2](https://studio.blender.org/films/caminandes-2/)：© Blender Foundation，采用 [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/)；[Elephants Dream](https://orange.blender.org/)：© 2006 Blender Foundation / Netherlands Media Art Institute，采用 [CC BY 2.5](https://creativecommons.org/licenses/by/2.5/)；[Spring](https://studio.blender.org/films/spring/pages/about/)：© Blender Foundation，采用 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)。
+- [Twin Dragons](https://github.com/Garydos/twin-dragons-nes)，作者 Garydos、surt 和 Shiru：代码采用 [zlib](https://zlib.net/zlib_license.html)，[图形](https://opengameart.org/content/twin-dragons)采用 [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/)。
+- (hero backdrop) [极光延时摄影](https://www.pexels.com/video/stunning-aurora-borealis-in-night-sky-timelapse-28889010/)，作者 [Frank Cone](https://www.pexels.com/@frank-cone-140140/)，来自 Pexels。
+
+## Record
+
+Full detail, kept for the record (not shown on the page). Markdown links are
+kept; write a literal `|` as `\|`. Raw files and their provenance notes
+are kept outside the repository (`SOURCES.md` next to them).
 
 | Title | Author | Licence | Source | Attribution |
 | --- | --- | --- | --- | --- |
@@ -17,7 +42,7 @@ kept outside the repository (`SOURCES.md` next to them).
 | Stunning Aurora Borealis in Night Sky Timelapse (hero backdrop) | [Frank Cone](https://www.pexels.com/@frank-cone-140140/) | [Pexels License](https://www.pexels.com/license/) | [Pexels](https://www.pexels.com/video/stunning-aurora-borealis-in-night-sky-timelapse-28889010/) | Video by Frank Cone from Pexels |
 | Twin Dragons (open-source NES homebrew, in the VestraNES recording) | Garydos (music and design), surt (art), Shiru (SFX) | [zlib](https://zlib.net/zlib_license.html) (code), [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) (graphics) | [github.com/Garydos/twin-dragons-nes](https://github.com/Garydos/twin-dragons-nes), graphics: [opengameart.org/content/twin-dragons](https://opengameart.org/content/twin-dragons) | |
 
-Notes:
+## Notes
 
 - The films appear only as short excerpts shown playing inside Vestra
   Player, never as the film on its own:
@@ -46,7 +71,7 @@ Notes:
   Spring, https://studio.blender.org/films/spring/pages/about/ (CC BY 4.0;
   the credit "© Blender Foundation | cloud.blender.org/spring").
 - Vestra Player is not affiliated with or endorsed by the Blender Foundation.
-  The footer says so under this table, with the excerpt note, in both
+  The footer says so under the credit lines, with the excerpt note, in both
   languages (`ft.creditsNote` in `src/i18n.json`).
 - Twin Dragons is the open-source NES homebrew by Garydos (music and design),
   surt (art) and Shiru (SFX), as its title screen credits them: code under the
@@ -56,8 +81,8 @@ Notes:
   affiliated with its authors. The VestraNES recording (`nes-3`; a still of
   it is the hero card `hero-nes-2`) shows about 12 s of play, cropped to the
   player window and scaled; the ROM itself is not distributed with the page.
-- Remove a row when its footage does not appear in any published recording;
-  add one when it does.
+- Remove a row (and its footer line) when its footage does not appear in any
+  published recording; add them when it does.
 - Blender Foundation logos and trademarks are not covered by the Creative
   Commons licences.
 - Pexels clips need no attribution; the credit is a courtesy. The Pexels

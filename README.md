@@ -38,7 +38,7 @@ The build prints the size of the HTML, CSS and JS and fails above 150 KiB
 | `src/i18n.json` | Every string, `en` and `zh-Hans` (the build fails if a key is missing in one); the build renders one page per language |
 | `src/styles.css`, `src/main.js` | Styles and the page script (language, download buttons, platforms dialog, playing windows, stage parallax, plugin filter) |
 | `media/slides.json` | The hero stage and the feature chapters: frame image, slides, posters and video sources |
-| `media/CREDITS.md` | Third-party footage and games shown in the demos; the footer lists its table |
+| `media/CREDITS.md` | Third-party footage and games shown in the demos; the footer shows its "Footer" lines |
 | `release.config.json` | Where release metadata comes from, asset name patterns, system requirements |
 | `site.config.json` | The site's public `url` (see below), footer links and licence names |
 | `public/` | Copied as is: favicons, Open Graph image, `_headers` for Cloudflare Pages |
@@ -149,7 +149,7 @@ into `media/slides.json`. Replacing one item is one command plus that edit.
 
 - `backdrop` is a looping clip (the aurora) for templates that show one behind
   the hero. This template does not: its files are not copied into `dist/` and
-  its credits row (Title ending in "(hero backdrop)") is left out of the footer
+  its credits line (marked "(hero backdrop)") is left out of the footer
   while `src/index.html` has no `{{slot:backdrop}}`.
 - `stage` is the hero: `center` is the front window, whose clip plays,
   `near` the two windows beside it (left, right), and `far` two
@@ -307,7 +307,7 @@ Then:
   script warns above 5 MB). `--vp9` adds a VP9 file.
 - Media are cached for a day: give a re-recorded clip a new id (`menus-2`).
 - Delete files that `media/slides.json` no longer names.
-- Footage and games visible in a recording need a row in `media/CREDITS.md`.
+- Footage and games visible in a recording need a row and a footer line in `media/CREDITS.md`.
 
 Recordings:
 

@@ -75,8 +75,8 @@
         "zh-Hans": "一个面板，调整一切"
       },
       "caption": {
-        "en": "In fullscreen, slide the pointer to the right edge: picture, audio, subtitles and playback open beside the video, and every change applies as it plays. Any command is a few letters away in the Command Palette.",
-        "zh-Hans": "全屏时把指针滑到屏幕右缘，画面、音频、字幕与播放的面板就在视频旁展开，播放中即时生效。命令面板里敲几个字母，任何命令都触手可及。"
+        "en": "In fullscreen, slide to the right edge and tune the film as it plays. Any command is a few letters away in the Command Palette.",
+        "zh-Hans": "全屏时把指针移到屏幕右缘，边播边调。在命令面板里敲几个字母，什么命令都找得到。"
       },
       "poster": "media/posters/adjust.webp",
       "sources": [
@@ -98,8 +98,8 @@
         "zh-Hans": "看得见画面的播放列表"
       },
       "caption": {
-        "en": "Every item carries a thumbnail taken from the film itself, made on your own machine. Hide them for a compact list and bring them back with one click.",
-        "zh-Hans": "每一项都带着取自影片本身、在本机生成的缩略图。一键隐藏即成紧凑列表，再一键换回来。"
+        "en": "Every film gets a thumbnail, made on your own machine. One click hides them for a compact list.",
+        "zh-Hans": "每部影片都有在本机生成的缩略图。一键收起，就是紧凑列表。"
       },
       "poster": "media/posters/playlist.webp",
       "sources": [
@@ -121,8 +121,8 @@
         "zh-Hans": "从插件商城添加功能"
       },
       "caption": {
-        "en": "Open the store from the bottom bar and install a plugin such as VestraTube: it appears in the player right away.",
-        "zh-Hans": "在底部栏打开插件商城，安装 VestraTube 等插件，装好立刻出现在播放器里。"
+        "en": "Open the store from the bottom bar and install a plugin such as VestraTube. It is ready to use right away.",
+        "zh-Hans": "从底部栏打开插件商城，装上 VestraTube 这样的插件，马上就能用。"
       },
       "poster": "media/posters/store-3.webp",
       "sources": [
@@ -144,8 +144,8 @@
         "zh-Hans": "说出想要的插件，AI 帮你做"
       },
       "caption": {
-        "en": "Tell Vestra Player AI what you want in plain words. It writes and tests the plugin, and one click installs it. Works with your own AI provider key.",
-        "zh-Hans": "用一句话告诉 Vestra Player AI 你想要什么，它会编写并测试插件，一键即可安装。使用你自己的 AI 服务密钥。"
+        "en": "Say what you want, and Vestra Player AI writes and tests the plugin with your own AI key. One click installs it.",
+        "zh-Hans": "说出你想要什么，Vestra Player AI 就用你自己的 AI 密钥写好插件并测试，一键即可安装。"
       },
       "poster": "media/posters/ai-3.webp",
       "sources": [

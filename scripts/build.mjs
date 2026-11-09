@@ -148,7 +148,7 @@ function renderPage(lang) {
     openSource: renderOpenSource(),
     platforms: renderPlatforms(),
     links: renderLinks(),
-    credits: renderCredits(),
+    credits: renderCredits(lang),
     licence: en["ft.licence"],
     // Only what the script needs at run time; every other string is in the HTML already.
     data: JSON.stringify({ strings: Object.fromEntries(["media.pause", "media.play"].map((k) => [k, en[k]])) }).replace(/</g, "\\u003c"),
@@ -602,15 +602,20 @@ function renderLinks() {
     .join("\n");
 }
 
-/** media/CREDITS.md: the first Markdown table (Title | Author | Licence | Source | ...). */
+/** media/CREDITS.md: the bullet lines of its "## Footer" (English) and "## Footer (<lang>)" sections, by language; the record table is not shown. */
 function parseCredits(markdown) {
-  const rows = markdown.split(/\r?\n/).filter((line) => line.trim().startsWith("|"));
-  if (rows.length < 2) return [];
-  // Cells split on unescaped pipes; `\|` is a literal pipe.
-  const cells = (line) =>
-    line.trim().replace(/^\||(?<!\\)\|$/g, "").split(/(?<!\\)\|/).map((c) => c.trim().replace(/\\\|/g, "|"));
-  const header = cells(rows[0]).map((h) => h.toLowerCase());
-  return rows.slice(2).map((row) => Object.fromEntries(cells(row).map((c, i) => [header[i], c])));
+  const byLang = {};
+  let lang = null;
+  for (const line of markdown.split(/\r?\n/)) {
+    const heading = line.match(/^##\s+(.*?)\s*$/);
+    if (heading) {
+      const footer = heading[1].match(/^Footer(?:\s+\(([^)]+)\))?$/i);
+      lang = footer ? footer[1] ?? "en" : null;
+      continue;
+    }
+    if (lang && /^[-*]\s/.test(line)) (byLang[lang] ??= []).push(line.replace(/^[-*]\s+/, "").trim());
+  }
+  return byLang;
 }
 
 function inlineMarkdown(text = "") {
@@ -624,17 +629,13 @@ function inlineMarkdown(text = "") {
   return parts.join("").replace(/`([^`]+)`/g, "<code>$1</code>");
 }
 
-function renderCredits() {
-  // The footer lists only footage the page shows: the backdrop's row goes when the template has no backdrop.
+function renderCredits(lang) {
+  // The footer lists only footage the page shows: a backdrop line goes when the template has no backdrop.
   const backdropShown = readFileSync(fromRoot("src/index.html"), "utf8").includes("{{slot:backdrop}}");
-  const rows = credits.filter((row) => row.title && (backdropShown || !/\(hero backdrop\)/i.test(row.title)));
-  if (!rows.length) return `      <p>—</p>`;
-  const items = rows.map((row) => {
-    const bits = [row.title, row.attribution || row.author, row.licence ?? row.license]
-      .filter((cell) => cell && !/^[—–-]$/.test(cell))
-      .map(inlineMarkdown);
-    const source = row.source && !/^[—–-]$/.test(row.source) ? ` (${inlineMarkdown(row.source)})` : "";
-    return `        <li>${bits.join(", ")}${source}</li>`;
-  });
+  const lines = (credits[lang] ?? credits.en ?? [])
+    .filter((line) => backdropShown || !/\(hero backdrop\)/i.test(line))
+    .map((line) => line.replace(/\s*\(hero backdrop\)\s*/i, " ").trim());
+  if (!lines.length) return `      <p>—</p>`;
+  const items = lines.map((line) => `        <li>${inlineMarkdown(line)}</li>`);
   return `      <ul class="credits">\n${items.join("\n")}\n      </ul>`;
 }
