@@ -58,10 +58,7 @@
         "frame": "media/frame/frame-nes-2.webp"
       }
     ],
-    "far": [
-      "media/posters/seek-far.webp",
-      "media/posters/store-far.webp"
-    ]
+    "far": ["media/posters/seek-far.webp", "media/posters/store-far.webp"]
   },
   "slides": [
     {
@@ -75,8 +72,8 @@
         "zh-Hans": "一个面板，调整一切"
       },
       "caption": {
-        "en": "In fullscreen, slide to the right edge and tune the film as it plays. Any command is a few letters away in the Command Palette.",
-        "zh-Hans": "全屏时把指针移到屏幕右缘，边播边调。在命令面板里敲几个字母，什么命令都找得到。"
+        "en": "Tune the picture, sound and subtitles as the film plays. Any command is a few letters away in the Command Palette.",
+        "zh-Hans": "画面、声音、字幕，边播边调。在命令面板里敲几个字母，什么命令都找得到。"
       },
       "poster": "media/posters/adjust.webp",
       "sources": [
