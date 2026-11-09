@@ -133,15 +133,15 @@
         "zh-Hans": "从底部栏打开插件商城，装上 VestraTube 这样的插件，马上就能用。"
       },
       "in": 0,
-      "out": 8.3,
-      "poster": "media/posters/store-3.webp",
+      "out": 6.95,
+      "poster": "media/posters/store-4.webp",
       "sources": [
         {
-          "src": "media/clips/store-3.webm",
+          "src": "media/clips/store-4.webm",
           "type": "video/webm; codecs=av01.0.09M.08"
         },
         {
-          "src": "media/clips/store-3.mp4",
+          "src": "media/clips/store-4.mp4",
           "type": "video/mp4; codecs=avc1.64002A"
         }
       ]
@@ -157,16 +157,16 @@
         "en": "Say what you want, and Vestra Player AI writes and tests the plugin with your own AI key. One click installs it.",
         "zh-Hans": "说出你想要什么，Vestra Player AI 就用你自己的 AI 密钥写好插件并测试，一键即可安装。"
       },
-      "in": 3,
-      "out": 16.5,
-      "poster": "media/posters/ai-4.webp",
+      "in": 0,
+      "out": 11.95,
+      "poster": "media/posters/ai-5.webp",
       "sources": [
         {
-          "src": "media/clips/ai-4.webm",
+          "src": "media/clips/ai-5.webm",
           "type": "video/webm; codecs=av01.0.09M.08"
         },
         {
-          "src": "media/clips/ai-4.mp4",
+          "src": "media/clips/ai-5.mp4",
           "type": "video/mp4; codecs=avc1.64002A"
         }
       ]

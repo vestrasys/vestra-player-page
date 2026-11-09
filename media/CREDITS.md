@@ -50,13 +50,13 @@ are kept outside the repository (`SOURCES.md` next to them).
     `bbb_sunflower_2160p_60fps_normal.mp4`, in the playlist recording under
     the display name `Big Buck Bunny (2008).mp4`): the hero centre clip
     (`adjust`), the adjustments, playlist, store and AI recordings (the feature
-    tour plays the re-cuts `adjust-short`, `playlist-short` and `ai-4`) and
+    tour plays `adjust-short`, `playlist-short`, `store-4` and `ai-5`) and
     their posters, the window frame stills, and the blurred back-row stills.
     Recoloured on screen (the Picture panel turns it grey and back; Colour
-    Wheels grade it in the AI clip `ai-4`), cropped to the player window or shown
+    Wheels grade it in the AI clip `ai-5`), cropped to the player window or shown
     fullscreen, scaled and cut; sped up in places (the adjustments and store
     recordings).
-  - Spring: the last seconds of the Plugin Store recording (`store-3`), the
+  - Spring: the last seconds of the Plugin Store recording (`store-4`), the
     official Blender Studio upload played through VestraTube, the first
     seconds of the film. Zoomed and cropped with the recording, which is cut
     and sped up in places; not recoloured.

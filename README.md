@@ -277,18 +277,24 @@ npm run encode -- nes-td-cut.mkv --id nes-3 --crop 12,52,2200,1328 --start 3.25 
 npm run encode -- --frame frame-still.png --id frame --crop 2,0,2220,1390 --client 2,52,2216,1336 --video 2,52,1654,1226
 
 # The feature tour's re-cuts (2026-11-09; the hero keeps the whole adjust take).
-# Specs: C:/vestra/rec/specs/adjust-short.json and ai-4.json (C:/vestra/rec/tools/edit.mjs).
+# Specs in C:/vestra/rec/specs/ (C:/vestra/rec/tools/edit.mjs).
 # adjust-short: rawC2 colour sliders 1.3-6.8 s, 0.3 s crossfade, Command Palette "reset pic"
 #   + Enter 18.8-24.167 s, the playback stall after Enter (24.167-24.65 s) cut out, 24.65-25.6 s:
 npm run encode -- adjust-short-cut.mp4 --id adjust-short --duration 11.517 --loop-fade 0.5 --poster-at 4.6 --crf-av1 39 --crf-h264 27
 # playlist-short: the playlist-3 cut (specs/playlist-3.json) without the loop fade, so Sintel
 #   plays its full 2 s after the double-click (the tour loops 1.5-5.85 s):
 npm run encode -- C:/vestra/rec/playlist-3-cut.mp4 --id playlist-short --duration 5.837 --poster-at 4.9
-# ai-4: specs/ai-3.json up to "Installed Colour Wheels 0.1.0", then a before/after of one
-#   film shot in ai-0776-user-wheels-fixed-ptr.mkv: 24.0-25.4 s ungraded, hard cut to
-#   33.9-38.1 s while Highlights is dragged (sky blue to cyan, the bunny white to
-#   green-yellow); it ends before the pointer heads for Reset. No colour filters added.
-npm run encode -- ai-4-cut.mp4 --id ai-4 --size 1874x1080 --crf-av1 41 --crf-h264 30 --poster-at 15.5
+# store-4 (specs/store-4a.json + store-4b.json, store-0776-rawC-ptr2.mkv): the Install click in a
+#   close-up on the VestraTube block (name, Install 0.5.3, one-line description), the installed
+#   state in the same close-up, then a 0.3 s cross-fade straight to the VestraTube tab (no store
+#   close, no pointer to the tab): search, results, double-click, Spring. The two parts are
+#   joined with ffmpeg xfade (0.3 s at 1.83, qp 4) into store-4-cut.mp4:
+npm run encode -- store-4-cut.mp4 --id store-4 --size 1874x1080 --duration 7.383 --loop-fade 0.4 --poster-at 0.8 --crf-av1 41 --crf-h264 30
+# ai-5 (specs/ai-5.json): the promo's AI shot (marketing/video main/shots/s6v7d.js, footage
+#   s6c-*) with its source spans and order from the raw takes, without the promo's overlays:
+#   prompt, the run as a time-lapse, "complete and verified", Install, Video > Colour Wheels,
+#   the wheels grading the film; hard cuts, each beat framed on the promo's crop.
+npm run encode -- ai-5-cut.mp4 --id ai-5 --size 1874x1080 --crf-av1 41 --crf-h264 30 --poster-at 11.0
 
 # Hero stage cards (the tour keeps its own clips). hero-adjust is a plain
 # (pointer: every take below goes through C:estraec	oolspointer.mjs; takes with the system
