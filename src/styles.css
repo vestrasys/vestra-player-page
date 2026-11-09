@@ -299,7 +299,14 @@ main { overflow-x: clip; }
 
 .chapters { max-width: var(--wide); margin: 0 auto; padding: 96px var(--gutter) 60px; }
 .tour .section-head { margin-bottom: 0; }
-.st-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(32px, 5vw, 72px); }
+/* The window's geometry, shared by the grid, the window and its sticky offset: it takes 7 of 12
+   parts of the content width (--wide less the gutters) after the gap, at --st-ar. */
+.tour {
+  --st-gap: clamp(32px, 5vw, 72px);
+  --st-ar: 1.6; /* 16 / 10 */
+  --st-win-h: calc((min(var(--wide), 100vw) - 2 * var(--gutter) - var(--st-gap)) * 7 / 12 / var(--st-ar));
+}
+.st-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--st-gap); }
 .st-step { min-height: 72vh; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; transition: opacity 0.4s ease; }
 /* With script the other features' texts sit dimmer (without it every text is shown in full). */
 .js .st-step { opacity: 0.32; }
@@ -313,8 +320,9 @@ main { overflow-x: clip; }
 .ch-num span { margin-left: 6px; color: var(--faint); }
 .ch-title { font-size: var(--t-h3); display: flex; flex-direction: column; align-items: flex-start; gap: 16px; }
 .ch-text { margin: 18px 0 0; color: var(--muted); font-size: 1.04rem; max-width: 30em; }
-/* Centred in the screen under the header (the window is about 0.344 of the content width tall). */
-.st-sticky { position: sticky; top: calc(var(--header) + max(16px, (100vh - var(--header) - min(1168px, 100vw - 32px) * 0.344 - 60px) / 2)); }
+/* Centred in the screen under the header: the window (--st-win-h) and the bar under it (about 60px:
+   its 16px margin, the pause button and some air). */
+.st-sticky { position: sticky; top: calc(var(--header) + max(16px, (100vh - var(--header) - var(--st-win-h) - 60px) / 2)); }
 .st-under { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 16px; }
 .st-under .pp { flex: none; }
 .st-segs { display: flex; gap: 6px; }
@@ -324,7 +332,7 @@ main { overflow-x: clip; }
 
 /* The window: one frame that cross-fades between the features; a click opens the full clip. */
 .vl-frame {
-  position: relative; display: block; width: 100%; aspect-ratio: 16 / 10; padding: 0; border: 0; cursor: zoom-in; touch-action: pan-y;
+  position: relative; display: block; width: 100%; aspect-ratio: var(--st-ar); padding: 0; border: 0; cursor: zoom-in; touch-action: pan-y;
   border-radius: var(--win-radius); overflow: hidden; background: var(--ink-2); color: inherit; font: inherit;
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.07), 0 40px 100px -30px rgba(0, 0, 0, 0.95), 0 0 70px -24px rgba(250, 10, 168, 0.16);
 }

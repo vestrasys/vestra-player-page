@@ -108,7 +108,7 @@
         "zh-Hans": "每部影片都有在本机生成的缩略图。双击一下，就换一部看。"
       },
       "in": 1.5,
-      "out": 5.85,
+      "out": 5.8,
       "poster": "media/posters/playlist-short.webp",
       "sources": [
         {

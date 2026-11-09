@@ -19,7 +19,8 @@ const OG_LOCALE = { en: "en_US", "zh-Hans": "zh_CN" };
 const SIZES = {
   hero: "(max-width: 860px) calc(100vw - 32px), min(605px, 45vw)",
   near: "(max-width: 860px) 1px, min(605px, 45vw)",
-  tour: "(max-width: 860px) calc(100vw - 32px), 58vw",
+  // The tour window: 7/12 of the content width less the gap (styles.css .tour), 639px at most.
+  tour: "(max-width: 860px) calc(100vw - 32px), min(640px, calc(55.42vw - 19px))",
 };
 const BUDGET = 150 * 1024; // HTML + CSS + JS, media and images excluded
 const MAX_FILE = 25 * 1024 * 1024; // Cloudflare Pages per-file limit
@@ -153,7 +154,7 @@ function renderPage(lang) {
     // Only what the script needs at run time; every other string is in the HTML already.
     // The tour's cut of each clip (in/out) and the full clip with its shape for the lightbox.
     data: JSON.stringify({
-      strings: Object.fromEntries(["media.pause", "media.play", "tour.watch"].map((k) => [k, en[k]])),
+      strings: Object.fromEntries(["media.pause", "media.play", "tour.watchLabel"].map((k) => [k, en[k]])),
       // (rebase() fixes attributes only: the clip paths here get the subfolder prefix themselves.)
       tour: manifest.slides.map((s) => ({ in: s.in, out: s.out, ar: Number(aspect(s).toFixed(4)), sources: s.sources.map(({ src, type }) => ({ src: /^https?:/.test(src) ? src : prefix + src, type })) })),
     }).replace(/</g, "\\u003c"),
@@ -610,7 +611,7 @@ ${steps}
       </div>
       <div class="st-media">
         <div class="st-sticky">
-          <button type="button" class="vl-frame" data-tour aria-label="${escape(`${en["tour.watch"]}: ${en[`slide.${manifest.slides[0].id}.title`]}`)}">
+          <button type="button" class="vl-frame" data-tour aria-label="${escape(format(en["tour.watchLabel"], { title: en[`slide.${manifest.slides[0].id}.title`] }))}">
             ${layers}
           </button>
           <div class="st-under"><div class="st-segs" aria-hidden="true">${segs}</div>${renderPause("tour")}</div>

@@ -160,7 +160,7 @@
       }
       layers.forEach((l, k) => l.toggleAttribute("data-on", k === index));
       steps.forEach((s, k) => s.toggleAttribute("data-on", k === index));
-      frame.setAttribute("aria-label", `${text("tour.watch")}: ${$(".ch-title", steps[index]).textContent}`);
+      frame.setAttribute("aria-label", text("tour.watchLabel").replace("{title}", $(".ch-title", steps[index]).textContent));
       progress(index, still() ? 1 : 0);
       run();
     }
@@ -205,7 +205,13 @@
     }
     if (box) {
       $(".lb-close", box).addEventListener("click", () => box.close());
-      box.addEventListener("click", (event) => { if (event.target === box) box.close(); });
+      // A click on the backdrop (outside the box) closes it; one on the dialog's own scrollbar does not.
+      box.addEventListener("click", (event) => {
+        if (event.target !== box) return;
+        const r = box.getBoundingClientRect();
+        const inside = event.clientX >= r.left && event.clientX <= r.right && event.clientY >= r.top && event.clientY <= r.bottom;
+        if (!inside) box.close();
+      });
       box.addEventListener("close", () => { boxVideo.pause(); boxOpen = false; onChange(); });
     }
     frame.addEventListener("click", () => open(index));
