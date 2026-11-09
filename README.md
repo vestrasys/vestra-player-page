@@ -265,10 +265,12 @@ npm run encode -- nes-td-cut.mkv --id nes-3 --crop 12,52,2200,1328 --start 3.25 
 npm run encode -- --frame frame-still.png --id frame --crop 2,0,2220,1390 --client 2,52,2216,1336 --video 2,52,1654,1226
 
 # Hero stage cards (the chapters keep their own clips). hero-adjust is a plain
+# (pointer: every take below goes through C:estraec	oolspointer.mjs; takes with the system
+# arrow baked in are tracked by track.mjs first and use <take>-ptr.mkv)
 # encode of its own take (player 0.7.6, maximized, no sidebar, 2560x1516 like the
 # frame, captured as the client area 2560x1476): column opened, Saturation
 # dragged to grey, Colour > Original, column closed; the fade joins the loop.
-npm run encode -- hero-adjust-rawB.mkv --id hero-adjust --start 1.3 --duration 10.3 --loop-fade 0.4 --poster-at 2.3
+npm run encode -- hero-adjust-rawB-ptr.mkv --id hero-adjust --start 1.3 --duration 10.3 --loop-fade 0.4 --poster-at 2.3
 # The side windows show only the hero-ai and hero-nes-2 posters. Each cut starts
 # from an intermediate cut with plain ffmpeg, then goes through encode at a smaller size.
 #  hero-ai: wheels-rawC.mkv 101.5-111.8 s and 145.7-148.5 s (0.3 s crossfade), each
