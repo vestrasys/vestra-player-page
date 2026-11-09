@@ -194,7 +194,7 @@ a.cta-btn:hover { transform: translateY(-1px); }
 }
 /* A fullscreen take (no window frame): the picture alone, its own --ar (build.mjs). */
 .card.is-full { background: #000; }
-.card > img, .win > img, .card-far img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.card > img, .card-far img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .shot { position: absolute; overflow: hidden; background: #000; }
 .shot img, .shot video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
 .shot video { opacity: 0; transition: opacity 0.4s ease; }
@@ -259,8 +259,8 @@ a.cta-btn:hover { transform: translateY(-1px); }
 @keyframes fan-in { from { opacity: 0; transform: translate3d(0, 48px, -240px); } }
 
 /* ---- Quiet backgrounds for the middle sections (the hero's and the end's language, fainter):
-   a thin spectrum divider on top, a dot grid at the page's edges that fades in and out, and an
-   aurora glow behind each chapter's window, alternating sides and hues. Static: nothing moves. ---- */
+   a thin spectrum divider on top and a dot grid at the page's edges that fades in and out.
+   Static: nothing moves. ---- */
 
 /* The glows reach past the viewport's sides: clipped here (body's clip alone still lets a phone
    widen its layout viewport). clip, not hidden: no scroll container. */
@@ -294,28 +294,18 @@ main { overflow-x: clip; }
     radial-gradient(620px 360px at 14% 42%, rgba(16, 168, 252, 0.12), transparent 70%),
     radial-gradient(560px 340px at 86% 62%, rgba(122, 10, 250, 0.12), transparent 70%);
 }
-/* Each chapter: a soft aurora behind its window (magenta and violet; cyan and violet when flipped). */
-.chapter { position: relative; }
-.chapter::before {
-  content: ""; position: absolute; z-index: -1; pointer-events: none;
-  top: 50%; left: 68%; width: min(1100px, 95vw); aspect-ratio: 16 / 10; transform: translate(-50%, -50%);
-  background:
-    radial-gradient(closest-side at 55% 50%, rgba(250, 10, 168, 0.2), transparent),
-    radial-gradient(closest-side at 35% 62%, rgba(122, 10, 250, 0.17), transparent);
-}
-.chapter.is-flip::before {
-  left: 32%;
-  background:
-    radial-gradient(closest-side at 45% 50%, rgba(16, 168, 252, 0.15), transparent),
-    radial-gradient(closest-side at 65% 62%, rgba(122, 10, 250, 0.18), transparent);
-}
-
-/* ---- Features: one chapter per recording ---- */
+/* ---- Features: the tour. The feature texts scroll on the left; one sticky window on the right
+   shows the feature at the reading line (main.js), looping that slide's cut. ---- */
 
 .chapters { max-width: var(--wide); margin: 0 auto; padding: 96px var(--gutter) 60px; }
-.chapter { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 8fr); gap: clamp(32px, 5vw, 72px); align-items: center; padding: 56px 0; }
-.chapter.is-flip { grid-template-columns: minmax(0, 8fr) minmax(0, 5fr); }
-.chapter.is-flip .ch-copy { order: 2; }
+.tour .section-head { margin-bottom: 0; }
+.st-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(32px, 5vw, 72px); }
+.st-step { min-height: 72vh; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; transition: opacity 0.4s ease; }
+/* With script the other features' texts sit dimmer (without it every text is shown in full). */
+.js .st-step { opacity: 0.32; }
+.js .st-step[data-on] { opacity: 1; }
+.st-step:last-child { min-height: 80vh; }
+.st-watch { margin-top: 18px; padding: 0; border: 0; background: none; font-size: 0.95rem; }
 .ch-num { margin: 0 0 16px; font: 700 0.82rem/1 var(--mono); letter-spacing: 0.14em; color: var(--accent); width: fit-content; }
 @supports (background-clip: text) or (-webkit-background-clip: text) {
   .ch-num { background: var(--brand); -webkit-background-clip: text; background-clip: text; color: transparent; }
@@ -323,14 +313,47 @@ main { overflow-x: clip; }
 .ch-num span { margin-left: 6px; color: var(--faint); }
 .ch-title { font-size: var(--t-h3); display: flex; flex-direction: column; align-items: flex-start; gap: 16px; }
 .ch-text { margin: 18px 0 0; color: var(--muted); font-size: 1.04rem; max-width: 30em; }
-.window { position: relative; margin: 0; perspective: 1400px; display: flex; flex-direction: column; align-items: flex-end; gap: 14px; }
-.chapter.is-flip .window { align-items: flex-start; }
-.win {
-  position: relative; width: 100%; aspect-ratio: 2220 / 1390; border-radius: var(--win-radius); overflow: hidden; background: var(--ink-2);
+/* Centred in the screen under the header (the window is about 0.344 of the content width tall). */
+.st-sticky { position: sticky; top: calc(var(--header) + max(16px, (100vh - var(--header) - min(1168px, 100vw - 32px) * 0.344 - 60px) / 2)); }
+.st-under { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 16px; }
+.st-under .pp { flex: none; }
+.st-segs { display: flex; gap: 6px; }
+/* A progress bar per feature: a track with a brand fill scaled by script (transform only). */
+.st-seg { display: block; width: 40px; height: 3px; border-radius: 2px; background: var(--line-2); overflow: hidden; }
+.st-seg i { display: block; height: 100%; background: var(--brand); transform-origin: 0 50%; transform: scaleX(0); }
+
+/* The window: one frame that cross-fades between the features; a click opens the full clip. */
+.vl-frame {
+  position: relative; display: block; width: 100%; aspect-ratio: 16 / 10; padding: 0; border: 0; cursor: zoom-in; touch-action: pan-y;
+  border-radius: var(--win-radius); overflow: hidden; background: var(--ink-2); color: inherit; font: inherit;
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.07), 0 40px 100px -30px rgba(0, 0, 0, 0.95), 0 0 70px -24px rgba(250, 10, 168, 0.16);
 }
-/* A fullscreen recording: the player's whole screen, no window frame; --ar is the recording's aspect ratio. */
-.win.is-full { aspect-ratio: var(--ar, 16 / 10); }
+.no-js .vl-frame { cursor: default; }
+.vl-layer { position: absolute; inset: 0; opacity: 0; transition: opacity 0.5s ease; }
+.vl-layer[data-on] { opacity: 1; }
+.vl-layer.is-full { background: #000; }
+.vl-layer > img.chrome { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+/* The full clip: a dialog with the feature's title and caption. */
+.lightbox {
+  width: min(1180px, calc(100vw - 32px)); max-width: none; max-height: calc(100dvh - 32px); padding: 0; overflow: auto;
+  color: var(--text); background: var(--ink-1); border: 1px solid var(--line-2); border-radius: 18px; box-shadow: 0 40px 140px rgba(0, 0, 0, 0.8);
+}
+.lightbox::backdrop { background: rgba(3, 4, 7, 0.84); }
+.lightbox[open] { animation: lb-in 0.35s cubic-bezier(0.2, 0.7, 0.2, 1); }
+@keyframes lb-in { from { opacity: 0; transform: scale(0.92); } }
+.lb-box { position: relative; }
+.lb-media { background: #000; }
+.lb-media video { display: block; width: 100%; max-height: calc(100dvh - 200px); aspect-ratio: var(--ar, 16 / 10); object-fit: contain; background: #000; }
+.lb-copy { padding: 18px 24px 22px; }
+.lb-num { margin: 0 0 6px; font: 700 0.78rem/1 var(--mono); letter-spacing: 0.14em; color: var(--accent); }
+.lb-copy h2 { font-size: clamp(1.25rem, 2.2vw, 1.6rem); }
+.lb-cap { margin: 8px 0 0; color: var(--muted); max-width: 52em; }
+.lb-close {
+  position: absolute; top: 12px; right: 12px; z-index: 2; width: 38px; height: 38px; border-radius: 50%;
+  display: grid; place-items: center; border: 1px solid var(--line-2); background: rgba(9, 8, 13, 0.75);
+}
+.lb-close svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; }
 
 /* ---- Open source ---- */
 
@@ -385,14 +408,11 @@ main { overflow-x: clip; }
 
 /* ---- Reveals: each block rises into place once (main.js adds .reveals, then .in per block) ---- */
 
-.win { --tilt: -16deg; }
-.chapter.is-flip .win { --tilt: 16deg; }
 @media (prefers-reduced-motion: no-preference) {
-  .reveals :is(.reveal, .os-grid, .ch-copy, .win) {
+  .reveals :is(.reveal, .os-grid) {
     transition: opacity 0.7s ease, transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1);
   }
-  .reveals :is(.reveal, .os-grid, .ch-copy):not(.in) { opacity: 0; transform: translateY(32px); }
-  .reveals .win:not(.in) { opacity: 0.35; transform: translateZ(-120px) rotateY(var(--tilt)) rotateX(6deg); }
+  .reveals :is(.reveal, .os-grid):not(.in) { opacity: 0; transform: translateY(32px); }
 }
 
 /* ---- Narrow screens: the fan collapses to its front window ---- */
@@ -413,16 +433,21 @@ main { overflow-x: clip; }
   /* The download button appears in the empty room left of the actions, so it never moves the others. */
   .nav-dl { position: absolute; right: calc(100% + 10px); }
   .chapters, .open { padding-top: 88px; }
-  .chapter, .chapter.is-flip { grid-template-columns: minmax(0, 1fr); gap: 22px; padding: 36px 0; }
-  .chapter.is-flip .ch-copy { order: 0; }
-  .window, .chapter.is-flip .window { align-items: flex-end; }
+  /* The tour: the window sticks under the header, the texts scroll beneath it. */
+  .st-grid { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .st-media { order: -1; position: sticky; top: var(--header); z-index: 4; margin: 0 calc(-1 * var(--gutter)); padding: 12px var(--gutter) 10px; background: linear-gradient(var(--ink) 88%, rgba(9, 8, 13, 0)); }
+  .st-sticky { position: static; padding-top: 0; margin-top: 0; }
+  .st-under { margin-top: 10px; }
+  .st-seg { width: 28px; }
+  .st-step { min-height: 52vh; }
+  .st-step:first-child { margin-top: 24px; }
+  .st-step:last-child { min-height: 60vh; }
+  .tour .ch-title { font-size: 1.5rem; }
   .os-grid { grid-template-columns: minmax(0, 1fr); }
   .os-card, .os-card + .os-card { padding: 22px 0; border-left: 0; }
   .os-card + .os-card { border-top: 1px solid var(--line); }
   .pp-hero { position: static; display: flex; margin: 14px 0 0 auto; }
   .floor { height: 46%; }
-  /* One column: the glow sits behind the window, under the copy. */
-  .chapter::before, .chapter.is-flip::before { left: 50%; top: 62%; width: 150vw; }
   /* The edges are narrow here: fainter dots. */
   .chapters::before { opacity: 0.6; }
 }

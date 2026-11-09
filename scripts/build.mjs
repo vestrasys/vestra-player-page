@@ -19,7 +19,7 @@ const OG_LOCALE = { en: "en_US", "zh-Hans": "zh_CN" };
 const SIZES = {
   hero: "(max-width: 860px) calc(100vw - 32px), min(605px, 45vw)",
   near: "(max-width: 860px) 1px, min(605px, 45vw)",
-  chapter: "(max-width: 860px) calc(100vw - 32px), min(740px, 58vw)",
+  tour: "(max-width: 860px) calc(100vw - 32px), 58vw",
 };
 const BUDGET = 150 * 1024; // HTML + CSS + JS, media and images excluded
 const MAX_FILE = 25 * 1024 * 1024; // Cloudflare Pages per-file limit
@@ -143,7 +143,7 @@ function renderPage(lang) {
     heroSource: renderHeroSource(),
     githubIcon: GITHUB_ICON,
     stage: renderStage(),
-    chapters: manifest.slides.map(renderChapter).join("\n"),
+    tour: renderTour(),
     pauseHero: renderPause("hero"),
     openSource: renderOpenSource(),
     platforms: renderPlatforms(),
@@ -151,7 +151,12 @@ function renderPage(lang) {
     credits: renderCredits(lang),
     licence: en["ft.licence"],
     // Only what the script needs at run time; every other string is in the HTML already.
-    data: JSON.stringify({ strings: Object.fromEntries(["media.pause", "media.play"].map((k) => [k, en[k]])) }).replace(/</g, "\\u003c"),
+    // The tour's cut of each clip (in/out) and the full clip with its shape for the lightbox.
+    data: JSON.stringify({
+      strings: Object.fromEntries(["media.pause", "media.play", "tour.watch"].map((k) => [k, en[k]])),
+      // (rebase() fixes attributes only: the clip paths here get the subfolder prefix themselves.)
+      tour: manifest.slides.map((s) => ({ in: s.in, out: s.out, ar: Number(aspect(s).toFixed(4)), sources: s.sources.map(({ src, type }) => ({ src: /^https?:/.test(src) ? src : prefix + src, type })) })),
+    }).replace(/</g, "\\u003c"),
   };
   // The front window's frame image (its poster for a fullscreen take, which has no frame) is the
   // largest paint (LCP) of the first screen: preloaded at high priority.
@@ -331,6 +336,9 @@ function checkManifest({ backdrop, frame, slides, stage }) {
     for (const lang of LANGS)
       if (!slide.title?.[lang] || !slide.caption?.[lang]) fail(`${where}: title and caption need "${lang}"`);
     if (!slide.sources?.length) fail(`${where}: no sources`);
+    // The tour plays the cut in-out of the clip (seconds).
+    if (!(Number.isFinite(slide.in) && Number.isFinite(slide.out) && slide.in >= 0 && slide.out > slide.in))
+      fail(`${where}: needs "in" and "out" (seconds, 0 <= in < out), the cut the feature tour plays`);
     files.push(slide.poster, ...slide.sources.map((s) => s.src), ...(slide.icon ? [slide.icon] : []));
   }
   checkFiles(files, "media/slides.json");
@@ -516,10 +524,10 @@ function size(slide) {
 }
 
 /** The clip over the window's client area: the poster underneath, the video on top once it plays (main.js). */
-function renderShot(slide, { lazy, sizes, alt = "" }) {
+function renderShot(slide, { lazy, sizes, alt = "", loop = true }) {
   const load = lazy ? ' loading="lazy"' : ' fetchpriority="high"';
   const sources = slide.sources.map((s) => `<source data-src="${escape(s.src)}" type="${escape(s.type)}">`).join("");
-  return `<div class="shot" style="${area(slide)}"><img ${imgSrc(slide.poster, sizes)} ${size(slide)}${load} decoding="async" alt="${escape(alt)}"><video muted loop playsinline preload="none" aria-hidden="true" tabindex="-1">${sources}</video></div>`;
+  return `<div class="shot" style="${area(slide)}"><img ${imgSrc(slide.poster, sizes)} ${size(slide)}${load} decoding="async" alt="${escape(alt)}"><video muted${loop ? " loop" : ""} playsinline preload="none" aria-hidden="true" tabindex="-1">${sources}</video></div>`;
 }
 
 function renderChrome(lazy, alt, sizes, f = frame) {
@@ -558,7 +566,7 @@ function renderStage() {
   const far = (src, side) =>
     `          <div class="card card-far card-${side}" aria-hidden="true"><img src="${escape(src)}" width="640" height="${farH}" loading="lazy" decoding="async" alt=""></div>`;
   // A still is its image only. A slide plays its clip (its poster and sources, the same files as
-  // its chapter but its own <video>): main.js starts it after the front window's clip, on wide
+  // its tour feature but its own <video>): main.js starts it after the front window's clip, on wide
   // screens only, and pauses it with the front window.
   const side = (slide, s) => slide.sources
     ? `          <div class="${cardClass(`card-near card-${s}`, slide)}" aria-hidden="true" data-companion="hero"${cardShape(slide)}>${cardChrome(slide, true, false, "near")}${renderShot(slide, { lazy: true, sizes: "near" })}</div>`
@@ -572,19 +580,43 @@ function renderStage() {
   ].join("\n");
 }
 
-function renderChapter(slide, i) {
+/** A clip's own shape: the fullscreen take, or the frame area it covers (the lightbox shows it so). */
+function aspect(slide) {
+  if (slide.fullscreen) return slide.fullscreen.width / slide.fullscreen.height;
+  const a = frame.areas[slide.area];
+  return a.width / a.height;
+}
+
+/**
+ * The feature tour: the feature texts scroll on one side, one sticky player window on the other
+ * shows the feature at the reading line (main.js), looping that slide's in-out cut. The window
+ * and "Watch the full clip" open the whole clip in a dialog. Phones: the window sticks on top.
+ */
+function renderTour() {
   const n = (k) => String(k).padStart(2, "0");
-  return `      <article class="chapter${i % 2 ? " is-flip" : ""}">
-        <div class="ch-copy">
-          <p class="ch-num" aria-hidden="true">${n(i + 1)}<span>/${n(manifest.slides.length)}</span></p>
+  const count = manifest.slides.length;
+  const steps = manifest.slides.map((slide, i) => `        <article class="st-step" data-i="${i}">
+          <p class="ch-num" aria-hidden="true">${n(i + 1)}<span>/${n(count)}</span></p>
           <h3 class="ch-title">${t(`slide.${slide.id}.title`)}</h3>
           <p class="ch-text">${t(`slide.${slide.id}.caption`)}</p>
+          <button type="button" class="text-link st-watch js-only" data-open="${i}">${escape(en["tour.watch"])} →</button>
+        </article>`).join("\n");
+  const layers = manifest.slides.map((slide, i) =>
+    `<div class="vl-layer${slide.fullscreen ? " is-full" : ""}" data-i="${i}"${i === 0 ? " data-on" : ""}>${slide.fullscreen ? "" : renderChrome(true, false, "tour")}${renderShot(slide, { lazy: true, sizes: "tour", loop: false })}</div>`).join("\n            ");
+  const segs = manifest.slides.map((_, i) => `<span class="st-seg" data-i="${i}"><i></i></span>`).join("");
+  return `    <div class="st-grid">
+      <div class="st-steps">
+${steps}
+      </div>
+      <div class="st-media">
+        <div class="st-sticky">
+          <button type="button" class="vl-frame" data-tour aria-label="${escape(`${en["tour.watch"]}: ${en[`slide.${manifest.slides[0].id}.title`]}`)}">
+            ${layers}
+          </button>
+          <div class="st-under"><div class="st-segs" aria-hidden="true">${segs}</div>${renderPause("tour")}</div>
         </div>
-        <figure class="window" data-media="${slide.id}">
-          <div class="win${slide.fullscreen ? " is-full" : ""}"${slide.fullscreen ? ` style="--ar:${(slide.fullscreen.width / slide.fullscreen.height).toFixed(4)}"` : ""}>${slide.fullscreen ? "" : renderChrome(true, false, "chapter")}${renderShot(slide, { lazy: true, sizes: "chapter" })}</div>
-          ${renderPause(slide.id)}
-        </figure>
-      </article>`;
+      </div>
+    </div>`;
 }
 
 // ---- Open source ----

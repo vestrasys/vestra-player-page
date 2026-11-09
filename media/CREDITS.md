@@ -36,7 +36,7 @@ are kept outside the repository (`SOURCES.md` next to them).
 | Big Buck Bunny (in the hero, adjustments, playlist, store and AI recordings and the window stills) | Blender Foundation | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | [peach.blender.org](https://peach.blender.org/about/) | (c) copyright 2008, Blender Foundation / www.bigbuckbunny.org |
 | Spring (at the end of the Plugin Store recording, played through VestraTube) | Blender Animation Studio | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | [studio.blender.org/films/spring](https://studio.blender.org/films/spring/pages/about/) | © Blender Foundation \| cloud.blender.org/spring |
 | Elephants Dream (a playlist row and its thumbnail in the playlist recording) | Blender Foundation | [CC BY 2.5](https://creativecommons.org/licenses/by/2.5/) | [orange.blender.org](https://orange.blender.org/) | (c) copyright 2006, Blender Foundation / Netherlands Media Art Institute / www.elephantsdream.org |
-| Sintel (a playlist row and its thumbnail in the playlist recording) | Blender Foundation | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | [durian.blender.org](https://durian.blender.org/sharing/) | (c) copyright Blender Foundation \| durian.blender.org |
+| Sintel (a playlist row and its thumbnail in the playlist recording, and about 2 s of its opening playing after the double-click) | Blender Foundation | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | [durian.blender.org](https://durian.blender.org/sharing/) | (c) copyright Blender Foundation \| durian.blender.org |
 | Tears of Steel (a playlist row and its thumbnail in the playlist recording) | Blender Foundation | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | [mango.blender.org](https://mango.blender.org/sharing/) | (CC) Blender Foundation \| mango.blender.org |
 | Caminandes 2: Gran Dillama (a playlist row and its thumbnail in the playlist recording) | Blender Institute | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | [studio.blender.org/films/caminandes-2](https://studio.blender.org/films/caminandes-2/) | (CC) Blender Foundation \| www.caminandes.com |
 | Stunning Aurora Borealis in Night Sky Timelapse (hero backdrop) | [Frank Cone](https://www.pexels.com/@frank-cone-140140/) | [Pexels License](https://www.pexels.com/license/) | [Pexels](https://www.pexels.com/video/stunning-aurora-borealis-in-night-sky-timelapse-28889010/) | Video by Frank Cone from Pexels |
@@ -49,10 +49,11 @@ are kept outside the repository (`SOURCES.md` next to them).
   - Big Buck Bunny (the 60 fps 2160p "sunflower" render,
     `bbb_sunflower_2160p_60fps_normal.mp4`, in the playlist recording under
     the display name `Big Buck Bunny (2008).mp4`): the hero centre clip
-    (`hero-adjust`), the adjustments, playlist, store and AI recordings and
+    (`adjust`), the adjustments, playlist, store and AI recordings (the feature
+    tour plays the re-cuts `adjust-short`, `playlist-short` and `ai-4`) and
     their posters, the window frame stills, and the blurred back-row stills.
     Recoloured on screen (the Picture panel turns it grey and back; Colour
-    Wheels grade it in the AI clip `ai-3`), cropped to the player window or shown
+    Wheels grade it in the AI clip `ai-4`), cropped to the player window or shown
     fullscreen, scaled and cut; sped up in places (the adjustments and store
     recordings).
   - Spring: the last seconds of the Plugin Store recording (`store-3`), the
@@ -60,9 +61,11 @@ are kept outside the repository (`SOURCES.md` next to them).
     seconds of the film. Zoomed and cropped with the recording, which is cut
     and sped up in places; not recoloured.
   - Elephants Dream, Sintel, Tears of Steel and Caminandes 2: in the playlist
-    recording (`playlist`) only as playlist rows, each with a small thumbnail
+    recording (`playlist-short`) as playlist rows, each with a small thumbnail
     (one frame near the start of the film, made by the player) and its
-    duration; none of them plays. The files are the official downloads from
+    duration. Sintel is double-clicked and the first seconds of the film play
+    for about 2 s (scaled with the recording, not recoloured); the others do
+    not play. The files are the official downloads from
     download.blender.org (see `C:\vestra\testmedia\blender-open-movies\CREDITS.md`
     outside the repository for the exact files and digests).
 - Licence sources (checked 2026-11-04): Big Buck Bunny,

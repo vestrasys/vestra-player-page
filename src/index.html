@@ -63,13 +63,13 @@
     </div>
   </section>
 
-  <section class="chapters" id="features" aria-labelledby="tour-title">
+  <section class="chapters tour" id="features" aria-labelledby="tour-title">
     <div class="section-head reveal">
       <p class="kicker">{{t:tour.kicker}}</p>
       <h2 id="tour-title">{{t:tour.title}}</h2>
       <p class="section-lede">{{t:tour.lede}}</p>
     </div>
-{{slot:chapters}}
+{{slot:tour}}
   </section>
 
   <section class="open" id="open-source" aria-labelledby="os-title">
@@ -115,6 +115,14 @@
     <button type="button" class="pf-close" aria-label="{{t:pf.close}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
   </div>
 {{slot:platforms}}
+</dialog>
+
+<dialog class="lightbox" id="lightbox" aria-labelledby="lb-title">
+  <div class="lb-box">
+    <button type="button" class="lb-close" aria-label="{{t:pf.close}}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <div class="lb-media"><video controls muted loop playsinline preload="none"></video></div>
+    <div class="lb-copy"><p class="lb-num"></p><h2 id="lb-title"></h2><p class="lb-cap"></p></div>
+  </div>
 </dialog>
 
 <script type="application/json" id="page-data">{{slot:data}}</script>

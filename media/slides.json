@@ -1,5 +1,5 @@
 {
-  "$comment": "Hero backdrop and feature carousel. Paths are relative to the site root (this repository's root at build time). Encode a recording with scripts/encode-clip.mjs and edit only this file; see README.md 'Replacing media'. A slide with \"hidden\": true is left out of the page (its files need not exist).",
+  "$comment": "Hero backdrop and feature carousel. Paths are relative to the site root (this repository's root at build time). Encode a recording with scripts/encode-clip.mjs and edit only this file; see README.md 'Replacing media'. Each slide plays the cut \"in\"-\"out\" (seconds) of its clip in the feature tour, looping; \"Watch the full clip\" opens the whole clip. A slide with \"hidden\": true is left out of the page (its files need not exist).",
   "backdrop": {
     "poster": "media/posters/aurora.webp",
     "sources": [
@@ -38,7 +38,23 @@
   },
   "stage": {
     "$comment": "The hero's depth stage: player windows fanned in 3D. \"center\" is the front window, whose clip plays; \"near\" are the windows beside it (left, right); \"far\" are pre-blurred stills for the back row (left, right), made with `npm run encode -- --far <slide-id | poster path> [--id <name>]`. A center or near entry is a slide id (that slide's clip, poster and area), a card of its own ({\"poster\", \"sources\"} from `npm run encode`, over the frame's client area or the \"area\" it names; or with \"frame\": a narrowed window from `npm run encode -- --window <width> --id <name>`, its picture under the title bar, for a cut without the playlist pane), or (near only) a still: a .webp path, or a card without \"sources\". The center window uses the main frame, or none for a fullscreen take (a slide or card with \"fullscreen\": {width, height}). Near clips start once the front window's clip plays, on wide screens only; reduced motion or Save-Data shows the posters only.",
-    "center": "adjust",
+    "center": {
+      "poster": "media/posters/adjust.webp",
+      "sources": [
+        {
+          "src": "media/clips/adjust.webm",
+          "type": "video/webm; codecs=av01.0.09M.08"
+        },
+        {
+          "src": "media/clips/adjust.mp4",
+          "type": "video/mp4; codecs=avc1.64002A"
+        }
+      ],
+      "fullscreen": {
+        "width": 2560,
+        "height": 1600
+      }
+    },
     "near": [
       "media/posters/hero-ai.webp",
       {
@@ -46,7 +62,10 @@
         "frame": "media/frame/frame-nes-2.webp"
       }
     ],
-    "far": ["media/posters/seek-far.webp", "media/posters/store-far.webp"]
+    "far": [
+      "media/posters/seek-far.webp",
+      "media/posters/store-far.webp"
+    ]
   },
   "slides": [
     {
@@ -63,14 +82,16 @@
         "en": "Tune the picture, sound and subtitles as the film plays. Any command is a few letters away in the Command Palette.",
         "zh-Hans": "画面、声音、字幕，边播边调。在命令面板里敲几个字母，什么命令都找得到。"
       },
-      "poster": "media/posters/adjust.webp",
+      "in": 0,
+      "out": 11,
+      "poster": "media/posters/adjust-short.webp",
       "sources": [
         {
-          "src": "media/clips/adjust.webm",
+          "src": "media/clips/adjust-short.webm",
           "type": "video/webm; codecs=av01.0.09M.08"
         },
         {
-          "src": "media/clips/adjust.mp4",
+          "src": "media/clips/adjust-short.mp4",
           "type": "video/mp4; codecs=avc1.64002A"
         }
       ]
@@ -86,14 +107,16 @@
         "en": "Every film gets a thumbnail, made on your own machine. Double-click one to switch.",
         "zh-Hans": "每部影片都有在本机生成的缩略图。双击一下，就换一部看。"
       },
-      "poster": "media/posters/playlist.webp",
+      "in": 1.5,
+      "out": 5.85,
+      "poster": "media/posters/playlist-short.webp",
       "sources": [
         {
-          "src": "media/clips/playlist.webm",
+          "src": "media/clips/playlist-short.webm",
           "type": "video/webm; codecs=av01.0.09M.08"
         },
         {
-          "src": "media/clips/playlist.mp4",
+          "src": "media/clips/playlist-short.mp4",
           "type": "video/mp4; codecs=avc1.64002A"
         }
       ]
@@ -109,6 +132,8 @@
         "en": "Open the store from the bottom bar and install a plugin such as VestraTube. It is ready to use right away.",
         "zh-Hans": "从底部栏打开插件商城，装上 VestraTube 这样的插件，马上就能用。"
       },
+      "in": 0,
+      "out": 8.3,
       "poster": "media/posters/store-3.webp",
       "sources": [
         {
@@ -132,14 +157,16 @@
         "en": "Say what you want, and Vestra Player AI writes and tests the plugin with your own AI key. One click installs it.",
         "zh-Hans": "说出你想要什么，Vestra Player AI 就用你自己的 AI 密钥写好插件并测试，一键即可安装。"
       },
-      "poster": "media/posters/ai-3.webp",
+      "in": 3,
+      "out": 16.5,
+      "poster": "media/posters/ai-4.webp",
       "sources": [
         {
-          "src": "media/clips/ai-3.webm",
+          "src": "media/clips/ai-4.webm",
           "type": "video/webm; codecs=av01.0.09M.08"
         },
         {
-          "src": "media/clips/ai-3.mp4",
+          "src": "media/clips/ai-4.mp4",
           "type": "video/mp4; codecs=avc1.64002A"
         }
       ]
@@ -155,6 +182,8 @@
         "en": "A plugin can be a whole emulator. Load a ROM from the Games menu and play with the keyboard.",
         "zh-Hans": "插件甚至可以是一个完整的模拟器。从“游戏”菜单加载 ROM，用键盘就能玩。"
       },
+      "in": 1,
+      "out": 9,
       "poster": "media/posters/nes-3.webp",
       "sources": [
         {
