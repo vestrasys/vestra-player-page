@@ -192,6 +192,8 @@ a.cta-btn:hover { transform: translateY(-1px); }
   position: relative; aspect-ratio: var(--ar, 2220 / 1390); border-radius: var(--win-radius); overflow: hidden; background: var(--ink-2);
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.07), 0 40px 80px -30px rgba(0, 0, 0, 0.9), 0 0 60px -20px rgba(250, 10, 168, 0.2);
 }
+/* A fullscreen take (no window frame): the picture alone, its own --ar (build.mjs). */
+.card.is-full { background: #000; }
 .card > img, .win > img, .card-far img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .shot { position: absolute; overflow: hidden; background: #000; }
 .shot img, .shot video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -255,6 +257,58 @@ a.cta-btn:hover { transform: translateY(-1px); }
   .card-far { animation-delay: 0.16s; }
 }
 @keyframes fan-in { from { opacity: 0; transform: translate3d(0, 48px, -240px); } }
+
+/* ---- Quiet backgrounds for the middle sections (the hero's and the end's language, fainter):
+   a thin spectrum divider on top, a dot grid at the page's edges that fades in and out, and an
+   aurora glow behind each chapter's window, alternating sides and hues. Static: nothing moves. ---- */
+
+/* The glows reach past the viewport's sides: clipped here (body's clip alone still lets a phone
+   widen its layout viewport). clip, not hidden: no scroll container. */
+main { overflow-x: clip; }
+.chapters, .open { position: relative; isolation: isolate; }
+/* Full-bleed layers inside the centred sections (body clips the overflow). */
+.chapters::before, .chapters::after, .open::before, .open::after {
+  content: ""; position: absolute; z-index: -1; pointer-events: none; left: 50%; width: 100vw; margin-left: -50vw;
+}
+/* The spectrum divider: the brand line, fading out at both ends. */
+.chapters::after, .open::before {
+  top: 0; height: 1px; left: 50%; width: min(960px, 100vw - 2 * var(--gutter)); margin-left: max(-480px, var(--gutter) - 50vw);
+  background: var(--brand); opacity: 0.45;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 30%, #000 70%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 30%, #000 70%, transparent);
+}
+/* The dot grid: the floor's dots laid flat, at the edges only (clear of the copy and the clips). */
+.chapters::before {
+  top: 0; bottom: 0; z-index: -2;
+  background: radial-gradient(circle, rgba(214, 160, 255, 0.2) 1px, transparent 1.6px) 50% 0 / 30px 30px;
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 12%, transparent 34%, #000 58%, transparent 80%, #000 92%, transparent), linear-gradient(to right, #000, transparent 28%, transparent 72%, #000);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(to bottom, transparent, #000 12%, transparent 34%, #000 58%, transparent 80%, #000 92%, transparent), linear-gradient(to right, #000, transparent 28%, transparent 72%, #000);
+  mask-composite: intersect;
+}
+/* Open source: a cool rim from the left, a warm one low on the right (the end's glow takes over below). */
+.open::after {
+  /* Room above and below so the glows fade out before the layer's edge. */
+  top: -100px; bottom: -100px; z-index: -2;
+  background:
+    radial-gradient(620px 360px at 14% 42%, rgba(16, 168, 252, 0.12), transparent 70%),
+    radial-gradient(560px 340px at 86% 62%, rgba(122, 10, 250, 0.12), transparent 70%);
+}
+/* Each chapter: a soft aurora behind its window (magenta and violet; cyan and violet when flipped). */
+.chapter { position: relative; }
+.chapter::before {
+  content: ""; position: absolute; z-index: -1; pointer-events: none;
+  top: 50%; left: 68%; width: min(1100px, 95vw); aspect-ratio: 16 / 10; transform: translate(-50%, -50%);
+  background:
+    radial-gradient(closest-side at 55% 50%, rgba(250, 10, 168, 0.2), transparent),
+    radial-gradient(closest-side at 35% 62%, rgba(122, 10, 250, 0.17), transparent);
+}
+.chapter.is-flip::before {
+  left: 32%;
+  background:
+    radial-gradient(closest-side at 45% 50%, rgba(16, 168, 252, 0.15), transparent),
+    radial-gradient(closest-side at 65% 62%, rgba(122, 10, 250, 0.18), transparent);
+}
 
 /* ---- Features: one chapter per recording ---- */
 
@@ -367,6 +421,10 @@ a.cta-btn:hover { transform: translateY(-1px); }
   .os-card + .os-card { border-top: 1px solid var(--line); }
   .pp-hero { position: static; display: flex; margin: 14px 0 0 auto; }
   .floor { height: 46%; }
+  /* One column: the glow sits behind the window, under the copy. */
+  .chapter::before, .chapter.is-flip::before { left: 50%; top: 62%; width: 150vw; }
+  /* The edges are narrow here: fainter dots. */
+  .chapters::before { opacity: 0.6; }
 }
 
 @media (max-width: 600px) {

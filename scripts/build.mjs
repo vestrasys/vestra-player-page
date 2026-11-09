@@ -153,11 +153,14 @@ function renderPage(lang) {
     // Only what the script needs at run time; every other string is in the HTML already.
     data: JSON.stringify({ strings: Object.fromEntries(["media.pause", "media.play"].map((k) => [k, en[k]])) }).replace(/</g, "\\u003c"),
   };
-  // The front window's frame image is the largest paint (LCP) of the first screen: preloaded at high priority.
+  // The front window's frame image (its poster for a fullscreen take, which has no frame) is the
+  // largest paint (LCP) of the first screen: preloaded at high priority.
+  const front = stageCard(manifest.stage.center);
+  const lcp = front.fullscreen ? front.poster : frame.image;
   const vars = {
     css, js, lang,
-    lcpImage: frame.image,
-    lcpSrcset: srcset(frame.image) ?? frame.image,
+    lcpImage: lcp,
+    lcpSrcset: srcset(lcp) ?? lcp,
     lcpSizes: SIZES.hero,
     github,
     navHref: stableUrl(buttonSystems[0]),
@@ -306,6 +309,8 @@ function checkManifest({ backdrop, frame, slides, stage }) {
     if (entry === stage.center && entry.frame) fail(`${where}: the center card uses the main frame ("frame" is for near cards)`);
     if (entry.area && !frame.areas[entry.area]) fail(`${where}: area "${entry.area}" is not in frame.areas`);
     if (entry.frame && entry.area) fail(`${where}: "frame" and "area" exclude each other (a card frame's clip covers it under the title bar)`);
+    if (entry.fullscreen && (entry.frame || entry.area)) fail(`${where}: a "fullscreen" card has no "frame" or "area" (the take is the whole screen)`);
+    if (entry.fullscreen && !(entry.fullscreen.width > 0 && entry.fullscreen.height > 0)) fail(`${where}: "fullscreen" needs { "width", "height" } of the recording`);
   }
   if (typeof stage.center === "string" && isStill(stage.center)) fail("media/slides.json stage.center must play a clip (a slide id or a card)");
   files.push(...stage.far, ...stageFiles(stage));
@@ -471,12 +476,14 @@ function isStill(entry) {
 /**
  * A stage window: a slide id (that slide's clip, poster and area), a .webp still (an image over
  * the client area) or a card of its own: { poster, sources, area? } in the main frame, or
- * { poster, sources, frame } in a narrowed window (encode-clip --window), its clip under the title bar.
- * Without "sources" a card is a still (near only).
+ * { poster, sources, frame } in a narrowed window (encode-clip --window), its clip under the title bar,
+ * or { poster, sources, fullscreen: { width, height } }: a fullscreen take, the picture alone with no
+ * window frame (like a fullscreen slide). Without "sources" a card is a still (near only).
  */
 function stageCard(entry) {
   if (typeof entry === "string") return isStill(entry) ? { area: "client", poster: entry } : stageSlide(entry);
   const card = { area: entry.area ?? "client", poster: entry.poster, sources: entry.sources };
+  if (entry.fullscreen) card.fullscreen = entry.fullscreen;
   if (entry.frame) {
     const { width, height } = webpSize(fromRoot(entry.frame));
     card.frame = { image: entry.frame, width, height, bar: manifest.frame.areas.client.y };
@@ -509,10 +516,10 @@ function size(slide) {
 }
 
 /** The clip over the window's client area: the poster underneath, the video on top once it plays (main.js). */
-function renderShot(slide, { lazy, sizes }) {
+function renderShot(slide, { lazy, sizes, alt = "" }) {
   const load = lazy ? ' loading="lazy"' : ' fetchpriority="high"';
   const sources = slide.sources.map((s) => `<source data-src="${escape(s.src)}" type="${escape(s.type)}">`).join("");
-  return `<div class="shot" style="${area(slide)}"><img ${imgSrc(slide.poster, sizes)} ${size(slide)}${load} decoding="async" alt=""><video muted loop playsinline preload="none" aria-hidden="true" tabindex="-1">${sources}</video></div>`;
+  return `<div class="shot" style="${area(slide)}"><img ${imgSrc(slide.poster, sizes)} ${size(slide)}${load} decoding="async" alt="${escape(alt)}"><video muted loop playsinline preload="none" aria-hidden="true" tabindex="-1">${sources}</video></div>`;
 }
 
 function renderChrome(lazy, alt, sizes, f = frame) {
@@ -521,9 +528,20 @@ function renderChrome(lazy, alt, sizes, f = frame) {
   return `<img class="chrome" ${imgSrc(f.image, sizes)} width="${f.width}" height="${f.height}"${load} decoding="async"${altAttr}>`;
 }
 
-/** A card in a narrowed window takes that window's shape (styles.css: --ar). */
+/** A card in a narrowed window, or a fullscreen take, takes that shape (styles.css: --ar). */
 function cardShape(slide) {
-  return slide.frame ? ` style="--ar:${(slide.frame.width / slide.frame.height).toFixed(4)}"` : "";
+  const s = slide.fullscreen ?? slide.frame;
+  return s ? ` style="--ar:${(s.width / s.height).toFixed(4)}"` : "";
+}
+
+/** The window frame over a stage card; a fullscreen take has none. */
+function cardChrome(slide, lazy, alt, sizes) {
+  return slide.fullscreen ? "" : renderChrome(lazy, alt, sizes, slide.frame);
+}
+
+/** The card's classes: "is-full" for a fullscreen take (styles.css). */
+function cardClass(base, slide) {
+  return `card ${base}${slide.fullscreen ? " is-full" : ""}`;
 }
 
 /** The pause control beside every playing window (one state for the whole page; main.js shows it). */
@@ -543,14 +561,14 @@ function renderStage() {
   // its chapter but its own <video>): main.js starts it after the front window's clip, on wide
   // screens only, and pauses it with the front window.
   const side = (slide, s) => slide.sources
-    ? `          <div class="card card-near card-${s}" aria-hidden="true" data-companion="hero"${cardShape(slide)}>${renderChrome(true, false, "near", slide.frame)}${renderShot(slide, { lazy: true, sizes: "near" })}</div>`
-    : `          <div class="card card-near card-${s}" aria-hidden="true"${cardShape(slide)}>${renderChrome(true, false, "near", slide.frame)}<div class="shot" style="${area(slide)}"><img ${imgSrc(slide.poster, "near")} ${size(slide)} loading="lazy" decoding="async" alt=""></div></div>`;
+    ? `          <div class="${cardClass(`card-near card-${s}`, slide)}" aria-hidden="true" data-companion="hero"${cardShape(slide)}>${cardChrome(slide, true, false, "near")}${renderShot(slide, { lazy: true, sizes: "near" })}</div>`
+    : `          <div class="${cardClass(`card-near card-${s}`, slide)}" aria-hidden="true"${cardShape(slide)}>${cardChrome(slide, true, false, "near")}<div class="shot" style="${area(slide)}"><img ${imgSrc(slide.poster, "near")} ${size(slide)} loading="lazy" decoding="async" alt=""></div></div>`;
   return [
     far(st.far[0], "l"),
     far(st.far[1], "r"),
     side(near[0], "l"),
     side(near[1], "r"),
-    `          <div class="card card-main" data-media="hero"${cardShape(center)}>${renderChrome(false, true, "hero", center.frame)}${renderShot(center, { lazy: false, sizes: "hero" })}</div>`,
+    `          <div class="${cardClass("card-main", center)}" data-media="hero"${cardShape(center)}>${cardChrome(center, false, true, "hero")}${renderShot(center, { lazy: false, sizes: "hero", alt: center.fullscreen ? en["frame.alt"] : "" })}</div>`,
   ].join("\n");
 }
 

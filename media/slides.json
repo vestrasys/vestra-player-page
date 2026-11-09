@@ -37,20 +37,8 @@
     }
   },
   "stage": {
-    "$comment": "The hero's depth stage: player windows fanned in 3D. \"center\" is the front window, whose clip plays; \"near\" are the windows beside it (left, right); \"far\" are pre-blurred stills for the back row (left, right), made with `npm run encode -- --far <slide-id | poster path> [--id <name>]`. A center or near entry is a slide id (that slide's clip, poster and area), a card of its own ({\"poster\", \"sources\"} from `npm run encode`, over the frame's client area or the \"area\" it names; or with \"frame\": a narrowed window from `npm run encode -- --window <width> --id <name>`, its picture under the title bar, for a cut without the playlist pane), or (near only) a still: a .webp path, or a card without \"sources\". The center window uses the main frame. Near clips start once the front window's clip plays, on wide screens only; reduced motion or Save-Data shows the posters only.",
-    "center": {
-      "poster": "media/posters/hero-adjust.webp",
-      "sources": [
-        {
-          "src": "media/clips/hero-adjust.webm",
-          "type": "video/webm; codecs=av01.0.09M.08"
-        },
-        {
-          "src": "media/clips/hero-adjust.mp4",
-          "type": "video/mp4; codecs=avc1.64002A"
-        }
-      ]
-    },
+    "$comment": "The hero's depth stage: player windows fanned in 3D. \"center\" is the front window, whose clip plays; \"near\" are the windows beside it (left, right); \"far\" are pre-blurred stills for the back row (left, right), made with `npm run encode -- --far <slide-id | poster path> [--id <name>]`. A center or near entry is a slide id (that slide's clip, poster and area), a card of its own ({\"poster\", \"sources\"} from `npm run encode`, over the frame's client area or the \"area\" it names; or with \"frame\": a narrowed window from `npm run encode -- --window <width> --id <name>`, its picture under the title bar, for a cut without the playlist pane), or (near only) a still: a .webp path, or a card without \"sources\". The center window uses the main frame, or none for a fullscreen take (a slide or card with \"fullscreen\": {width, height}). Near clips start once the front window's clip plays, on wide screens only; reduced motion or Save-Data shows the posters only.",
+    "center": "adjust",
     "near": [
       "media/posters/hero-ai.webp",
       {
@@ -95,8 +83,8 @@
         "zh-Hans": "看得见画面的播放列表"
       },
       "caption": {
-        "en": "Every film gets a thumbnail, made on your own machine. One click hides them for a compact list.",
-        "zh-Hans": "每部影片都有在本机生成的缩略图。一键收起，就是紧凑列表。"
+        "en": "Every film gets a thumbnail, made on your own machine. Double-click one to switch.",
+        "zh-Hans": "每部影片都有在本机生成的缩略图。双击一下，就换一部看。"
       },
       "poster": "media/posters/playlist.webp",
       "sources": [

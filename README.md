@@ -157,15 +157,19 @@ into `media/slides.json`. Replacing one item is one command plus that edit.
   `npm run encode -- --far <slide-id | media/posters/x.webp> [--id <name>]`
   (the page uses no live blur filter). A `center` or `near` entry is one of:
   - a slide id: that slide's clip plays there (its poster, sources and area,
-    in a `<video>` of its own, so its chapter is unaffected);
+    in a `<video>` of its own, so its chapter is unaffected). The committed
+    center is `adjust`, the first chapter's fullscreen take: a fullscreen
+    slide (or a card with `"fullscreen": { "width", "height" }`) shows the
+    picture alone in its own shape, with no window frame, and its poster
+    becomes the preloaded LCP image;
   - a card of its own, `{ "poster", "sources" }` as `npm run encode` prints
     them, so the hero can show a cut that differs from the chapter's (the
-    committed center, `hero-adjust`, is a player 0.7.6 take of its own: the
+    former center, `hero-adjust`, still in `media/`, is a player 0.7.6 take of its own: the
     maximized window without the sidebar, the Adjustments and Effects column
     opened from the bottom bar's right side, saturation down to grey, Colour
     Original, column closed). It covers the frame's
-    client area, or the `"area"` it names. The center always uses the main
-    frame. A `near` card for a cut without the playlist pane adds `"frame"`: a
+    client area, or the `"area"` it names. The center uses the main
+    frame (or none, when fullscreen). A `near` card for a cut without the playlist pane adds `"frame"`: a
     narrowed window made with `npm run encode -- --window <width> --id <name>`,
     where `<width>` is the frame's client height (1476) times the clip's
     width / height; the card takes that window's shape and its picture covers
