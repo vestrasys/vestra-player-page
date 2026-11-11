@@ -120,6 +120,14 @@ token, no stable release yet, API error), the build prints a warning and the
 page links every download to `releasesPage` with "Not available" in place of
 the version, size and digest. It never fails for this reason.
 
+Release data is untrusted: asset, file and tag names must be plain file names
+(letters, digits, `.` `_` `+` `-`; no `..`, slashes or leading dot), and every
+URL taken from it must be https and stay under `github.com/<owner>/<repo>`
+(the SHA256SUMS request, which carries `GITHUB_TOKEN`, under
+`api.github.com/repos/<owner>/<repo>/releases/assets/`) or, for the url
+provider, on the manifest's origin. Anything else fails the build with the
+field and the reason.
+
 The player repository is private for now, so the default configuration builds
 the fallback. Point the configuration at the public location of the downloads
 once there is one.
@@ -282,7 +290,7 @@ npm run encode -- --frame frame-still.png --id frame --crop 2,0,2220,1390 --clie
 #   + Enter 18.8-24.167 s, the playback stall after Enter (24.167-24.65 s) cut out, 24.65-25.6 s:
 npm run encode -- adjust-short-cut.mp4 --id adjust-short --duration 11.517 --loop-fade 0.5 --poster-at 4.6 --crf-av1 39 --crf-h264 27
 # playlist-short: the playlist-3 cut (specs/playlist-3.json) without the loop fade, so Sintel
-#   plays its full 2 s after the double-click (the tour loops 1.5-5.85 s):
+#   plays its full 2 s after the double-click (the tour loops 1.5-5.8 s, slides.json "in"/"out"):
 npm run encode -- C:/vestra/rec/playlist-3-cut.mp4 --id playlist-short --duration 5.837 --poster-at 4.9
 # store-4 (specs/store-4a.json + store-4b.json, store-0776-rawC-ptr2.mkv): the Install click in a
 #   close-up on the VestraTube block (name, Install 0.5.3, one-line description), the installed
