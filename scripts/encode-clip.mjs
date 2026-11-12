@@ -7,6 +7,7 @@
 //   node scripts/encode-clip.mjs <recording> --id <name>
 //        [--crop x,y,w,h] [--start <s>] [--duration <s>] [--size 1920x1080]
 //        [--loop-fade <s>] [--poster-at <s>] [--crf-av1 34] [--crf-h264 22] [--vp9]
+//        [--keyframes <t,t,...>] [--sm WxH] [--crf-sm 40] [--poster-quality 82]
 //
 //   Writes media/clips/<name>.webm (AV1), media/clips/<name>.mp4 (H.264),
 //   optionally media/clips/<name>.vp9.webm, and media/posters/<name>.webp.
@@ -17,6 +18,11 @@
 //   end on the same picture still loops without a jump (needs --duration; the
 //   result is <s> seconds shorter). --poster-at is a time in the result.
 //   Prints the "poster" and "sources" lines for media/slides.json.
+//   --keyframes forces a key frame at each of these times of the result (a
+//   feature theme's beat starts, so a click on a rail item seeks to one), in
+//   both codecs; the key frames are checked with ffprobe afterwards. --sm adds
+//   media/clips/<name>.sm.webm, an AV1 copy scaled to fit WxH, for phones (a
+//   <source> with "media": "(max-width: 640px)").
 //
 // Frame (the player window around the tour):
 //
@@ -60,8 +66,9 @@
 //   for a poster path): the slide's poster, or the still, in the frame's client
 //   area, scaled to 640 px wide and blurred, so
 //   the page needs no live blur filter. Prints the line for "stage.far".
-import { readFileSync, statSync } from "node:fs";
-import { ffmpeg, fail, fromRoot, kib, parseArgs, readJson, webpSize } from "./lib.mjs";
+import { execFileSync } from "node:child_process";
+import { statSync } from "node:fs";
+import { ffmpeg, ffmpegPath, fail, fromRoot, kib, parseArgs, readJson, webpSize } from "./lib.mjs";
 
 const options = parseArgs(process.argv.slice(2), ["vp9", "small"]);
 const id = options.id ?? (options.frame ? "frame" : typeof options.far === "string" ? `${options.far}-far` : undefined);
@@ -183,17 +190,30 @@ function encodeClip(input) {
     ? `[0:v]${base},split[a][b];[a]trim=start=${fade},setpts=PTS-STARTPTS[m];[b]trim=end=${fade},setpts=PTS-STARTPTS[h];` +
       `[m][h]xfade=transition=fade:duration=${fade}:offset=${(duration - 2 * fade).toFixed(3)},format=yuv420p[v]`
     : `[0:v]${base},format=yuv420p[v]`;
-  const common = [...trim, "-i", input, "-filter_complex", graph, "-map", "[v]", "-an", "-g", "120"];
+  const keyframes = options.keyframes === undefined ? null
+    : String(options.keyframes).split(",").map((v) => Number(v.trim()));
+  if (keyframes && keyframes.some((t) => !Number.isFinite(t) || t < 0)) fail("--keyframes must be a list of seconds, for example 0,3.4,7");
+  const force = keyframes ? ["-force_key_frames", keyframes.join(",")] : [];
+  const common = [...trim, "-i", input, "-filter_complex", graph, "-map", "[v]", "-an", "-g", "120", ...force];
+  const svtParams = `tune=0${keyframes ? ":force-key-frames=1" : ""}`;
 
   const outputs = {
     av1: fromRoot(`media/clips/${id}.webm`),
     h264: fromRoot(`media/clips/${id}.mp4`),
     vp9: fromRoot(`media/clips/${id}.vp9.webm`),
     poster: fromRoot(`media/posters/${id}.webp`),
+    sm: fromRoot(`media/clips/${id}.sm.webm`),
   };
+  const sm = options.sm === undefined ? null : /^(\d+)x(\d+)$/.exec(options.sm);
+  if (options.sm !== undefined && !sm) fail("--sm must be WIDTHxHEIGHT, for example 960x600");
 
   ffmpeg([...common, "-c:v", "libsvtav1", "-preset", "4", "-crf", options["crf-av1"] ?? "34",
-    "-svtav1-params", "tune=0", outputs.av1]);
+    "-svtav1-params", svtParams, outputs.av1]);
+  if (sm) {
+    const smGraph = graph.replace(/\[v\]$/, `,scale=w='min(${sm[1]},iw)':h='min(${sm[2]},ih)':force_original_aspect_ratio=decrease:force_divisible_by=2:flags=lanczos[v]`);
+    ffmpeg([...trim, "-i", input, "-filter_complex", smGraph, "-map", "[v]", "-an", "-g", "120", ...force,
+      "-c:v", "libsvtav1", "-preset", "4", "-crf", options["crf-sm"] ?? "40", "-svtav1-params", svtParams, outputs.sm]);
+  }
   ffmpeg([...common, "-c:v", "libx264", "-preset", "slower", "-crf", options["crf-h264"] ?? "22",
     "-profile:v", "high", "-level", "4.2", "-movflags", "+faststart", outputs.h264]);
   if (options.vp9)
@@ -201,20 +221,33 @@ function encodeClip(input) {
       "-deadline", "good", "-cpu-used", "2", outputs.vp9]);
   // The poster is a frame of the finished clip, so it matches the video exactly
   // (crop, trim and loop fade included).
-  ffmpeg(["-ss", String(posterAt), "-i", outputs.h264, "-frames:v", "1", "-c:v", "libwebp", "-quality", "82", outputs.poster]);
+  ffmpeg(["-ss", String(posterAt), "-i", outputs.h264, "-frames:v", "1", "-c:v", "libwebp", "-quality", options["poster-quality"] ?? "82", outputs.poster]);
 
-  for (const key of ["av1", "h264", ...(options.vp9 ? ["vp9"] : []), "poster"]) report(outputs[key]);
+  for (const key of ["av1", "h264", ...(sm ? ["sm"] : []), ...(options.vp9 ? ["vp9"] : []), "poster"]) report(outputs[key]);
+  if (keyframes) for (const key of ["av1", "h264", ...(sm ? ["sm"] : [])]) checkKeyframes(outputs[key], keyframes);
   small(outputs.poster);
   const mb = (file) => statSync(file).size / 1e6;
   if (mb(outputs.av1) > 5 || mb(outputs.h264) > 5)
     console.warn("warning: over 5 MB; raise --crf-av1 / --crf-h264 or shorten the clip");
 
   const sources = [
+    ...(sm ? [{ src: `media/clips/${id}.sm.webm`, type: "video/webm; codecs=av01.0.08M.08", media: "(max-width: 640px)" }] : []),
     { src: `media/clips/${id}.webm`, type: "video/webm; codecs=av01.0.09M.08" },
     ...(options.vp9 ? [{ src: `media/clips/${id}.vp9.webm`, type: "video/webm; codecs=vp09.00.41.08" }] : []),
     { src: `media/clips/${id}.mp4`, type: "video/mp4; codecs=avc1.64002A" },
   ];
   console.log(`\nmedia/slides.json:\n"poster": "media/posters/${id}.webp",\n"sources": ${JSON.stringify(sources, null, 2)}`);
+}
+
+/** Fails unless every time in `times` falls on a key frame of `file` (to the frame). */
+function checkKeyframes(file, times) {
+  const probe = ffmpegPath().replace(/ffmpeg(\.exe)?$/i, (m, ext) => `ffprobe${ext ?? ""}`);
+  const out = execFileSync(probe, ["-v", "error", "-select_streams", "v:0", "-skip_frame", "nokey", "-show_entries", "frame=pts_time",
+    "-of", "csv=p=0", file], { encoding: "utf8" });
+  const keys = out.split(/\r?\n/).map(Number).filter(Number.isFinite);
+  const missing = times.filter((t) => !keys.some((k) => Math.abs(k - t) < 0.5 / 60));
+  if (missing.length) fail(`${rel(file)}: no key frame at ${missing.join(", ")} s (key frames: ${keys.map((k) => k.toFixed(3)).join(", ")})`);
+  console.log(`${rel(file)}: key frames at every beat start (${times.length})`);
 }
 
 /** <name>.webp -> <name>.sm.webp at half the width (the srcset's 1x copy). */

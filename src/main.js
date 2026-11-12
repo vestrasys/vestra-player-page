@@ -1,5 +1,5 @@
 // Vestra Player download page: the download button for the visitor's system,
-// the playing windows (stage and feature chapters), the stage parallax and
+// the playing windows (stage and feature themes), the stage parallax and
 // the one-shot reveals. Each language
 // is its own prerendered page, so nothing here translates.
 // Plain script, no dependencies.
@@ -81,8 +81,8 @@
   })();
 
   // ---- Media: one window plays at a time ----
-  // Every [data-media] window (the stage's front window) holds a poster and a muted video, and
-  // the feature tour's sticky window holds one layer per feature. The most visible window plays
+  // Every [data-media] window (the stage's front window) and each feature theme's window holds a
+  // poster and a muted video. The most visible window plays (a theme's from 60 % visible)
   // and every other one is paused, so only one window decodes at a time. Its companions
   // ([data-companion] cards, the stage's side windows) play with it: they load only once its own
   // clip is playing, and only while they are shown (wide screens; the cards are display: none
@@ -103,127 +103,164 @@
     }
     video.load();
   }
-  const n2 = (k) => String(k).padStart(2, "0");
+  // The feature themes: each window loops its theme's pre-composited video. On every video frame
+  // (requestVideoFrameCallback, else animation frames reading currentTime) the beat under the
+  // clock is found; its rail item takes the ring, its bar is scaled to the beat's progress, and the
+  // caption changes (out 120 ms ending 60 ms after the boundary, in 240 ms). A click on an item
+  // seeks to its beat, which starts on a key frame; the window and "Watch the full clip" open the
+  // active beat's full clip. The media logic below decides which window plays.
+  const box = $("#lightbox");
+  const boxVideo = box && $("video", box);
+  let boxOpen = false;
+  let onBoxChange = () => {};
+  function openClip(i, num) {
+    const clip = data.clips[i];
+    if (!clip || !box || typeof box.showModal !== "function") return;
+    $(".lb-num", box).textContent = num;
+    $("#lb-title", box).textContent = clip.title;
+    $(".lb-cap", box).textContent = clip.caption;
+    boxVideo.style.setProperty("--ar", String(clip.ar));
+    boxVideo.replaceChildren(...clip.sources.map((s) => Object.assign(document.createElement("source"), { src: s.src, type: s.type })));
+    boxVideo.load();
+    boxOpen = true;
+    onBoxChange();
+    box.showModal();
+    if (mayMove()) safePlay(boxVideo);
+  }
+  if (box) {
+    $(".lb-close", box).addEventListener("click", () => box.close());
+    // A click on the backdrop (outside the box) closes it; one on the dialog's own scrollbar does not.
+    box.addEventListener("click", (event) => {
+      if (event.target !== box) return;
+      const r = box.getBoundingClientRect();
+      const inside = event.clientX >= r.left && event.clientX <= r.right && event.clientY >= r.top && event.clientY <= r.bottom;
+      if (!inside) box.close();
+    });
+    box.addEventListener("close", () => { boxVideo.pause(); boxOpen = false; onBoxChange(); });
+  }
 
-  // The feature tour: the step at the reading line picks the feature; its layer loops the
-  // slide's in-out cut while the media logic below lets it play (active). Segments under the
-  // window show the cut's progress (full with reduced motion: nothing advances).
-  const tour = (() => {
-    const frame = $("[data-tour]");
-    const cuts = data.tour;
-    if (!frame || !cuts) return null;
-    const layers = $$(".vl-layer", frame);
-    const videos = layers.map((l) => $("video", l));
-    const steps = $$(".st-step");
-    const segs = $$(".st-seg");
-    const wide = window.matchMedia("(min-width: 861px)");
-    const still = () => reduce.matches || saveData;
-    let index = 0;
+  const themes = $$(".theme").map((el, ti) => {
+    const spec = data.themes[ti];
+    const frame = $(".th-frame", el);
+    const video = $("video", frame);
+    const cap = $(".th-cap", el);
+    const name = $(".th-name", cap);
+    const textEl = $(".th-text", cap);
+    const watch = $(".th-watch", cap);
+    const rail = $(".th-items", el);
+    const items = $$(".th-item", rail);
+    const num = $(".ch-num", el).textContent.replace("/", " / ");
+    // The caption of each beat (and the outro), from the prerendered list.
+    const texts = $$(".th-list li", el).map((li) => ({
+      name: $("b", li).textContent,
+      text: $(".tx > span", li).textContent,
+      fine: $(".th-fine", li)?.textContent ?? "",
+    }));
+    const outroEl = $(".th-outro", el);
+    if (outroEl) texts.push({ name: $("b", outroEl).textContent, text: $("span", outroEl).textContent, fine: "" });
+    const spans = spec.beats.map((b) => [b.start, b.end]);
+    if (spec.outro) spans.push([spec.outro.start, spec.outro.end]);
+    const clipOf = (k) => (k < spec.beats.length ? spec.beats[k].clip : -1);
+    let current = 0;
+    let fading = false;
+    let swapTimer = 0;
     let active = false;
-    let raf = 0;
-    let onChange = () => {};
+    let cb = 0;
 
-    const progress = (i, p) => { $("i", segs[i]).style.transform = `scaleX(${p})`; };
-    function seekIn(v, cut) {
-      const go = () => { try { v.currentTime = cut.in; } catch { /* not seekable yet */ } };
-      if (v.readyState >= 1) go(); else v.addEventListener("loadedmetadata", go, { once: true });
-    }
-    function tick() {
-      raf = 0;
-      const v = videos[index];
-      const cut = cuts[index];
-      // The cut loops: back to "in" at "out" (or at the clip's end).
-      if (v.readyState >= 1 && (v.currentTime >= cut.out - 0.04 || v.ended)) {
-        v.currentTime = cut.in;
-        if (v.ended) safePlay(v);
-      }
-      progress(index, Math.max(0, Math.min(1, (v.currentTime - cut.in) / (cut.out - cut.in))));
-      if (!v.paused) raf = requestAnimationFrame(tick);
-    }
-    function run() {
-      const v = videos[index];
-      if (!active) {
-        for (const x of videos) if (!x.paused) x.pause();
-        return;
-      }
-      loadVideo(v);
-      if (v.currentTime < cuts[index].in - 0.05 || v.currentTime >= cuts[index].out) seekIn(v, cuts[index]);
-      safePlay(v);
-    }
-    function set(i) {
-      const old = index;
-      index = i;
-      if (old !== index) {
-        videos[old].pause();
-        progress(old, 0);
-        seekIn(videos[index], cuts[index]);
-      }
-      layers.forEach((l, k) => l.toggleAttribute("data-on", k === index));
-      steps.forEach((s, k) => s.toggleAttribute("data-on", k === index));
-      frame.setAttribute("aria-label", text("tour.watchLabel").replace("{title}", $(".ch-title", steps[index]).textContent));
-      progress(index, still() ? 1 : 0);
-      run();
-    }
-    for (const [i, v] of videos.entries()) {
-      v.addEventListener("playing", () => {
-        v.parentElement.classList.add("is-live");
-        if (i === index && !raf) raf = requestAnimationFrame(tick);
-      });
-    }
-    // The step whose top has passed the reading line (mid-screen; lower on phones, under the window).
-    let queued = 0;
-    const pick = () => {
-      queued = 0;
-      const line = innerHeight * (wide.matches ? 0.5 : 0.72);
-      let i = 0;
-      steps.forEach((s, k) => { if (s.getBoundingClientRect().top <= line) i = k; });
-      if (i !== index) set(i);
+    const beatAt = (t) => {
+      for (let k = spans.length - 1; k >= 0; k--) if (t >= spans[k][0] - 1e-3) return k;
+      return 0;
     };
-    addEventListener("scroll", () => { if (!queued) queued = requestAnimationFrame(pick); }, { passive: true });
-    addEventListener("resize", pick);
-    reduce.addEventListener?.("change", () => progress(index, still() ? 1 : 0));
-    set(0);
-    pick();
-
-    // The full clip in a dialog, with the feature's title and caption.
-    const box = $("#lightbox");
-    const boxVideo = box && $("video", box);
-    let boxOpen = false;
-    function open(i) {
-      if (!box || typeof box.showModal !== "function") return;
-      const cut = cuts[i];
-      $(".lb-num", box).textContent = `${n2(i + 1)} / ${n2(cuts.length)}`;
-      $("#lb-title", box).textContent = $(".ch-title", steps[i]).textContent;
-      $(".lb-cap", box).textContent = $(".ch-text", steps[i]).textContent;
-      boxVideo.style.setProperty("--ar", String(cut.ar));
-      boxVideo.replaceChildren(...cut.sources.map((s) => Object.assign(document.createElement("source"), { src: s.src, type: s.type })));
-      boxVideo.load();
-      boxOpen = true;
-      onChange();
-      box.showModal();
-      if (!still()) safePlay(boxVideo);
+    function caption(k) {
+      clearTimeout(swapTimer);
+      name.textContent = texts[k].name;
+      textEl.textContent = texts[k].text;
+      if (texts[k].fine) textEl.append(" ", Object.assign(document.createElement("small"), { className: "th-fine", textContent: texts[k].fine }));
+      const clip = clipOf(k);
+      watch.hidden = clip < 0;
+      frame.toggleAttribute("data-noclip", clip < 0);
+      frame.setAttribute("aria-label", clip < 0 ? texts[k].name : text("tour.watchLabel").replace("{title}", texts[k].name));
+      cap.classList.remove("out", "in");
+      void cap.offsetWidth; // restart the entrance
+      cap.classList.add("in");
+      fading = false;
     }
-    if (box) {
-      $(".lb-close", box).addEventListener("click", () => box.close());
-      // A click on the backdrop (outside the box) closes it; one on the dialog's own scrollbar does not.
-      box.addEventListener("click", (event) => {
-        if (event.target !== box) return;
-        const r = box.getBoundingClientRect();
-        const inside = event.clientX >= r.left && event.clientX <= r.right && event.clientY >= r.top && event.clientY <= r.bottom;
-        if (!inside) box.close();
+    function fadeOut(then) {
+      if (fading) return;
+      fading = true;
+      cap.classList.remove("in");
+      cap.classList.add("out");
+      swapTimer = setTimeout(then, 120);
+    }
+    function setBeat(k, animate) {
+      if (k === current) return;
+      current = k;
+      const outro = k >= spec.beats.length;
+      items.forEach((item, j) => {
+        item.toggleAttribute("aria-current", j === k);
+        item.classList.toggle("done", !outro && j < k);
+        if (j !== k) item.style.removeProperty("--p");
       });
-      box.addEventListener("close", () => { boxVideo.pause(); boxOpen = false; onChange(); });
+      rail.classList.toggle("all", outro);
+      // The caption follows when its fade-out ends (it started 60 ms before the boundary).
+      if (!animate) caption(k);
+      else if (!fading) fadeOut(() => caption(current));
     }
-    frame.addEventListener("click", () => open(index));
-    for (const b of $$("[data-open]")) b.addEventListener("click", () => open(Number(b.dataset.open)));
+    function onTime(t) {
+      const k = beatAt(t);
+      if (k !== current) setBeat(k, true);
+      const [s, e] = spans[k];
+      if (k < items.length) items[k].style.setProperty("--p", Math.max(0, Math.min(1, (t - s) / (e - s))).toFixed(4));
+      // The outgoing caption starts fading 60 ms before the boundary.
+      const next = (k + 1) % spans.length;
+      if (!fading && e - t <= 0.06 && next !== k) fadeOut(() => caption(current));
+    }
+    const hasRVFC = "requestVideoFrameCallback" in HTMLVideoElement.prototype;
+    function loop(now, meta) {
+      cb = 0;
+      onTime(meta ? meta.mediaTime : video.currentTime);
+      if (!video.paused) schedule();
+    }
+    function schedule() {
+      if (cb) return;
+      cb = hasRVFC ? video.requestVideoFrameCallback(loop) : requestAnimationFrame(() => loop());
+    }
+    video.addEventListener("playing", () => { frame.classList.add("is-live"); schedule(); });
+    video.addEventListener("seeked", () => onTime(video.currentTime));
+
+    function go(k) {
+      loadVideo(video);
+      const seek = () => { try { video.currentTime = spans[k][0]; } catch { /* not seekable yet */ } };
+      if (video.readyState >= 1) seek(); else video.addEventListener("loadedmetadata", seek, { once: true });
+      fading = false;
+      setBeat(k, false);
+      if (active) safePlay(video);
+    }
+    items.forEach((item, k) => item.addEventListener("click", () => go(k)));
+    // Arrow keys move between the items; Enter and Space activate them (they are buttons).
+    rail.addEventListener("keydown", (event) => {
+      const at = items.indexOf(document.activeElement);
+      if (at < 0) return;
+      const step = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[event.key];
+      if (step === undefined) return;
+      event.preventDefault();
+      items[(at + step + items.length) % items.length].focus();
+    });
+    const open = () => { const clip = clipOf(current); if (clip >= 0) openClip(clip, num); };
+    frame.addEventListener("click", open);
+    watch.addEventListener("click", open);
 
     return {
       el: frame,
-      activate(on) { if (on !== active) { active = on; run(); } },
-      get boxOpen() { return boxOpen; },
-      set onChange(fn) { onChange = fn; },
+      video,
+      activate(on) {
+        if (on === active) return;
+        active = on;
+        if (on) { loadVideo(video); safePlay(video); } else if (!video.paused) video.pause();
+      },
+      prefetch() { if (!video.dataset.loaded) { video.preload = "auto"; loadVideo(video); } },
     };
-  })();
+  });
 
   (() => {
     const units = $$("[data-media]")
@@ -234,8 +271,8 @@
           .filter((c) => c.video),
       }))
       .filter((u) => u.video);
-    // The tour's window is one more window, played by the tour itself.
-    if (tour) units.push({ el: tour.el, tour, ratio: 0, companions: [] });
+    // Each theme's window is one more window, played by its theme (from 60 % visible).
+    for (const theme of themes) units.push({ el: theme.el, theme, ratio: 0, min: 0.6, companions: [] });
     // The stage's side windows are shown from this width on (styles.css).
     const wide = window.matchMedia("(min-width: 861px)");
     const buttons = $$(".pp");
@@ -256,12 +293,12 @@
     function sync() {
       if (!ready) return;
       let best = null;
-      for (const u of units) if (u.ratio >= 0.35 && (!best || u.ratio > best.ratio)) best = u;
-      const allowed = mayMove() && !userPaused && !(tour && tour.boxOpen);
+      for (const u of units) if (u.ratio >= (u.min ?? 0.35) && (!best || u.ratio > best.ratio)) best = u;
+      const allowed = mayMove() && !userPaused && !boxOpen;
       for (const u of units) {
         const on = u === best && allowed;
-        if (u.tour) {
-          u.tour.activate(on);
+        if (u.theme) {
+          u.theme.activate(on);
           continue;
         }
         if (on) {
@@ -289,11 +326,12 @@
       // The control exists only while something may play.
       const show = !reduce.matches && !saveData;
       for (const b of buttons) b.hidden = !show;
+      root.classList.toggle("motion", show);
     }
 
-    if (tour) tour.onChange = sync;
+    onBoxChange = sync;
     for (const u of units) {
-      if (u.tour) continue;
+      if (u.theme) continue;
       // The video fades in over its poster once frames arrive.
       u.video.addEventListener("playing", () => u.shot.classList.add("is-live"));
       for (const c of u.companions) c.video.addEventListener("playing", () => c.shot.classList.add("is-live"));
@@ -322,6 +360,16 @@
       sync();
     }, { threshold: [0, 0.2, 0.35, 0.5, 0.65, 0.8, 1] });
     for (const u of units) io.observe(u.el);
+    // A theme's video is fetched once its band is within one screen of the viewport.
+    const near = new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting || !mayMove()) continue;
+        const u = units.find((x) => x.el === entry.target);
+        if (u && u.theme) u.theme.prefetch();
+        near.unobserve(entry.target);
+      }
+    }, { rootMargin: "100% 0px" });
+    for (const u of units) if (u.theme) near.observe(u.el);
 
     document.addEventListener("visibilitychange", sync);
     reduce.addEventListener?.("change", () => { controls(); sync(); });

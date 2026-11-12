@@ -1,0 +1,19 @@
+{
+  "$comment": "Theme 03 'And with AI' (SPEC 3.4). Ask Vestra: R15 (2026-11-12, brand pointer): the palette, 'turn on AI upscaling' typed (3.3x), Enter, the status strip 'Planning...' (1.67x); AI Upscaling opens on R15's 'Done · Picture: AI Upscaling' strip and the on-screen line, then the promo's RTX pair (the 4K captures, cut 1:1 to the same detail); Vestra Player AI is cut from ai-5. Highlights stays hidden until the sound model ships (R18).",
+  "size": [1728, 1080], "fps": 60, "work": "C:/vestra/rec/page-v2", "font": "C:/Windows/Fonts/consolab.ttf",
+  "beats": [
+    { "id": "ask", "dur": 3.4, "parts": [
+      { "src": "C:/vestra/rec/v9/ptr/R15-t1-ptr.mkv", "in": 0.3, "out": 1.0, "speed": 1, "crop": [480, 40, 1920, 1200] },
+      { "src": "C:/vestra/rec/v9/ptr/R15-t1-ptr.mkv", "in": 1.4, "out": 5.4, "speed": 3.3333, "crop": [480, 40, 1920, 1200] },
+      { "src": "C:/vestra/rec/v9/ptr/R15-t1-ptr.mkv", "in": 5.4, "out": 7.9, "speed": 1.6667, "crop": [480, 40, 1920, 1200] } ] },
+    { "id": "upscale", "dur": 3.6, "parts": [
+      { "src": "C:/vestra/rec/v9/ptr/R15-t1-ptr.mkv", "in": 8.6, "out": 9.4, "speed": 1, "crop": [0, 40, 2048, 1280] },
+      { "dur": 2.8, "wipe": { "a": "C:/vestra/rec/vsr-bbb/nvidia-std.png", "b": "C:/vestra/rec/vsr-bbb/nvidia-vsr.png", "crop": [896, 480, 1728, 1080], "from": 0.82, "to": 0.30, "at": 0.3, "move": 1.0, "labels": ["Standard", "RTX Video Super Resolution"] } } ] },
+    { "id": "build", "dur": 6.4, "parts": [
+      { "src": "C:/vestra/rec/ai-5-cut.mp4", "in": 1.0, "out": 2.2, "speed": 1, "crop": [73, 0, 1728, 1080] },
+      { "src": "C:/vestra/rec/ai-5-cut.mp4", "in": 2.2, "out": 5.9, "speed": 3.0833, "crop": [73, 0, 1728, 1080] },
+      { "src": "C:/vestra/rec/ai-5-cut.mp4", "in": 5.9, "out": 8.5, "speed": 1.625, "crop": [73, 0, 1728, 1080] },
+      { "src": "C:/vestra/rec/ai-5-cut.mp4", "in": 9.5, "out": 11.9, "speed": 1, "crop": [73, 0, 1728, 1080] } ] },
+    { "id": "highlights", "dur": 3.6, "hidden": true, "parts": [] }
+  ]
+}

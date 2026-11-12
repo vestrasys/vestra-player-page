@@ -19,8 +19,27 @@ const OG_LOCALE = { en: "en_US", "zh-Hans": "zh_CN" };
 const SIZES = {
   hero: "(max-width: 860px) calc(100vw - 32px), min(605px, 45vw)",
   near: "(max-width: 860px) 1px, min(605px, 45vw)",
-  // The tour window: 7/12 of the content width less the gap (styles.css .tour), 639px at most.
-  tour: "(max-width: 860px) calc(100vw - 32px), min(640px, calc(55.42vw - 19px))",
+  // A theme's window (styles.css .th-win): the content width, 1168px at most, and short enough that the head,
+  // window, caption and rail fit one screen; 560px in the static layout (no video).
+  theme: "(max-width: 640px) calc(100vw - 32px), min(1168px, calc(100vw - 32px), calc((100vh - 394px) * 1.6))",
+};
+// A theme's outro counts its visible beats in words ("Five plugins today").
+const NUMBERS = {
+  en: ["No", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve"],
+  "zh-Hans": ["零", "一", "两", "三", "四", "五", "六", "七", "八", "九", "十", "十一", "十二"],
+};
+// Line glyphs for the chip rails (24 x 24, stroked; styles.css .th-item svg).
+const GLYPHS = {
+  picture: '<path d="M4 7h10M18 7h2M4 12h3M11 12h9M4 17h12"/><circle cx="16" cy="7" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="18" cy="17" r="2"/>',
+  sound: '<path d="M5 20V10M9.7 20V4M14.3 20v-8M19 20V7"/>',
+  subtitles: '<rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M7 14.5h4M13.5 14.5H17M7 11h2M11.5 11H17"/>',
+  seek: '<path d="M3 18h18"/><rect x="8" y="5" width="9" height="7" rx="1.5"/><path d="M12.5 12v6"/><circle cx="12.5" cy="18" r="1.6"/>',
+  playlist: '<rect x="3" y="4.5" width="6" height="4.5" rx="1"/><rect x="3" y="14.5" width="6" height="4.5" rx="1"/><path d="M12.5 6.7H21M12.5 16.7H21"/>',
+  palette: '<circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5.5 5.5"/>',
+  ask: '<path d="M11 3.5l1.8 5.2 5.2 1.8-5.2 1.8L11 17.5l-1.8-5.2L4 10.5l5.2-1.8zM18.5 15l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z"/>',
+  upscale: '<rect x="3" y="12" width="9" height="9" rx="1.5"/><path d="M12 4h9v9M21 4l-7.5 7.5"/>',
+  build: '<path d="M8.5 7L4 12l4.5 5M15.5 7L20 12l-4.5 5M13.3 5l-2.6 14"/>',
+  highlights: '<path d="M3 18l3-6 3 3 3.5-9 3 7 2.5-3 3 8"/>',
 };
 const BUDGET = 150 * 1024; // HTML + CSS + JS, media and images excluded
 const MAX_FILE = 25 * 1024 * 1024; // Cloudflare Pages per-file limit
@@ -35,6 +54,8 @@ if (process.env.RELEASE_INCLUDE_PRERELEASES === "1") releaseConfig.includePrerel
 const manifest = readJson(fromRoot("media/slides.json"));
 // Hidden slides (drafts such as a slide whose recording does not exist yet) stay out of the page.
 manifest.slides = (manifest.slides ?? []).filter((slide) => !slide.hidden);
+// Hidden beats (a feature whose footage or release is not there yet) are left out of the page and the video.
+for (const theme of manifest.themes ?? []) theme.beats = (theme.beats ?? []).filter((beat) => !beat.hidden);
 const i18n = readJson(fromRoot("src/i18n.json"));
 const credits = parseCredits(readFileSync(fromRoot("media/CREDITS.md"), "utf8"));
 
@@ -144,7 +165,7 @@ function renderPage(lang) {
     heroSource: renderHeroSource(),
     githubIcon: GITHUB_ICON,
     stage: renderStage(),
-    tour: renderTour(),
+    themes: renderThemes(lang),
     pauseHero: renderPause("hero"),
     openSource: renderOpenSource(),
     platforms: renderPlatforms(),
@@ -152,11 +173,15 @@ function renderPage(lang) {
     credits: renderCredits(lang),
     licence: en["ft.licence"],
     // Only what the script needs at run time; every other string is in the HTML already.
-    // The tour's cut of each clip (in/out) and the full clip with its shape for the lightbox.
+    // Each theme's beat times (the captions are in the HTML) and the full clips with their shape for the lightbox.
     data: JSON.stringify({
       strings: Object.fromEntries(["media.pause", "media.play", "tour.watchLabel"].map((k) => [k, en[k]])),
+      themes: manifest.themes.map((th) => ({
+        beats: th.beats.map((b) => ({ start: b.start, end: b.end, clip: b.clip ? manifest.slides.findIndex((s) => s.id === b.clip) : -1 })),
+        ...(th.outro ? { outro: { start: th.outro.start, end: th.outro.end } } : {}),
+      })),
       // (rebase() fixes attributes only: the clip paths here get the subfolder prefix themselves.)
-      tour: manifest.slides.map((s) => ({ in: s.in, out: s.out, ar: Number(aspect(s).toFixed(4)), sources: s.sources.map(({ src, type }) => ({ src: /^https?:/.test(src) ? src : prefix + src, type })) })),
+      clips: manifest.slides.map((s) => ({ title: s.title[lang], caption: s.caption[lang], ar: Number(aspect(s).toFixed(4)), sources: s.sources.map(({ src, type }) => ({ src: /^https?:/.test(src) ? src : prefix + src, type })) })),
     }).replace(/</g, "\\u003c"),
   };
   // The front window's frame image (its poster for a fullscreen take, which has no frame) is the
@@ -337,12 +362,53 @@ function checkManifest({ backdrop, frame, slides, stage }) {
     for (const lang of LANGS)
       if (!slide.title?.[lang] || !slide.caption?.[lang]) fail(`${where}: title and caption need "${lang}"`);
     if (!slide.sources?.length) fail(`${where}: no sources`);
-    // The tour plays the cut in-out of the clip (seconds).
-    if (!(Number.isFinite(slide.in) && Number.isFinite(slide.out) && slide.in >= 0 && slide.out > slide.in))
-      fail(`${where}: needs "in" and "out" (seconds, 0 <= in < out), the cut the feature tour plays`);
     files.push(slide.poster, ...slide.sources.map((s) => s.src), ...(slide.icon ? [slide.icon] : []));
   }
+  files.push(...checkThemes(manifest.themes, ids));
   checkFiles(files, "media/slides.json");
+}
+
+/**
+ * The feature themes: copy in every language, a known rail and glyph, full clips that exist, and
+ * visible beats (and the outro) that tile the theme's video from 0 to its "duration" with no gap or
+ * overlap (to 1/60 s), so the rail always follows the picture. Returns the files the themes name.
+ */
+function checkThemes(themes, slideIds) {
+  if (!themes?.length) fail('media/slides.json: no "themes"');
+  const files = [];
+  const ids = new Set();
+  const frame = 1 / 60 + 1e-6;
+  for (const th of themes) {
+    const where = `media/slides.json theme "${th.id}"`;
+    if (!/^[a-z0-9-]+$/.test(th.id ?? "") || ids.has(th.id)) fail(`${where}: id must be unique [a-z0-9-]`);
+    ids.add(th.id);
+    for (const lang of LANGS) if (!th.title?.[lang] || !th.lede?.[lang]) fail(`${where}: title and lede need "${lang}"`);
+    if (th.rail !== "icons" && th.rail !== "chips") fail(`${where}: "rail" must be "icons" or "chips"`);
+    if (!th.poster || !th.sources?.length) fail(`${where}: needs a "poster" and "sources"`);
+    if (!(th.duration > 0)) fail(`${where}: "duration" (seconds, the length of its video) is required`);
+    if (!th.beats.length) fail(`${where}: no visible beats`);
+    files.push(th.poster, ...th.sources.map((s) => s.src));
+    let t = 0;
+    for (const beat of th.beats) {
+      const at = `${where} beat "${beat.id}"`;
+      for (const lang of LANGS) {
+        if (!beat.label?.[lang] || !beat.caption?.[lang]) fail(`${at}: label and caption need "${lang}"`);
+        if (beat.fine && !beat.fine[lang]) fail(`${at}: fine print needs "${lang}"`);
+      }
+      if (th.rail === "icons" ? !beat.icon : !GLYPHS[beat.glyph]) fail(`${at}: needs ${th.rail === "icons" ? 'an "icon"' : `a "glyph" (${Object.keys(GLYPHS).join(", ")})`}`);
+      if (beat.icon) files.push(beat.icon);
+      if (beat.clip && !slideIds.has(beat.clip)) fail(`${at}: "clip" names slide "${beat.clip}", which is missing or hidden`);
+      if (Math.abs(beat.start - t) > frame || !(beat.end > beat.start)) fail(`${at}: starts at ${beat.start} s, expected ${t} s (visible beats tile the video; a hidden beat's span must be cut out of it)`);
+      t = beat.end;
+    }
+    if (th.outro) {
+      for (const lang of LANGS) if (!th.outro.name?.[lang] || !th.outro.caption?.[lang]) fail(`${where} outro: name and caption need "${lang}"`);
+      if (Math.abs(th.outro.start - t) > frame || !(th.outro.end > th.outro.start)) fail(`${where} outro: starts at ${th.outro.start} s, expected ${t} s`);
+      t = th.outro.end;
+    }
+    if (Math.abs(t - th.duration) > frame) fail(`${where}: the beats end at ${t} s, the video lasts ${th.duration} s`);
+  }
+  return files;
 }
 
 /** Copies only the media the manifest names (local paths). */
@@ -357,6 +423,11 @@ function copyMedia() {
     files.add(s.poster);
     if (s.icon) files.add(s.icon);
     for (const source of s.sources) files.add(source.src);
+  }
+  for (const th of manifest.themes) {
+    files.add(th.poster);
+    for (const source of th.sources) files.add(source.src);
+    for (const beat of th.beats) if (beat.icon) files.add(beat.icon);
   }
   for (const file of [...files]) {
     const smallCopy = file.replace(/\.webp$/, ".sm.webp");
@@ -589,35 +660,56 @@ function aspect(slide) {
 }
 
 /**
- * The feature tour: the feature texts scroll on one side, one sticky player window on the other
- * shows the feature at the reading line (main.js), looping that slide's in-out cut. The window
- * and "Watch the full clip" open the whole clip in a dialog. Phones: the window sticks on top.
+ * The feature themes (layout A): per theme a head (number, title, lede), one window that plays the
+ * theme's pre-composited loop, and under it the active beat's caption and a rail of the beats (plugin
+ * icons or chips) whose progress follows the video's clock (main.js). The window and "Watch the full
+ * clip" open the active beat's full clip in a dialog. Without script, with reduced motion or Save-Data
+ * the poster stays and a list of every beat (icon, name, sentence) replaces the caption and the rail;
+ * the list is in the HTML either way, for search engines.
  */
-function renderTour() {
+function renderThemes(lang) {
   const n = (k) => String(k).padStart(2, "0");
-  const count = manifest.slides.length;
-  const steps = manifest.slides.map((slide, i) => `        <article class="st-step" data-i="${i}">
-          <p class="ch-num" aria-hidden="true">${n(i + 1)}<span>/${n(count)}</span></p>
-          <h3 class="ch-title">${t(`slide.${slide.id}.title`)}</h3>
-          <p class="ch-text">${t(`slide.${slide.id}.caption`)}</p>
-          <button type="button" class="text-link st-watch js-only" data-open="${i}">${escape(en["tour.watch"])} →</button>
-        </article>`).join("\n");
-  const layers = manifest.slides.map((slide, i) =>
-    `<div class="vl-layer${slide.fullscreen ? " is-full" : ""}" data-i="${i}"${i === 0 ? " data-on" : ""}>${slide.fullscreen ? "" : renderChrome(true, false, "tour")}${renderShot(slide, { lazy: true, sizes: "tour", loop: false })}</div>`).join("\n            ");
-  const segs = manifest.slides.map((_, i) => `<span class="st-seg" data-i="${i}"><i></i></span>`).join("");
-  return `    <div class="st-grid">
-      <div class="st-steps">
-${steps}
+  const count = manifest.themes.length;
+  const L = (o) => o[lang];
+  const watch = `${escape(en["tour.watch"])} →`;
+  const icon = (th, beat) => th.rail === "icons"
+    ? `<img src="${escape(beat.icon)}" width="52" height="52" loading="lazy" decoding="async" alt="">`
+    : `<svg viewBox="0 0 24 24" aria-hidden="true">${GLYPHS[beat.glyph]}</svg>`;
+  const fine = (beat) => (beat.fine ? ` <small class="th-fine">${escape(L(beat.fine))}</small>` : "");
+  return manifest.themes.map((th, i) => {
+    const first = th.beats[0];
+    const firstClip = first.clip ? manifest.slides.find((s) => s.id === first.clip) : null;
+    const outro = th.outro && {
+      name: L(th.outro.name),
+      caption: format(L(th.outro.caption), { n: NUMBERS[lang][th.beats.length] ?? String(th.beats.length) }),
+    };
+    const items = th.beats.map((beat, k) =>
+      `<button type="button" class="th-item" data-k="${k}" style="--k:${k}" aria-label="${escape(L(beat.label))}"${k === 0 ? ' aria-current="true"' : ""}><span class="ic">${icon(th, beat)}</span><span class="lb">${escape(L(beat.label))}</span><i class="pg"><b></b></i></button>`).join("");
+    const list = th.beats.map((beat) =>
+      `          <li><span class="ic">${icon(th, beat)}</span><span class="tx"><b>${escape(L(beat.label))}</b> <span>${escape(L(beat.caption))}</span>${fine(beat)}</span></li>`).join("\n");
+    const sources = th.sources.map((s) => `<source data-src="${escape(s.src)}" type="${escape(s.type)}"${s.media ? ` media="${escape(s.media)}"` : ""}>`).join("");
+    const label = firstClip ? format(en["tour.watchLabel"], { title: L(first.label) }) : L(first.label);
+    return `    <article class="theme th-${th.rail}${th.beats.length > 4 ? " th-many" : ""}" id="theme-${th.id}" data-theme="${i}" aria-labelledby="theme-${th.id}-title">
+      <div class="th-head reveal">
+        <div><p class="ch-num" aria-hidden="true">${n(i + 1)}<span>/${n(count)}</span></p><h3 id="theme-${th.id}-title">${escape(L(th.title))}</h3></div>
+        <p class="th-lede">${escape(L(th.lede))}</p>
       </div>
-      <div class="st-media">
-        <div class="st-sticky">
-          <button type="button" class="vl-frame" data-tour aria-label="${escape(format(en["tour.watchLabel"], { title: en[`slide.${manifest.slides[0].id}.title`] }))}">
-            ${layers}
-          </button>
-          <div class="st-under"><div class="st-segs" aria-hidden="true">${segs}</div>${renderPause("tour")}</div>
+      <div class="th-main">
+        <div class="th-win">
+          <button type="button" class="th-frame"${firstClip ? "" : " data-noclip"} aria-label="${escape(label)}"><img ${imgSrc(th.poster, "theme")} width="1728" height="1080" loading="lazy" decoding="async" alt=""><video muted loop playsinline preload="none" aria-hidden="true" tabindex="-1">${sources}</video></button>
+        </div>
+        <div class="th-live js-only">
+          <p class="th-cap"><b class="th-name">${escape(L(first.label))}</b> <span class="th-text">${escape(L(first.caption))}${fine(first)}</span><button type="button" class="text-link th-watch"${firstClip ? "" : " hidden"}>${watch}</button></p>
+          <div class="th-rail"><div class="th-items" role="group" aria-label="${escape(L(th.title))}">${items}</div>${renderPause("theme")}</div>
+        </div>
+        <div class="th-static">
+          <ul class="th-list">
+${list}
+          </ul>${outro ? `\n          <p class="th-outro"><b>${escape(outro.name)}</b> <span>${escape(outro.caption)}</span></p>` : ""}
         </div>
       </div>
-    </div>`;
+    </article>`;
+  }).join("\n");
 }
 
 // ---- Open source ----

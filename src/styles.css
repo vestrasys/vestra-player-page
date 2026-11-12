@@ -294,53 +294,115 @@ main { overflow-x: clip; }
     radial-gradient(620px 360px at 14% 42%, rgba(16, 168, 252, 0.12), transparent 70%),
     radial-gradient(560px 340px at 86% 62%, rgba(122, 10, 250, 0.12), transparent 70%);
 }
-/* ---- Features: the tour. The feature texts scroll on the left; one sticky window on the right
-   shows the feature at the reading line (main.js), looping that slide's cut. ---- */
+/* ---- Features: three themes. Each theme is a head, one window playing the theme's loop, the
+   active beat's caption and a rail of its beats (main.js follows the video's clock). Without
+   motion (no script, reduced motion, Save-Data) the poster stays and a list of every beat
+   replaces the caption and the rail. ---- */
 
 .chapters { max-width: var(--wide); margin: 0 auto; padding: 96px var(--gutter) 60px; }
-.tour .section-head { margin-bottom: 0; }
-/* The window's geometry, shared by the grid, the window and its sticky offset: it takes 7 of 12
-   parts of the content width (--wide less the gutters) after the gap, at --st-ar. */
-.tour {
-  --st-gap: clamp(32px, 5vw, 72px);
-  --st-ar: 1.6; /* 16 / 10 */
-  --st-win-h: calc((min(var(--wide), 100vw) - 2 * var(--gutter) - var(--st-gap)) * 7 / 12 / var(--st-ar));
+.themes .section-head { margin-bottom: 16px; }
+.theme {
+  /* The window: the content width, 1168px at most, and short enough that the head, window,
+     caption and rail fit one screen (810px wide at 1440 x 900); never below 560px. */
+  --win-w: max(min(100%, 1168px, (100vh - var(--header) - 330px) * 1.6), min(100%, 560px));
+  padding: 40px 0 34px;
 }
-.st-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--st-gap); }
-.st-step { min-height: 72vh; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; transition: opacity 0.4s ease; }
-/* With script the other features' texts sit dimmer (without it every text is shown in full). */
-.js .st-step { opacity: 0.32; }
-.js .st-step[data-on] { opacity: 1; }
-.st-step:last-child { min-height: 80vh; }
-.st-watch { margin-top: 18px; padding: 0; border: 0; background: none; font-size: 0.95rem; }
-.ch-num { margin: 0 0 16px; font: 700 0.82rem/1 var(--mono); letter-spacing: 0.14em; color: var(--accent); width: fit-content; }
+.theme + .theme { border-top: 1px solid var(--line); }
+.th-head { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 6fr); gap: 40px; align-items: end; margin-bottom: 22px; }
+.ch-num { margin: 0 0 12px; font: 700 0.8125rem/1 var(--mono); letter-spacing: 0.14em; color: var(--accent); width: fit-content; }
 @supports (background-clip: text) or (-webkit-background-clip: text) {
   .ch-num { background: var(--brand); -webkit-background-clip: text; background-clip: text; color: transparent; }
 }
 .ch-num span { margin-left: 6px; color: var(--faint); }
-.ch-title { font-size: var(--t-h3); display: flex; flex-direction: column; align-items: flex-start; gap: 16px; }
-.ch-text { margin: 18px 0 0; color: var(--muted); font-size: 1.04rem; max-width: 30em; }
-/* Centred in the screen under the header: the window (--st-win-h) and the bar under it (about 60px:
-   its 16px margin, the pause button and some air). */
-.st-sticky { position: sticky; top: calc(var(--header) + max(16px, (100vh - var(--header) - var(--st-win-h) - 60px) / 2)); }
-.st-under { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 16px; }
-.st-under .pp { flex: none; }
-.st-segs { display: flex; gap: 6px; }
-/* A progress bar per feature: a track with a brand fill scaled by script (transform only). */
-.st-seg { display: block; width: 40px; height: 3px; border-radius: 2px; background: var(--line-2); overflow: hidden; }
-.st-seg i { display: block; height: 100%; background: var(--brand); transform-origin: 0 50%; transform: scaleX(0); }
+.th-head h3 { font-size: clamp(1.75rem, 2.8vw, 2.5rem); font-weight: 720; line-height: 1.08; letter-spacing: -0.025em; }
+:root[lang="zh-Hans"] .th-head h3 { letter-spacing: 0; line-height: 1.22; }
+.th-lede { margin: 0; justify-self: end; max-width: 32em; color: var(--muted); font-size: 17px; line-height: 1.55; }
 
-/* The window: one frame that cross-fades between the features; a click opens the full clip. */
-.vl-frame {
-  position: relative; display: block; width: 100%; aspect-ratio: var(--st-ar); padding: 0; border: 0; cursor: zoom-in; touch-action: pan-y;
-  border-radius: var(--win-radius); overflow: hidden; background: var(--ink-2); color: inherit; font: inherit;
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.07), 0 40px 100px -30px rgba(0, 0, 0, 0.95), 0 0 70px -24px rgba(250, 10, 168, 0.16);
+.th-win { display: flex; justify-content: center; }
+/* The window: the poster underneath, the loop on top once it plays. A click opens the active
+   beat's full clip (data-noclip: the beat has none). */
+.th-frame {
+  position: relative; display: block; width: var(--win-w); aspect-ratio: 16 / 10; padding: 0; border: 0; cursor: zoom-in;
+  border-radius: var(--win-radius); overflow: hidden; background: #000; color: inherit; font: inherit;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.07), 0 40px 100px -30px rgba(0, 0, 0, 0.95), 0 0 90px -24px rgba(250, 10, 168, 0.22);
 }
-.no-js .vl-frame { cursor: default; }
-.vl-layer { position: absolute; inset: 0; opacity: 0; transition: opacity 0.5s ease; }
-.vl-layer[data-on] { opacity: 1; }
-.vl-layer.is-full { background: #000; }
-.vl-layer > img.chrome { display: block; width: 100%; height: 100%; object-fit: cover; }
+.th-frame[data-noclip], .no-js .th-frame { cursor: default; }
+.th-frame img, .th-frame video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+.th-frame video { opacity: 0; transition: opacity 0.4s ease; }
+.th-frame.is-live video { opacity: 1; }
+
+/* Caption: one line under the window; a minimum height so the rail never moves. */
+.th-live { width: var(--win-w); margin: 0 auto; container-type: inline-size; }
+.th-cap { display: flex; align-items: baseline; gap: 12px; min-height: 28px; margin: 16px 0 0; }
+.th-name { font: 700 18px/1.3 var(--display); letter-spacing: -0.01em; white-space: nowrap; }
+.th-text { color: var(--muted); font-size: 15.5px; line-height: 1.45; }
+.th-fine { color: var(--faint); font-size: 12.5px; white-space: nowrap; }
+.th-watch { margin-left: auto; padding: 0; border: 0; background: none; font-size: 14px; white-space: nowrap; }
+/* Beat change: out in 120 ms, in over 240 ms from 8 px below (outExpo). */
+.th-cap > * { transition: opacity 0.12s linear; }
+.th-cap.out > * { opacity: 0; }
+.th-cap.in > * { animation: cap-in 0.24s cubic-bezier(0.16, 1, 0.3, 1) both; }
+@keyframes cap-in { from { opacity: 0; transform: translateY(8px); } }
+
+/* Rail: one button per beat, then the pause button. */
+.th-rail { display: flex; align-items: flex-start; gap: 16px; margin-top: 14px; }
+.th-items { display: flex; flex-wrap: wrap; gap: 10px; }
+.th-rail .pp { flex: none; margin-left: auto; align-self: center; }
+.th-item {
+  flex: 0 0 auto; width: 92px; display: flex; flex-direction: column; align-items: center; gap: 7px; padding: 0; border: 0;
+  background: none; color: var(--faint); font: 600 11.5px/1.2 var(--font); text-align: center; opacity: 0.62;
+  transition: opacity 0.24s ease, color 0.24s ease;
+}
+.th-item .ic {
+  width: 52px; height: 52px; border-radius: 14px; background: var(--ink-2); display: grid; place-items: center; overflow: hidden;
+  box-shadow: 0 0 0 1px var(--line-2);
+  transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.th-item .ic img { display: block; width: 100%; height: 100%; }
+.th-item svg, .th-list svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+/* Progress: the active beat's bar is scaled by script (--p, from the video's clock); earlier beats are full. */
+.th-item .pg { display: block; width: 52px; height: 3px; border-radius: 2px; background: var(--line-2); overflow: hidden; }
+.th-item .pg b { display: block; height: 100%; background: var(--brand); transform-origin: 0 50%; transform: scaleX(0); }
+.th-item[aria-current] .pg b { transform: scaleX(var(--p, 0)); }
+.th-item.done .pg b { transform: scaleX(1); }
+.th-item[aria-current], .th-item.done { opacity: 1; color: var(--text); }
+.th-item[aria-current] .ic { transform: scale(1.1); box-shadow: 0 0 0 2px #fa0aa8, 0 0 26px -4px rgba(250, 10, 168, 0.75); }
+/* The store's outro: every icon takes the ring, 60 ms apart; on the wrap they clear together. */
+.th-items.all .th-item { opacity: 1; color: var(--text); }
+.th-items.all .th-item .pg b { transform: scaleX(1); }
+.th-items.all .th-item .ic { box-shadow: 0 0 0 2px #fa0aa8, 0 0 22px -6px rgba(250, 10, 168, 0.7); transition-delay: calc(var(--k) * 60ms); }
+
+/* Chip rails (themes without plugin icons): a line glyph and the label; the bar is the chip's bottom edge. */
+.th-chips .th-item {
+  position: relative; width: auto; flex-direction: row; gap: 9px; padding: 9px 15px 9px 11px; border-radius: 12px; overflow: hidden;
+  background: var(--ink-2); box-shadow: 0 0 0 1px var(--line-2); font-size: 13.5px; transition: opacity 0.24s ease, color 0.24s ease, box-shadow 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.th-chips .th-item .ic { width: 24px; height: 24px; border-radius: 0; background: none; box-shadow: none; }
+.th-chips .th-item .pg { position: absolute; left: 0; right: 0; bottom: 0; width: auto; border-radius: 0; background: transparent; }
+.th-chips .th-item[aria-current] { box-shadow: 0 0 0 1.5px #fa0aa8, 0 0 24px -8px rgba(250, 10, 168, 0.8); }
+.th-chips .th-item[aria-current] .ic { transform: none; box-shadow: none; color: var(--accent-hi); }
+/* A long chip rail beside the pause button needs about 900px: narrower, only the active chip keeps its label. */
+@container (max-width: 900px) {
+  .th-chips.th-many .th-item:not([aria-current]) .lb { display: none; }
+}
+
+/* Without motion: the poster beside a list of every beat. */
+:root.motion .th-static, :root:not(.motion) .th-live { display: none; }
+:root:not(.motion) .th-main { display: grid; grid-template-columns: minmax(0, 560px) minmax(0, 1fr); gap: 36px; align-items: start; }
+:root:not(.motion) .th-frame { width: 100%; }
+.th-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 28px; }
+.th-list li { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 12px; align-items: start; }
+.th-list .ic { width: 44px; height: 44px; border-radius: 12px; overflow: hidden; display: grid; place-items: center; background: var(--ink-2); box-shadow: 0 0 0 1px var(--line-2); color: var(--accent-hi); }
+.th-list .ic img { display: block; width: 100%; height: 100%; }
+.th-list .tx { font-size: 13.5px; line-height: 1.45; color: var(--muted); }
+.th-list .tx b { display: block; font: 700 15px/1.3 var(--display); color: var(--text); }
+.th-list .th-fine { display: block; white-space: normal; }
+.th-outro { margin: 18px 0 0; font-size: 13.5px; color: var(--muted); }
+.th-outro b { color: var(--text); font-family: var(--display); }
+
+@media (max-width: 1023px) {
+  .th-head { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); }
+}
 
 /* The full clip: a dialog with the feature's title and caption. */
 .lightbox {
@@ -441,16 +503,6 @@ main { overflow-x: clip; }
   /* The download button appears in the empty room left of the actions, so it never moves the others. */
   .nav-dl { position: absolute; right: calc(100% + 10px); }
   .chapters, .open { padding-top: 88px; }
-  /* The tour: the window sticks under the header, the texts scroll beneath it. */
-  .st-grid { grid-template-columns: minmax(0, 1fr); gap: 0; }
-  .st-media { order: -1; position: sticky; top: var(--header); z-index: 4; margin: 0 calc(-1 * var(--gutter)); padding: 12px var(--gutter) 10px; background: linear-gradient(var(--ink) 88%, rgba(9, 8, 13, 0)); }
-  .st-sticky { position: static; padding-top: 0; margin-top: 0; }
-  .st-under { margin-top: 10px; }
-  .st-seg { width: 28px; }
-  .st-step { min-height: 52vh; }
-  .st-step:first-child { margin-top: 24px; }
-  .st-step:last-child { min-height: 60vh; }
-  .tour .ch-title { font-size: 1.5rem; }
   .os-grid { grid-template-columns: minmax(0, 1fr); }
   .os-card, .os-card + .os-card { padding: 22px 0; border-left: 0; }
   .os-card + .os-card { border-top: 1px solid var(--line); }
@@ -470,6 +522,37 @@ main { overflow-x: clip; }
   .pf-item { flex-direction: column; align-items: stretch; }
   .pf-get { text-align: center; }
   .end { padding: 96px var(--gutter) 110px; }
+}
+
+/* ---- Phones: the themes stack; fixed caption height so the rail does not jump ---- */
+
+@media (max-width: 640px) {
+  .theme { padding: 22px 0 26px; }
+  .th-head { grid-template-columns: minmax(0, 1fr); gap: 10px; margin-bottom: 16px; }
+  .th-head h3 { font-size: 28px; }
+  .th-lede { justify-self: start; font-size: 15px; }
+  .theme { --win-w: 100%; }
+  .th-cap { flex-direction: column; align-items: flex-start; gap: 3px; min-height: 92px; }
+  .th-name { font-size: 17px; }
+  .th-text { font-size: 14.5px; }
+  .th-fine { white-space: normal; }
+  .th-watch { margin: 4px 0 0; }
+  .th-rail { flex-direction: column; align-items: stretch; gap: 12px; }
+  .th-rail .pp { align-self: flex-end; }
+  /* Icon rail: the icons without labels, spread across the width. */
+  .th-icons .th-items { flex-wrap: nowrap; justify-content: space-between; gap: 0; }
+  .th-icons .th-item { width: 44px; }
+  .th-icons .th-item .ic { width: 44px; height: 44px; border-radius: 12px; }
+  .th-icons .th-item .pg { width: 44px; }
+  .th-icons .th-item .lb { display: none; }
+  /* Chip rails: a long rail shows glyphs only, the active chip with its label. */
+  .th-chips .th-items { gap: 6px; }
+  .th-chips .th-item { gap: 6px; padding: 8px 9px 8px 7px; font-size: 12.5px; }
+  .th-chips .th-item .ic { width: 20px; height: 20px; }
+  .th-chips .th-item svg { width: 19px; height: 19px; }
+  .th-chips.th-many .th-item:not([aria-current]) .lb { display: none; }
+  :root:not(.motion) .th-main { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+  .th-list { grid-template-columns: minmax(0, 1fr); }
 }
 
 @media (prefers-reduced-motion: reduce) {

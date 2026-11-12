@@ -2,9 +2,9 @@
 
 The single-page website for downloading Vestra Player:
 a hero whose player windows stand fanned in depth and gather into one as the
-page scrolls, with download buttons (the visitor's system first); a feature tour (the
-feature texts scroll beside one sticky player window that plays each
-feature's recording), open source, and the closing download buttons. Static output for
+page scrolls, with download buttons (the visitor's system first); the features as
+three themes (each a window playing the theme's loop, the active feature's caption
+and a rail of its features), open source, and the closing download buttons. Static output for
 Cloudflare Pages; plain HTML, CSS and JavaScript built by a Node script with no
 dependencies. English (`/`) and Simplified Chinese (`/zh-hans/`), each a
 prerendered page.
@@ -38,13 +38,15 @@ The build prints the size of the HTML, CSS and JS and fails above 150 KiB
 | `src/index.html` | Page template: `{{t:key}}` text, `{{h:key}}` HTML text, `{{var:…}}` values, `{{slot:…}}` sections rendered by the build |
 | `src/i18n.json` | Every string, `en` and `zh-Hans` (the build fails if a key is missing in one); the build renders one page per language |
 | `src/styles.css`, `src/main.js` | Styles and the page script (language, download buttons, platforms dialog, playing windows, stage parallax, plugin filter) |
-| `media/slides.json` | The hero stage and the feature tour: frame image, slides, posters, video sources and the tour's cut of each clip |
+| `media/slides.json` | The hero stage, the feature themes (copy, beat times, posters, video sources) and the full clips (`slides`) |
+| `media/themes/*.json` | How each theme's loop is composed from recordings and stills (`scripts/compose-theme.mjs`) |
 | `media/CREDITS.md` | Third-party footage and games shown in the demos; the footer shows its "Footer" lines |
 | `release.config.json` | Where release metadata comes from, asset name patterns, system requirements |
 | `site.config.json` | The site's public `url` (see below), footer links and licence names |
 | `public/` | Copied as is: favicons, Open Graph image, `_headers` for Cloudflare Pages |
 | `scripts/build.mjs` | `npm run build` |
 | `scripts/encode-clip.mjs` | Encodes a recording or window screenshot into the page's formats |
+| `scripts/compose-theme.mjs` | Cuts a theme's beats into one loop with the punch at every beat (needs ffmpeg) |
 | `scripts/make-assets.mjs` | Regenerates the icons and the placeholder media (needs ffmpeg) |
 
 ## Languages and search engines
@@ -166,14 +168,13 @@ into `media/slides.json`. Replacing one item is one command plus that edit.
   `npm run encode -- --far <slide-id | media/posters/x.webp> [--id <name>]`
   (the page uses no live blur filter). A `center` or `near` entry is one of:
   - a slide id: that slide's clip plays there (its poster, sources and area,
-    in a `<video>` of its own, so the tour is unaffected). A fullscreen
+    in a `<video>` of its own). A fullscreen
     slide (or a card with `"fullscreen": { "width", "height" }`) shows the
     picture alone in its own shape, with no window frame, and its poster
     becomes the preloaded LCP image;
   - a card of its own, `{ "poster", "sources" }` as `npm run encode` prints
-    them, so the hero can show a cut that differs from the tour's. The
-    committed center is such a card: the whole fullscreen `adjust` take (the
-    tour plays its re-cut `adjust-short`). (The
+    them, so the hero can show a cut of its own. The
+    committed center is such a card: the whole fullscreen `adjust` take. (The
     former center, `hero-adjust`, still in `media/`, is a player 0.7.6 take of its own: the
     maximized window without the sidebar, the Adjustments and Effects column
     opened from the bottom bar's right side, saturation down to grey, Colour
@@ -186,8 +187,13 @@ into `media/slides.json`. Replacing one item is one command plus that edit.
     everything under the title bar;
   - (`near` only) a still: a `.webp` path (over the frame's client area), or
     a card without `"sources"` (its `"poster"`, and `"frame"` if any). The
-    committed side windows are the posters of the hero cuts `hero-ai` (the
-    colour wheels) and `hero-nes-2` (narrow window, no playlist pane).
+    committed side windows are the poster of the hero cut `hero-ai` (the
+    colour wheels) and, on the right, the Plugin Store (D10 of the launch v2
+    spec): `hero-store`, the R14 still (player 0.8.0, the store's Installed
+    view over the player, cut below the store's tab row:
+    `npm run encode -- --still C:/vestra/rec/v9/shots/R14-still.png --id hero-store --crop 0,112,2435,1404`,
+    then scaled to 1280 px wide like `hero-ai`: ffmpeg `crop=2435:1404:0:112,scale=1280:-2`, WebP quality 80, 80 KB).
+    VestraNES moved to the far right (`nes-far`).
 
   Side clips (a near slide id or card with sources; none as committed)
   load only once the front window's clip is playing, only on wide screens (the
@@ -205,18 +211,86 @@ into `media/slides.json`. Replacing one item is one command plus that edit.
   optional `icon`, a `poster` and `sources` (tried in order; AV1 WebM first,
   H.264 MP4 last). `"hidden": true` leaves a slide out of the page; its files
   need not exist.
-- Each slide also has `in` and `out` (seconds): the cut of its clip the
-  feature tour plays. The tour lists the slides' texts in one column; one
-  sticky window beside them (above them on phones) shows the feature whose
-  text has passed the reading line and loops that cut, with a progress bar
-  per feature. The window and "Watch the full clip" open the whole clip in a
-  dialog with the feature's title and caption.
-- Of all the windows on screen (the stage's front window and the tour's)
-  only the most visible one plays (with the stage's side clips when it is
-  the front window); a clip loads when its window is first chosen. A pause
+- The slides are the full clips: "Watch the full clip" (and a click on a
+  theme's window) opens the clip of the active beat's `clip` in a dialog
+  with that slide's title and caption.
+- `themes` are the feature section: per theme `id`, `title` and `lede`
+  (`en`, `zh-Hans`), `rail` (`icons`: each beat has an `icon`, the
+  plugin's icon as 104 px WebP in `media/icons/`; `chips`: each beat has a
+  `glyph` from `GLYPHS` in `scripts/build.mjs`), `duration`, `poster`
+  and `sources` (a `"media": "(max-width: 640px)"` source first, for
+  phones), and `beats`: `id`, `start`, `end`, `label`, `caption`, optional
+  `fine` (fine print) and `clip` (a slide id). An optional `outro`
+  (`start`, `end`, `name`, `caption`; `{n}` is the number of visible
+  beats in words) lights every icon. `"hidden": true` leaves a beat out;
+  its span must then be cut out of the video too. The build fails unless the
+  visible beats and the outro tile `0`–`duration` (to 1/60 s) and every
+  string exists in both languages.
+- Each theme's window loops its video; the script follows the video's clock
+  (`requestVideoFrameCallback`) to ring the active rail item, fill its
+  progress bar and change the caption. A click on an item seeks to its beat
+  (a key frame). Without script, with reduced motion or Save-Data no video
+  loads: the poster shows beside a list of every beat (also in the HTML for
+  search engines).
+- Of all the windows on screen (the stage's front window and the themes')
+  only the most visible one plays (a theme's from 60 % visible; with the
+  stage's side clips when it is the front window); a theme's video is
+  fetched once its band is within one screen, the hero's when its window is
+  first chosen. A pause
   button under each playing window stops every clip on the page, and nothing
   plays behind the full-clip dialog. With reduced motion, Save-Data or without script nothing loads or
   plays and the posters show.
+
+### Feature themes
+
+Each theme's video is one 60 fps loop of hard cuts, composed from a spec in
+`media/themes/` (recordings with their spans and crops, stills,
+the before/after wipe) and encoded with a key frame at every beat start:
+
+```sh
+node scripts/compose-theme.mjs media/themes/store.json     # prints the beat times and the encode line
+npm run encode -- C:/vestra/rec/page-v2/store.mp4 --id theme-store --keyframes 0,4.4,7.2,10,12.6,15.6 \
+  --sm 960x600 --poster-at 14.5 --crf-av1 46 --crf-sm 50 --crf-h264 28 --poster-quality 50
+```
+
+Copy the printed times into the theme's beats in `media/slides.json`.
+Budget (launch v2 spec 3.9): AV1 at most 4.0 MB per 20 s, the phone copy
+1.6 MB, the poster 60 KB. The encode's poster is quality 50 at most; when a
+frame does not fit 60 KB (the store list's text does not), pick another beat's
+frame and write the poster with ffmpeg (`-ss <s> -i media/clips/theme-<id>.mp4
+-frames:v 1 -c:v libwebp -quality <q>`, and its half-width `.sm.webp`).
+
+The themes as committed: the player 0.8.0 takes of 2026-11-12
+(`C:/vestra/rec/v9/R*.mkv`, 2560x1600 screen captures at about 55 fps; the
+real arrow tracked by `C:/vestra/rec/tools/track.mjs` and covered by the
+brand pointer, `pointer.mjs draw`, into `C:/vestra/rec/v9/ptr/<take>-ptr.mkv`;
+the tracks are `ptr/<take>.track.json`; R9's I-beam in the search field,
+which track.mjs does not know, is covered by a pointer parked on it).
+
+| Theme | Beats | Waiting for |
+| --- | --- | --- |
+| player | Picture (R1), Sound (R2), Subtitles (R3), Seek preview (R4), Playlist (R5), Command Palette (R6) | |
+| store | Clip Export (R7 one clip, then Highlights by loudness from R17/R17b), VestraTube (R9: the search field and the first result row only, as a strip centred on black, `"fit"`; then Spring playing), Shader Upscale (R11, then the wipe between the stills `shots/R11-still-off.png` and `-on.png`), Auto Frame (R12), VestraNES (`nes-td-cut`), outro (R14, the Installed view cut below its tab row) | |
+| ai | Ask Vestra (R15), AI Upscaling (R15's "Done" strip, then the promo's RTX pair, 1:1 from the 4K captures), Vestra Player AI (`ai-5-cut`) | Highlights hidden until the sound model (R18) |
+
+Full clips ("Watch the full clip"): the same takes at real pace, composed by
+`compose-theme.mjs` from one-beat specs with `"punch": false` in
+`C:/vestra/rec/page-v2/full/*.json`, then encoded:
+
+```sh
+npm run encode -- C:/vestra/rec/page-v2/full/picture-9.mp4 --id picture-9 --poster-at 4.5 --crf-av1 41 --crf-h264 30      # R1 + R2, fullscreen
+npm run encode -- C:/vestra/rec/page-v2/full/palette-9.mp4 --id palette-9 --size 1874x1080 --poster-at 2.6 --crf-av1 41 --crf-h264 30
+npm run encode -- C:/vestra/rec/page-v2/full/playlist-9.mp4 --id playlist-9 --size 1874x1080 --poster-at 2.4 --crf-av1 41 --crf-h264 30
+npm run encode -- C:/vestra/rec/page-v2/full/vestratube-9.mp4 --id vestratube-9 --poster-at 5.5 --crf-av1 41 --crf-h264 30   # 1728x1080, D8 strip
+npm run encode -- C:/vestra/rec/page-v2/full/clipexport-9.mp4 --id clipexport-9 --size 1874x1080 --poster-at 3.0 --crf-av1 41 --crf-h264 30
+npm run encode -- C:/vestra/rec/page-v2/full/ask-9.mp4 --id ask-9 --size 1874x1080 --poster-at 4.2 --crf-av1 41 --crf-h264 30
+```
+
+Privacy: the Clip Export takes show "Clip exported as <the Windows user's
+Videos folder>…" at the top left after an export (R7 23.9–27.9 s, R8
+11.6–16.2 s); no cut uses those spans. Ask Vestra (R15, R16) was recorded on
+the user's own profile: only the palette's command names and the approval
+sheet are used.
 
 ### Commands
 
@@ -323,6 +397,8 @@ npm run encode -- ai-wheels.mkv  --id hero-ai  --size 1280x800 --duration 12.8 -
 npm run encode -- nes-td-cut.mkv --id hero-nes-2 --crop 12,52,1640,1328 --size 1280x800 --duration 15.167 --loop-fade 0.5 --poster-at 10.35
 npm run encode -- --window 1823 --id frame-nes-2  # 1476 x 1640/1328: the NES card's window without the pane
 
+# Theme loops (see "Feature themes"): --keyframes forces a key frame at each beat start (checked with
+# ffprobe afterwards), --sm adds the phone copy <id>.sm.webm, --poster-quality lowers the poster's WebP quality.
 # In general: crop = the player window's client area in the recording.
 npm run encode -- <recording> --id <slide-id> --crop <x,y,w,h> --start <s> --duration <s> --loop-fade 0.5 --poster-at <s>
 npm run encode -- --frame <window-screenshot.png> --id frame --crop <x,y,w,h> --client <x,y,w,h> [--video <x,y,w,h>]
