@@ -189,10 +189,9 @@ into `media/slides.json`. Replacing one item is one command plus that edit.
     a card without `"sources"` (its `"poster"`, and `"frame"` if any). The
     committed side windows are the poster of the hero cut `hero-ai` (the
     colour wheels) and, on the right, the Plugin Store (D10 of the launch v2
-    spec): `hero-store`, the R14 still (player 0.8.0, the store's Installed
-    view over the player, cut below the store's tab row:
-    `npm run encode -- --still C:/vestra/rec/v9/shots/R14-still.png --id hero-store --crop 0,112,2435,1404`,
-    then scaled to 1280 px wide like `hero-ai`: ffmpeg `crop=2435:1404:0:112,scale=1280:-2`, WebP quality 80, 80 KB).
+    spec): `hero-store`, since 2026-11-12 a frameless card (`"fullscreen": { 1728, 1080 }`) with the store
+    loop's outro (the five plugin icons and names, "All from the Plugin Store."; the user found the store
+    window's text too much to take in): ffmpeg `-ss 2.5 -i x-outro-p.mp4 -frames:v 1 -vf scale=1280:-2`, WebP quality 80, 23 KB.
     VestraNES moved to the far right (`nes-far`).
 
   Side clips (a near slide id or card with sources; none as committed)
@@ -269,9 +268,15 @@ which track.mjs does not know, is covered by a pointer parked on it).
 
 | Theme | Beats | Waiting for |
 | --- | --- | --- |
-| player | Picture (R1), Sound (R2), Subtitles (R3), Seek preview (R4), Playlist (R5), Command Palette (R6) | |
-| store | Clip Export (R7 one clip, then Highlights by loudness from R17/R17b), VestraTube (R9: the search field and the first result row only, as a strip centred on black, `"fit"`; then Spring playing), Shader Upscale (R11, then the wipe between the stills `shots/R11-still-off.png` and `-on.png`), Auto Frame (R12), VestraNES (`nes-td-cut`), outro (R14, the Installed view cut below its tab row) | |
-| ai | Ask Vestra (R15), AI Upscaling (R15's "Done" strip, then the promo's RTX pair, 1:1 from the 4K captures), Vestra Player AI (`ai-5-cut`) | Highlights hidden until the sound model (R18) |
+| player | Picture (R1), Sound (R2, cropped to the equalizer), Seek preview (R4), Playlist (R5), Command Palette (R6: the palette at about 1.5x while "reset pic" is typed, then the whole picture). Subtitles left out (user ruling 2026-11-12: a basic feature) | |
+| store | Clip Export (explainers `gif` and `reel`), VestraTube (R9: the search field and the first result row only, as a strip centred on black, `"fit"`; then Spring playing), Shader Upscale (explainer `shader`: Anime4K off and on, two player captures of one 240p frame), Auto Frame (explainer `autoframe`), VestraNES (`nes-td-cut`), outro (explainer `outro`: the five icons and names, "All from the Plugin Store.") | |
+| ai | Ask Vestra (explainer `ask`: R15 through a camera, the sentence turned into the command), AI Upscaling (explainer `vsr`: AI Upscaling off and on, two player captures of one 360p frame), Vestra Player AI (explainer `build`, five captioned steps) | Highlights hidden until the sound model (R18) |
+
+Explainers (2026-11-12): motion graphics that explain what a feature does, with real frames, real data and real
+player captures inside and no drawn player UI. They are the promo video's `main/explain.html` scenes
+(`C:/vestra/marketing/video/v9/main/explain/explain.js`), rendered at 1728x1080 with
+`node v9/tools/render2.mjs "v9/main/explain.html?s=<scene>&d=<seconds>" --size 1728x1080 --out v9/work/explain/x-<scene>-p.mp4`
+from `C:/vestra/marketing/video` (delete the `.chunks` folder first when a scene changed), and used as whole-frame parts.
 
 Full clips ("Watch the full clip"): the same takes at real pace, composed by
 `compose-theme.mjs` from one-beat specs with `"punch": false` in

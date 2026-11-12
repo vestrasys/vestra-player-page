@@ -1,14 +1,109 @@
 {
-  "$comment": "Theme 01 'It starts complete' (SPEC 3.4). Player 0.8.0 takes of 2026-11-12 (C:/vestra/rec/v9, real arrow replaced by the brand pointer: rec/tools/track.mjs + pointer.mjs -> v9/ptr/<take>-ptr.mkv). R1, R2 fullscreen 2560x1600; the others maximized (client area 2560x1476 at y 40; the taskbar below it is never in a crop). Composed by scripts/compose-theme.mjs; see README 'Feature themes'.",
-  "size": [1728, 1080], "fps": 60, "work": "C:/vestra/rec/page-v2",
+  "$comment": "Theme 01 'It starts complete' (SPEC 3.4). Subtitles left out (user ruling 2026-11-12: a basic feature, not featured). Player 0.8.0 takes of 2026-11-12 (C:/vestra/rec/v9, real arrow replaced by the brand pointer: rec/tools/track.mjs + pointer.mjs -> v9/ptr/<take>-ptr.mkv). R1, R2 fullscreen 2560x1600; the others maximized (client area 2560x1476 at y 40; the taskbar below it is never in a crop). Composed by scripts/compose-theme.mjs; see README 'Feature themes'. Rebuild 2026-11-12 (readability: UI text at least 16 px on desktop and about 12 px on a phone): Sound is cropped closer to the equalizer; the Command Palette beat shows the palette at about 1.5x (the typed 'reset pic' reads on a phone), then cuts wide for the colour coming back.",
+  "size": [
+    1728,
+    1080
+  ],
+  "fps": 60,
+  "work": "C:/vestra/rec/page-v2",
   "beats": [
-    { "id": "picture", "dur": 3.0, "parts": [ { "src": "C:/vestra/rec/v9/ptr/R1-t2-ptr.mkv", "in": 1.6, "out": 5.6, "crop": [0, 0, 2560, 1600] } ] },
-    { "id": "sound", "dur": 2.6, "parts": [ { "src": "C:/vestra/rec/v9/ptr/R2-t1-ptr.mkv", "in": 3.3, "out": 7.6, "crop": [832, 200, 1728, 1080] } ] },
-    { "id": "subtitles", "dur": 2.6, "parts": [ { "src": "C:/vestra/rec/v9/ptr/R3-t1-ptr.mkv", "in": 2.0, "out": 4.6, "crop": [700, 220, 1860, 1162] } ] },
-    { "id": "seek", "dur": 2.4, "parts": [ { "src": "C:/vestra/rec/v9/ptr/R4-t1-ptr.mkv", "in": 0.6, "out": 3.6, "crop": [0, 436, 1728, 1080] } ] },
-    { "id": "playlist", "dur": 2.4, "parts": [ { "src": "C:/vestra/rec/v9/ptr/R5-t1-ptr.mkv", "in": 2.6, "out": 6.2, "crop": [832, 40, 1728, 1080] } ] },
-    { "id": "palette", "dur": 3.0, "parts": [
-      { "src": "C:/vestra/rec/v9/ptr/R6-t1-ptr.mkv", "in": 0.5, "out": 3.0, "speed": 1.5, "crop": [480, 40, 1920, 1200] },
-      { "src": "C:/vestra/rec/v9/ptr/R6-t1-ptr.mkv", "in": 4.7, "out": 6.03, "speed": 1, "crop": [480, 40, 1920, 1200] } ] }
+    {
+      "id": "picture",
+      "dur": 3,
+      "parts": [
+        {
+          "src": "C:/vestra/rec/v9/ptr/R1-t2-ptr.mkv",
+          "in": 1.6,
+          "out": 5.6,
+          "crop": [
+            0,
+            0,
+            2560,
+            1600
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sound",
+      "dur": 2.6,
+      "parts": [
+        {
+          "src": "C:/vestra/rec/v9/ptr/R2-t1-ptr.mkv",
+          "in": 3.3,
+          "out": 7.6,
+          "crop": [
+            1500,
+            330,
+            1060,
+            662
+          ]
+        }
+      ]
+    },
+    {
+      "id": "seek",
+      "dur": 2.4,
+      "parts": [
+        {
+          "src": "C:/vestra/rec/v9/ptr/R4-t1-ptr.mkv",
+          "in": 0.6,
+          "out": 3.6,
+          "crop": [
+            0,
+            436,
+            1728,
+            1080
+          ]
+        }
+      ]
+    },
+    {
+      "id": "playlist",
+      "dur": 2.4,
+      "parts": [
+        {
+          "src": "C:/vestra/rec/v9/ptr/R5-t1-ptr.mkv",
+          "in": 2.6,
+          "out": 6.2,
+          "crop": [
+            832,
+            40,
+            1728,
+            1080
+          ]
+        }
+      ]
+    },
+    {
+      "id": "palette",
+      "dur": 3,
+      "parts": [
+        {
+          "src": "C:/vestra/rec/v9/ptr/R6-t1-ptr.mkv",
+          "in": 0.5,
+          "out": 3,
+          "speed": 1.5,
+          "crop": [
+            820,
+            40,
+            768,
+            480
+          ]
+        },
+        {
+          "src": "C:/vestra/rec/v9/ptr/R6-t1-ptr.mkv",
+          "in": 4.7,
+          "out": 6.03,
+          "speed": 1,
+          "crop": [
+            480,
+            40,
+            1920,
+            1200
+          ]
+        }
+      ]
+    }
   ]
 }

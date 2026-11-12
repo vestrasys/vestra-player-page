@@ -57,7 +57,13 @@
     },
     "near": [
       "media/posters/hero-ai.webp",
-      "media/posters/hero-store.webp"
+      {
+        "poster": "media/posters/hero-store.webp",
+        "fullscreen": {
+          "width": 1728,
+          "height": 1080
+        }
+      }
     ],
     "far": [
       "media/posters/seek-far.webp",
@@ -67,7 +73,7 @@
   "themes": [
     {
       "id": "player",
-      "$comment": "Composed from media/themes/player.json (scripts/compose-theme.mjs): player 0.8.0 takes of 2026-11-12 (R1-R6).",
+      "$comment": "Composed from media/themes/player.json (scripts/compose-theme.mjs): player 0.8.0 takes of 2026-11-12 (R1-R6). Subtitles left out (user ruling 2026-11-12: a basic feature, not featured).",
       "title": {
         "en": "It starts complete",
         "zh-Hans": "开箱即完整"
@@ -77,7 +83,7 @@
         "zh-Hans": "画面、声音、字幕、播放列表、命令面板，第一次打开就都在。播放由 libmpv 负责。"
       },
       "rail": "chips",
-      "duration": 16,
+      "duration": 13.4,
       "poster": "media/posters/theme-player.webp",
       "sources": [
         {
@@ -126,24 +132,10 @@
           "clip": "picture"
         },
         {
-          "id": "subtitles",
-          "glyph": "subtitles",
-          "start": 5.6,
-          "end": 8.2,
-          "label": {
-            "en": "Subtitles",
-            "zh-Hans": "字幕"
-          },
-          "caption": {
-            "en": "Style them, shift them, or search for them online without leaving the player.",
-            "zh-Hans": "改样式、调同步，还能不离开播放器搜索在线字幕。"
-          }
-        },
-        {
           "id": "seek",
           "glyph": "seek",
-          "start": 8.2,
-          "end": 10.6,
+          "start": 5.6,
+          "end": 8,
           "label": {
             "en": "Seek preview",
             "zh-Hans": "进度条预览"
@@ -156,8 +148,8 @@
         {
           "id": "playlist",
           "glyph": "playlist",
-          "start": 10.6,
-          "end": 13,
+          "start": 8,
+          "end": 10.4,
           "clip": "playlist",
           "label": {
             "en": "Playlist",
@@ -171,8 +163,8 @@
         {
           "id": "palette",
           "glyph": "palette",
-          "start": 13,
-          "end": 16,
+          "start": 10.4,
+          "end": 13.4,
           "clip": "palette",
           "label": {
             "en": "Command Palette",
@@ -187,7 +179,7 @@
     },
     {
       "id": "store",
-      "$comment": "Composed from media/themes/store.json: player 0.8.0 takes of 2026-11-12 (R7, R17, R9, R11, R12, R14) and the VestraNES take. No VestraBili (user ruling 2026-11-12). The poster is the Clip Export beat (the store list's text does not fit the 60 KB poster budget).",
+      "$comment": "Composed from media/themes/store.json: Clip Export and Auto Frame explainers of 2026-11-12, VestraTube (R9), Shader Upscale (Anime4K wipe of two real player captures), VestraNES, the icons-and-names outro. No VestraBili (user ruling 2026-11-12).",
       "title": {
         "en": "It grows with its community",
         "zh-Hans": "随社区一起成长"
@@ -197,7 +189,7 @@
         "zh-Hans": "功能来自插件商城。每个插件都开源，装上马上就能用。"
       },
       "rail": "icons",
-      "duration": 18.2,
+      "duration": 20.4,
       "poster": "media/posters/theme-store.webp",
       "sources": [
         {
@@ -219,7 +211,7 @@
           "id": "clipexport",
           "icon": "media/icons/clipexport.webp",
           "start": 0,
-          "end": 4.4,
+          "end": 5.6,
           "label": {
             "en": "Clip Export",
             "zh-Hans": "片段导出"
@@ -233,8 +225,8 @@
         {
           "id": "vestratube",
           "icon": "media/icons/vestratube.webp",
-          "start": 4.4,
-          "end": 7.2,
+          "start": 5.6,
+          "end": 8.4,
           "clip": "vestratube",
           "label": {
             "en": "VestraTube",
@@ -248,8 +240,8 @@
         {
           "id": "shaderupscale",
           "icon": "media/icons/shaderupscale.webp",
-          "start": 7.2,
-          "end": 10,
+          "start": 8.4,
+          "end": 11.8,
           "label": {
             "en": "Shader Upscale",
             "zh-Hans": "着色器超分"
@@ -262,8 +254,8 @@
         {
           "id": "autoframe",
           "icon": "media/icons/autoframe.webp",
-          "start": 10,
-          "end": 12.6,
+          "start": 11.8,
+          "end": 14.8,
           "label": {
             "en": "Auto Frame",
             "zh-Hans": "自动取景"
@@ -276,8 +268,8 @@
         {
           "id": "vestranes",
           "icon": "media/icons/vestranes.webp",
-          "start": 12.6,
-          "end": 15.6,
+          "start": 14.8,
+          "end": 17.8,
           "clip": "nes-3",
           "label": {
             "en": "VestraNES",
@@ -290,8 +282,8 @@
         }
       ],
       "outro": {
-        "start": 15.6,
-        "end": 18.2,
+        "start": 17.8,
+        "end": 20.4,
         "name": {
           "en": "All from the Plugin Store",
           "zh-Hans": "全部来自插件商城"
@@ -304,7 +296,7 @@
     },
     {
       "id": "ai",
-      "$comment": "Composed from media/themes/ai.json: Ask Vestra and the 'Done' strip are R15 (2026-11-12). Highlights waits for the sound model (R18): hidden, and absent from the video.",
+      "$comment": "Composed from media/themes/ai.json: explainers of 2026-11-12 (R15 through a camera and the sentence-to-command flow; real player captures of AI Upscaling off and on; Vestra Player AI in five captioned steps). Highlights waits for the sound model (R18): hidden, and absent from the video.",
       "title": {
         "en": "And with AI",
         "zh-Hans": "也随 AI 一起成长"
@@ -314,7 +306,7 @@
         "zh-Hans": "说出想做的事，让画面更清晰，或者让它替你写一个插件。助手用你自己的 AI 密钥，超分在你自己的显卡上运行。"
       },
       "rail": "chips",
-      "duration": 13.4,
+      "duration": 17.2,
       "poster": "media/posters/theme-ai.webp",
       "sources": [
         {
@@ -336,7 +328,7 @@
           "id": "ask",
           "glyph": "ask",
           "start": 0,
-          "end": 3.4,
+          "end": 4.2,
           "label": {
             "en": "Ask Vestra",
             "zh-Hans": "Ask Vestra"
@@ -354,8 +346,8 @@
         {
           "id": "upscale",
           "glyph": "upscale",
-          "start": 3.4,
-          "end": 7,
+          "start": 4.2,
+          "end": 7.6,
           "label": {
             "en": "AI Upscaling",
             "zh-Hans": "AI 超分"
@@ -372,8 +364,8 @@
         {
           "id": "build",
           "glyph": "build",
-          "start": 7,
-          "end": 13.4,
+          "start": 7.6,
+          "end": 17.2,
           "clip": "ai",
           "label": {
             "en": "Vestra Player AI",

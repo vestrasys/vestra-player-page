@@ -1,5 +1,5 @@
 {
-  "$comment": "Theme 02 'It grows with its community' (SPEC 3.4, without VestraBili: user ruling 2026-11-12). Player 0.8.0 takes of 2026-11-12 with the brand pointer (C:/vestra/rec/v9/ptr). Clip Export: R7 (one clip, Animated GIF; the export wait is cut, and no frame shows the export's file path) then Highlights, loudness only (R17 scan, R17b Add All and Export Merged; Clip Export 0.6.0). VestraTube: R9 framed on the search field and the first result row only (D8: no third-party row in frame), then Spring playing. Shader Upscale: R11 (FSRCNNX turned on) and the wipe between the stills R11-still-off/on (one frame, 2x detail). Auto Frame: R12 (Caminandes 2 in the top-left corner of a green 4K frame). Outro: R14, the store's Installed view, cut below its tab row. VestraNES: the existing take.",
+  "$comment": "Theme 02 'It grows with its community' (SPEC 3.4, without VestraBili: user ruling 2026-11-12). Rebuilt 2026-11-12 for readability (user rulings: one idea per beat; explain an effect with motion design outside any player UI). Clip Export and Auto Frame are explainers rendered by the promo's pipeline (C:/vestra/marketing/video/v9/main/explain.html at 1728x1080; real Sintel frames, Sintel's real loudness curve, the real Auto Frame file and R12's after frame). Shader Upscale: Anime4K (Mode A+A, Ultra), a zoomed wipe between two real player captures of one 240p Caminandes 2 frame. VestraTube: R9 framed on the search field and the first result row only (D8), then Spring playing. VestraNES: the existing take. Outro: the five plugin icons with their names and 'All from the Plugin Store.' (replaces the store window).",
   "size": [
     1728,
     1080
@@ -10,102 +10,30 @@
   "beats": [
     {
       "id": "clipexport",
-      "dur": 4.4,
+      "dur": 5.6,
       "parts": [
         {
-          "src": "C:/vestra/rec/v9/ptr/R7-t1-ptr.mkv",
-          "in": 0.5,
-          "out": 1.1,
+          "src": "C:/vestra/marketing/video/v9/work/explain/x-gif-p.mp4",
+          "in": 0,
+          "out": 2.6,
           "speed": 1,
           "crop": [
-            1800,
-            300,
-            760,
-            475
+            0,
+            0,
+            1728,
+            1080
           ]
         },
         {
-          "src": "C:/vestra/rec/v9/ptr/R7-t1-ptr.mkv",
-          "in": 13.5,
-          "out": 14.3,
+          "src": "C:/vestra/marketing/video/v9/work/explain/x-reel-p.mp4",
+          "in": 0,
+          "out": 3,
           "speed": 1,
           "crop": [
-            1800,
-            300,
-            760,
-            475
-          ]
-        },
-        {
-          "src": "C:/vestra/rec/v9/ptr/R7-t1-ptr.mkv",
-          "in": 17.2,
-          "out": 17.6,
-          "speed": 1,
-          "crop": [
-            1800,
-            300,
-            760,
-            475
-          ]
-        },
-        {
-          "src": "C:/vestra/rec/v9/ptr/R7-t1-ptr.mkv",
-          "in": 30.4,
-          "out": 30.8,
-          "speed": 1,
-          "crop": [
-            1800,
-            100,
-            760,
-            475
-          ]
-        },
-        {
-          "src": "C:/vestra/rec/v9/ptr/R17-t1-ptr.mkv",
-          "in": 1,
-          "out": 1.4,
-          "speed": 1,
-          "crop": [
-            1440,
-            140,
-            1120,
-            700
-          ]
-        },
-        {
-          "src": "C:/vestra/rec/v9/ptr/R17-t1-ptr.mkv",
-          "in": 1.6,
-          "out": 4.2,
-          "speed": 2.6,
-          "crop": [
-            1440,
-            140,
-            1120,
-            700
-          ]
-        },
-        {
-          "src": "C:/vestra/rec/v9/ptr/R17b-t1-ptr.mkv",
-          "in": 0.9,
-          "out": 1.3,
-          "speed": 1,
-          "crop": [
-            1440,
-            140,
-            1120,
-            700
-          ]
-        },
-        {
-          "src": "C:/vestra/rec/v9/ptr/R17b-t1-ptr.mkv",
-          "in": 5.4,
-          "out": 6.6,
-          "speed": 3,
-          "crop": [
-            1440,
-            140,
-            1120,
-            700
+            0,
+            0,
+            1728,
+            1080
           ]
         }
       ]
@@ -156,56 +84,36 @@
     },
     {
       "id": "shaderupscale",
-      "dur": 2.8,
+      "dur": 3.4,
       "parts": [
         {
-          "src": "C:/vestra/rec/v9/ptr/R11-t1-ptr.mkv",
-          "in": 7.2,
-          "out": 8.2,
+          "src": "C:/vestra/marketing/video/v9/work/explain/x-shader-p.mp4",
+          "in": 0,
+          "out": 3.4,
           "speed": 1,
           "crop": [
             0,
-            40,
-            1040,
-            650
+            0,
+            1728,
+            1080
           ]
-        },
-        {
-          "dur": 1.8,
-          "wipe": {
-            "a": "C:/vestra/rec/v9/shots/R11-still-off.png",
-            "b": "C:/vestra/rec/v9/shots/R11-still-on.png",
-            "crop": [
-              930,
-              520,
-              864,
-              540
-            ],
-            "from": 0.82,
-            "to": 0.3,
-            "at": 0.2,
-            "move": 1,
-            "labels": [
-              "Off",
-              "FSRCNNX x2"
-            ]
-          }
         }
       ]
     },
     {
       "id": "autoframe",
-      "dur": 2.6,
+      "dur": 3,
       "parts": [
         {
-          "src": "C:/vestra/rec/v9/ptr/R12-t2-ptr.mkv",
-          "in": 3.6,
-          "out": 6.2,
+          "src": "C:/vestra/marketing/video/v9/work/explain/x-autoframe-p.mp4",
+          "in": 0,
+          "out": 3,
+          "speed": 1,
           "crop": [
             0,
-            40,
-            2362,
-            1476
+            0,
+            1728,
+            1080
           ]
         }
       ]
@@ -232,14 +140,15 @@
       "dur": 2.6,
       "parts": [
         {
-          "src": "C:/vestra/rec/v9/ptr/R14-t1-ptr.mkv",
-          "in": 1,
-          "out": 3.6,
+          "src": "C:/vestra/marketing/video/v9/work/explain/x-outro-p.mp4",
+          "in": 0,
+          "out": 2.6,
+          "speed": 1,
           "crop": [
-            12,
-            112,
-            1568,
-            980
+            0,
+            0,
+            1728,
+            1080
           ]
         }
       ]
