@@ -125,6 +125,8 @@ mkdirSync(join(dist, "assets"), { recursive: true });
 cpSync(fromRoot("public"), dist, { recursive: true });
 const css = hashed("src/styles.css", "site", "css");
 const js = hashed("src/main.js", "site", "js");
+// The hashed name of every copied media file (copyMedia), for hashMedia.
+const mediaNames = new Map();
 const media = copyMedia();
 
 const frame = manifest.frame;
@@ -173,15 +175,13 @@ function renderPage(lang) {
     credits: renderCredits(lang),
     licence: en["ft.licence"],
     // Only what the script needs at run time; every other string is in the HTML already.
-    // Each theme's beat times (the captions are in the HTML) and the full clips with their shape for the lightbox.
+    // Each theme's beat times (the captions are in the HTML).
     data: JSON.stringify({
-      strings: Object.fromEntries(["media.pause", "media.play", "tour.watchLabel"].map((k) => [k, en[k]])),
+      strings: Object.fromEntries(["media.pause", "media.play"].map((k) => [k, en[k]])),
       themes: manifest.themes.map((th) => ({
-        beats: th.beats.map((b) => ({ start: b.start, end: b.end, clip: b.clip ? manifest.slides.findIndex((s) => s.id === b.clip) : -1 })),
+        beats: th.beats.map((b) => ({ start: b.start, end: b.end })),
         ...(th.outro ? { outro: { start: th.outro.start, end: th.outro.end } } : {}),
       })),
-      // (rebase() fixes attributes only: the clip paths here get the subfolder prefix themselves.)
-      clips: manifest.slides.map((s) => ({ title: s.title[lang], caption: s.caption[lang], ar: Number(aspect(s).toFixed(4)), sources: s.sources.map(({ src, type }) => ({ src: /^https?:/.test(src) ? src : prefix + src, type })) })),
     }).replace(/</g, "\\u003c"),
   };
   // The front window's frame image (its poster for a fullscreen take, which has no frame) is the
@@ -208,7 +208,8 @@ function renderPage(lang) {
     if (!(key in en)) fail(`unknown string ${key}`);
     return kind === "h" ? en[key] : escape(en[key]);
   });
-  return prefix ? rebase(html, prefix) : html;
+  const out = hashMedia(html);
+  return prefix ? rebase(out, prefix) : out;
 }
 
 /** Prefixes the page's own relative URLs (assets, media, icons) for a page in a subfolder. */
@@ -349,7 +350,6 @@ function checkManifest({ backdrop, frame, slides, stage }) {
     if (!backdrop.poster || !backdrop.sources?.length) fail("media/slides.json backdrop: needs a poster and sources");
     files.push(backdrop.poster, ...backdrop.sources.map((s) => s.src));
   }
-  if (!slides?.length) fail("media/slides.json: no slides");
   const ids = new Set();
   for (const slide of slides) {
     const where = `media/slides.json slide "${slide.id}"`;
@@ -397,7 +397,7 @@ function checkThemes(themes, slideIds) {
       }
       if (th.rail === "icons" ? !beat.icon : !GLYPHS[beat.glyph]) fail(`${at}: needs ${th.rail === "icons" ? 'an "icon"' : `a "glyph" (${Object.keys(GLYPHS).join(", ")})`}`);
       if (beat.icon) files.push(beat.icon);
-      if (beat.clip && !slideIds.has(beat.clip)) fail(`${at}: "clip" names slide "${beat.clip}", which is missing or hidden`);
+      if (beat.clip) fail(`${at}: "clip" is no longer supported (the full clips were removed on 2026-11-12)`);
       if (Math.abs(beat.start - t) > frame || !(beat.end > beat.start)) fail(`${at}: starts at ${beat.start} s, expected ${t} s (visible beats tile the video; a hidden beat's span must be cut out of it)`);
       t = beat.end;
     }
@@ -412,6 +412,15 @@ function checkThemes(themes, slideIds) {
 }
 
 /** Copies only the media the manifest names (local paths). */
+/** Rewrites the page's references to copied media to their content-hashed names. */
+function hashMedia(html) {
+  const keys = [...mediaNames.keys()].sort((a, b) => b.length - a.length);
+  if (!keys.length) return html;
+  const esc = (k) => k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const re = new RegExp(`(?<=["' ,(])(${keys.map(esc).join("|")})(?=["' ,)])`, "g");
+  return html.replace(re, (m) => mediaNames.get(m));
+}
+
 function copyMedia() {
   const files = new Set([manifest.frame.image, ...manifest.stage.far, ...stageFiles(manifest.stage)]);
   // The backdrop clip ships only while the template shows it.
@@ -437,8 +446,13 @@ function copyMedia() {
   let count = 0;
   for (const file of files) {
     if (/^https?:/.test(file)) continue;
-    mkdirSync(dirname(join(dist, file)), { recursive: true });
-    copyFileSync(fromRoot(file), join(dist, file));
+    // Content-hashed file names (as the CSS and JS), so a re-encoded clip or poster is never served
+    // from a browser's cache under its old name; the page's references are rewritten (hashMedia).
+    const data = readFileSync(fromRoot(file));
+    const out = file.replace(/(\.[a-z0-9]+)$/i, `.${createHash("sha256").update(data).digest("hex").slice(0, 10)}$1`);
+    mediaNames.set(file, out);
+    mkdirSync(dirname(join(dist, out)), { recursive: true });
+    writeFileSync(join(dist, out), data);
     bytes += statSync(fromRoot(file)).size;
     count++;
   }
@@ -652,33 +666,23 @@ function renderStage() {
   ].join("\n");
 }
 
-/** A clip's own shape: the fullscreen take, or the frame area it covers (the lightbox shows it so). */
-function aspect(slide) {
-  if (slide.fullscreen) return slide.fullscreen.width / slide.fullscreen.height;
-  const a = frame.areas[slide.area];
-  return a.width / a.height;
-}
-
 /**
  * The feature themes (layout A): per theme a head (number, title, lede), one window that plays the
  * theme's pre-composited loop, and under it the active beat's caption and a rail of the beats (plugin
- * icons or chips) whose progress follows the video's clock (main.js). The window and "Watch the full
- * clip" open the active beat's full clip in a dialog. Without script, with reduced motion or Save-Data
- * the poster stays and a list of every beat (icon, name, sentence) replaces the caption and the rail;
+ * icons or chips) whose progress follows the video's clock (main.js). Without script, with reduced motion
+ * or Save-Data the poster stays and a list of every beat (icon, name, sentence) replaces the caption and the rail;
  * the list is in the HTML either way, for search engines.
  */
 function renderThemes(lang) {
   const n = (k) => String(k).padStart(2, "0");
   const count = manifest.themes.length;
   const L = (o) => o[lang];
-  const watch = `${escape(en["tour.watch"])} →`;
   const icon = (th, beat) => th.rail === "icons"
     ? `<img src="${escape(beat.icon)}" width="52" height="52" loading="lazy" decoding="async" alt="">`
     : `<svg viewBox="0 0 24 24" aria-hidden="true">${GLYPHS[beat.glyph]}</svg>`;
   const fine = (beat) => (beat.fine ? ` <small class="th-fine">${escape(L(beat.fine))}</small>` : "");
   return manifest.themes.map((th, i) => {
     const first = th.beats[0];
-    const firstClip = first.clip ? manifest.slides.find((s) => s.id === first.clip) : null;
     const outro = th.outro && {
       name: L(th.outro.name),
       caption: format(L(th.outro.caption), { n: NUMBERS[lang][th.beats.length] ?? String(th.beats.length) }),
@@ -688,7 +692,6 @@ function renderThemes(lang) {
     const list = th.beats.map((beat) =>
       `          <li><span class="ic">${icon(th, beat)}</span><span class="tx"><b>${escape(L(beat.label))}</b> <span>${escape(L(beat.caption))}</span>${fine(beat)}</span></li>`).join("\n");
     const sources = th.sources.map((s) => `<source data-src="${escape(s.src)}" type="${escape(s.type)}"${s.media ? ` media="${escape(s.media)}"` : ""}>`).join("");
-    const label = firstClip ? format(en["tour.watchLabel"], { title: L(first.label) }) : L(first.label);
     return `    <article class="theme th-${th.rail}${th.beats.length > 4 ? " th-many" : ""}" id="theme-${th.id}" data-theme="${i}" aria-labelledby="theme-${th.id}-title">
       <div class="th-head reveal">
         <div><p class="ch-num" aria-hidden="true">${n(i + 1)}<span>/${n(count)}</span></p><h3 id="theme-${th.id}-title">${escape(L(th.title))}</h3></div>
@@ -696,10 +699,10 @@ function renderThemes(lang) {
       </div>
       <div class="th-main">
         <div class="th-win">
-          <button type="button" class="th-frame"${firstClip ? "" : " data-noclip"} aria-label="${escape(label)}"><img ${imgSrc(th.poster, "theme")} width="1728" height="1080" loading="lazy" decoding="async" alt=""><video muted loop playsinline preload="none" aria-hidden="true" tabindex="-1">${sources}</video></button>
+          <div class="th-frame"><img ${imgSrc(th.poster, "theme")} width="1728" height="1080" loading="lazy" decoding="async" alt=""><video muted loop playsinline preload="none" aria-hidden="true" tabindex="-1">${sources}</video></div>
         </div>
         <div class="th-live js-only">
-          <p class="th-cap"><b class="th-name">${escape(L(first.label))}</b> <span class="th-text">${escape(L(first.caption))}${fine(first)}</span><button type="button" class="text-link th-watch"${firstClip ? "" : " hidden"}>${watch}</button></p>
+          <p class="th-cap"><b class="th-name">${escape(L(first.label))}</b> <span class="th-text">${escape(L(first.caption))}${fine(first)}</span></p>
           <div class="th-rail"><div class="th-items" role="group" aria-label="${escape(L(th.title))}">${items}</div>${renderPause("theme")}</div>
         </div>
         <div class="th-static">

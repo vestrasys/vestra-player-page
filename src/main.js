@@ -86,8 +86,8 @@
   // and every other one is paused, so only one window decodes at a time. Its companions
   // ([data-companion] cards, the stage's side windows) play with it: they load only once its own
   // clip is playing, and only while they are shown (wide screens; the cards are display: none
-  // below). Nothing loads or plays with reduced motion, Save-Data, a hidden tab, while the full
-  // clip is open or after the visitor pressed pause (one state for the whole page).
+  // below). Nothing loads or plays with reduced motion, Save-Data, a hidden tab or after the visitor
+  // pressed pause (one state for the whole page).
 
   const mayMove = () => !reduce.matches && !saveData && !document.hidden;
   function safePlay(video) {
@@ -107,37 +107,8 @@
   // (requestVideoFrameCallback, else animation frames reading currentTime) the beat under the
   // clock is found; its rail item takes the ring, its bar is scaled to the beat's progress, and the
   // caption changes (out 120 ms ending 60 ms after the boundary, in 240 ms). A click on an item
-  // seeks to its beat, which starts on a key frame; the window and "Watch the full clip" open the
-  // active beat's full clip. The media logic below decides which window plays.
-  const box = $("#lightbox");
-  const boxVideo = box && $("video", box);
-  let boxOpen = false;
-  let onBoxChange = () => {};
-  function openClip(i, num) {
-    const clip = data.clips[i];
-    if (!clip || !box || typeof box.showModal !== "function") return;
-    $(".lb-num", box).textContent = num;
-    $("#lb-title", box).textContent = clip.title;
-    $(".lb-cap", box).textContent = clip.caption;
-    boxVideo.style.setProperty("--ar", String(clip.ar));
-    boxVideo.replaceChildren(...clip.sources.map((s) => Object.assign(document.createElement("source"), { src: s.src, type: s.type })));
-    boxVideo.load();
-    boxOpen = true;
-    onBoxChange();
-    box.showModal();
-    if (mayMove()) safePlay(boxVideo);
-  }
-  if (box) {
-    $(".lb-close", box).addEventListener("click", () => box.close());
-    // A click on the backdrop (outside the box) closes it; one on the dialog's own scrollbar does not.
-    box.addEventListener("click", (event) => {
-      if (event.target !== box) return;
-      const r = box.getBoundingClientRect();
-      const inside = event.clientX >= r.left && event.clientX <= r.right && event.clientY >= r.top && event.clientY <= r.bottom;
-      if (!inside) box.close();
-    });
-    box.addEventListener("close", () => { boxVideo.pause(); boxOpen = false; onBoxChange(); });
-  }
+  // seeks to its beat, which starts on a key frame. The media logic below decides which window plays.
+
 
   const themes = $$(".theme").map((el, ti) => {
     const spec = data.themes[ti];
@@ -146,10 +117,8 @@
     const cap = $(".th-cap", el);
     const name = $(".th-name", cap);
     const textEl = $(".th-text", cap);
-    const watch = $(".th-watch", cap);
     const rail = $(".th-items", el);
     const items = $$(".th-item", rail);
-    const num = $(".ch-num", el).textContent.replace("/", " / ");
     // The caption of each beat (and the outro), from the prerendered list.
     const texts = $$(".th-list li", el).map((li) => ({
       name: $("b", li).textContent,
@@ -160,7 +129,6 @@
     if (outroEl) texts.push({ name: $("b", outroEl).textContent, text: $("span", outroEl).textContent, fine: "" });
     const spans = spec.beats.map((b) => [b.start, b.end]);
     if (spec.outro) spans.push([spec.outro.start, spec.outro.end]);
-    const clipOf = (k) => (k < spec.beats.length ? spec.beats[k].clip : -1);
     let current = 0;
     let fading = false;
     let swapTimer = 0;
@@ -176,10 +144,6 @@
       name.textContent = texts[k].name;
       textEl.textContent = texts[k].text;
       if (texts[k].fine) textEl.append(" ", Object.assign(document.createElement("small"), { className: "th-fine", textContent: texts[k].fine }));
-      const clip = clipOf(k);
-      watch.hidden = clip < 0;
-      frame.toggleAttribute("data-noclip", clip < 0);
-      frame.setAttribute("aria-label", clip < 0 ? texts[k].name : text("tour.watchLabel").replace("{title}", texts[k].name));
       cap.classList.remove("out", "in");
       void cap.offsetWidth; // restart the entrance
       cap.classList.add("in");
@@ -246,9 +210,6 @@
       event.preventDefault();
       items[(at + step + items.length) % items.length].focus();
     });
-    const open = () => { const clip = clipOf(current); if (clip >= 0) openClip(clip, num); };
-    frame.addEventListener("click", open);
-    watch.addEventListener("click", open);
 
     return {
       el: frame,
@@ -294,7 +255,7 @@
       if (!ready) return;
       let best = null;
       for (const u of units) if (u.ratio >= (u.min ?? 0.35) && (!best || u.ratio > best.ratio)) best = u;
-      const allowed = mayMove() && !userPaused && !boxOpen;
+      const allowed = mayMove() && !userPaused;
       for (const u of units) {
         const on = u === best && allowed;
         if (u.theme) {
@@ -329,7 +290,6 @@
       root.classList.toggle("motion", show);
     }
 
-    onBoxChange = sync;
     for (const u of units) {
       if (u.theme) continue;
       // The video fades in over its poster once frames arrive.

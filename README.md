@@ -38,7 +38,7 @@ The build prints the size of the HTML, CSS and JS and fails above 150 KiB
 | `src/index.html` | Page template: `{{t:key}}` text, `{{h:key}}` HTML text, `{{var:…}}` values, `{{slot:…}}` sections rendered by the build |
 | `src/i18n.json` | Every string, `en` and `zh-Hans` (the build fails if a key is missing in one); the build renders one page per language |
 | `src/styles.css`, `src/main.js` | Styles and the page script (language, download buttons, platforms dialog, playing windows, stage parallax, plugin filter) |
-| `media/slides.json` | The hero stage, the feature themes (copy, beat times, posters, video sources) and the full clips (`slides`) |
+| `media/slides.json` | The hero stage, the feature themes (copy, beat times, posters, video sources); the full clips were removed on 2026-11-12 |
 | `media/themes/*.json` | How each theme's loop is composed from recordings and stills (`scripts/compose-theme.mjs`) |
 | `media/CREDITS.md` | Third-party footage and games shown in the demos; the footer shows its "Footer" lines |
 | `release.config.json` | Where release metadata comes from, asset name patterns, system requirements |
@@ -210,9 +210,10 @@ into `media/slides.json`. Replacing one item is one command plus that edit.
   optional `icon`, a `poster` and `sources` (tried in order; AV1 WebM first,
   H.264 MP4 last). `"hidden": true` leaves a slide out of the page; its files
   need not exist.
-- The slides are the full clips: "Watch the full clip" (and a click on a
-  theme's window) opens the clip of the active beat's `clip` in a dialog
-  with that slide's title and caption.
+- The slides were the full clips ("Watch the full clip"), removed on 2026-11-12;
+  `slides` is now optional and only a stage entry may name one. Media files get
+  content-hashed names in `dist/` (as the CSS and JS), so a re-encoded clip is
+  never served from a browser cache under its old name.
 - `themes` are the feature section: per theme `id`, `title` and `lede`
   (`en`, `zh-Hans`), `rail` (`icons`: each beat has an `icon`, the
   plugin's icon as 104 px WebP in `media/icons/`; `chips`: each beat has a
@@ -278,7 +279,9 @@ player captures inside and no drawn player UI. They are the promo video's `main/
 `node v9/tools/render2.mjs "v9/main/explain.html?s=<scene>&d=<seconds>" --size 1728x1080 --out v9/work/explain/x-<scene>-p.mp4`
 from `C:/vestra/marketing/video` (delete the `.chunks` folder first when a scene changed), and used as whole-frame parts.
 
-Full clips ("Watch the full clip"): the same takes at real pace, composed by
+Full clips ("Watch the full clip") were removed on 2026-11-12 (user ruling): the link, the dialog, the
+`slides` list and their media are gone, and the build refuses a beat's `"clip"`. Kept for the record, they were
+the same takes at real pace, composed by
 `compose-theme.mjs` from one-beat specs with `"punch": false` in
 `C:/vestra/rec/page-v2/full/*.json`, then encoded:
 

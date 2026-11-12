@@ -1,5 +1,5 @@
 {
-  "$comment": "Hero stage, feature themes and full clips. Paths are relative to the site root (this repository's root at build time). Encode a recording with scripts/encode-clip.mjs and edit only this file; see README.md 'Replacing media' and 'Feature themes'. \"slides\" are the full clips: \"Watch the full clip\" on a theme's beat opens the slide its \"clip\" names. A slide with \"hidden\": true is left out of the page (its files need not exist).",
+  "$comment": "Hero stage and feature themes. Paths are relative to the site root (this repository's root at build time). Encode a recording with scripts/encode-clip.mjs and edit only this file; see README.md 'Replacing media' and 'Feature themes'. The full clips (\"slides\", \"Watch the full clip\") were removed on 2026-11-12 (user ruling); a stage entry may still be a card or a .webp still.",
   "backdrop": {
     "poster": "media/posters/aurora.webp",
     "sources": [
@@ -106,7 +106,6 @@
           "glyph": "picture",
           "start": 0,
           "end": 3,
-          "clip": "picture",
           "label": {
             "en": "Picture",
             "zh-Hans": "画面"
@@ -128,8 +127,7 @@
           "caption": {
             "en": "A ten-band equalizer with presets, and every track and output a click away.",
             "zh-Hans": "十段均衡器自带预设，音轨和输出设备一点就换。"
-          },
-          "clip": "picture"
+          }
         },
         {
           "id": "seek",
@@ -150,7 +148,6 @@
           "glyph": "playlist",
           "start": 8,
           "end": 10.4,
-          "clip": "playlist",
           "label": {
             "en": "Playlist",
             "zh-Hans": "播放列表"
@@ -165,7 +162,6 @@
           "glyph": "palette",
           "start": 10.4,
           "end": 14,
-          "clip": "palette",
           "label": {
             "en": "Command Palette",
             "zh-Hans": "命令面板"
@@ -219,15 +215,13 @@
           "caption": {
             "en": "Cut a clip, a GIF or a WebP, or let Highlights find the loud moments and join them into one video.",
             "zh-Hans": "导出片段、GIF 或 WebP；也可以让“高光”找出最热闹的几段，合成一个视频。"
-          },
-          "clip": "clipexport"
+          }
         },
         {
           "id": "vestratube",
           "icon": "media/icons/vestratube.webp",
           "start": 5.6,
           "end": 11.6,
-          "clip": "vestratube",
           "label": {
             "en": "VestraTube",
             "zh-Hans": "VestraTube"
@@ -270,7 +264,6 @@
           "icon": "media/icons/vestranes.webp",
           "start": 18,
           "end": 21,
-          "clip": "nes-3",
           "label": {
             "en": "VestraNES",
             "zh-Hans": "VestraNES"
@@ -340,8 +333,7 @@
           "fine": {
             "en": "Uses your own AI key.",
             "zh-Hans": "使用你自己的 AI 密钥。"
-          },
-          "clip": "ask"
+          }
         },
         {
           "id": "upscale",
@@ -366,7 +358,6 @@
           "glyph": "build",
           "start": 7.6,
           "end": 17,
-          "clip": "ai",
           "label": {
             "en": "Vestra Player AI",
             "zh-Hans": "Vestra Player AI"
@@ -392,198 +383,6 @@
             "en": "Clip Export listens for laughter and applause on your own computer and suggests the moments to keep. You choose what to export.",
             "zh-Hans": "片段导出在本机听出笑声和掌声，把值得留下的片段列给你。导出什么，由你决定。"
           }
-        }
-      ]
-    }
-  ],
-  "slides": [
-    {
-      "id": "picture",
-      "fullscreen": {
-        "width": 1728,
-        "height": 1080
-      },
-      "title": {
-        "en": "Adjust the picture and the sound as it plays",
-        "zh-Hans": "边播边调画面和声音"
-      },
-      "caption": {
-        "en": "Move to the right edge and the column slides in: Saturation down to grey, then the equalizer from Flat to Voice, Music and Cinema.",
-        "zh-Hans": "鼠标移到右边缘，调节栏滑出：饱和度拉到全灰，再把均衡器从平直换成人声、音乐、影院。"
-      },
-      "poster": "media/posters/picture-9.webp",
-      "sources": [
-        {
-          "src": "media/clips/picture-9.webm",
-          "type": "video/webm; codecs=av01.0.09M.08"
-        },
-        {
-          "src": "media/clips/picture-9.mp4",
-          "type": "video/mp4; codecs=avc1.64002A"
-        }
-      ]
-    },
-    {
-      "id": "palette",
-      "area": "client",
-      "title": {
-        "en": "Any command, a few letters away",
-        "zh-Hans": "敲几个字母，什么命令都找得到"
-      },
-      "caption": {
-        "en": "Open the Command Palette, type “reset pic” and press Enter: the colour comes back.",
-        "zh-Hans": "打开命令面板，输入“reset pic”，回车，颜色就回来了。"
-      },
-      "poster": "media/posters/palette-9.webp",
-      "sources": [
-        {
-          "src": "media/clips/palette-9.webm",
-          "type": "video/webm; codecs=av01.0.09M.08"
-        },
-        {
-          "src": "media/clips/palette-9.mp4",
-          "type": "video/mp4; codecs=avc1.64002A"
-        }
-      ]
-    },
-    {
-      "id": "playlist",
-      "area": "client",
-      "title": {
-        "en": "A playlist that shows its films",
-        "zh-Hans": "看得见画面的播放列表"
-      },
-      "caption": {
-        "en": "Every film gets a thumbnail, made on your own machine. Double-click one to switch.",
-        "zh-Hans": "每部影片都有在本机生成的缩略图。双击一下，就换一部看。"
-      },
-      "poster": "media/posters/playlist-9.webp",
-      "sources": [
-        {
-          "src": "media/clips/playlist-9.webm",
-          "type": "video/webm; codecs=av01.0.09M.08"
-        },
-        {
-          "src": "media/clips/playlist-9.mp4",
-          "type": "video/mp4; codecs=avc1.64002A"
-        }
-      ]
-    },
-    {
-      "id": "clipexport",
-      "area": "client",
-      "title": {
-        "en": "Clip Export: a clip, a GIF, or the best parts merged",
-        "zh-Hans": "片段导出：一段视频、一张 GIF，或把精彩片段合成一个"
-      },
-      "caption": {
-        "en": "Set Start and End while the film plays and export an animated GIF. Join parts of several films in the Collection, or let Highlights find the loud moments (by loudness, on your own computer) and export them as one video.",
-        "zh-Hans": "边播边设好起点和终点，导出动图 GIF。在合集里把几部影片的片段合在一起，或者让“高光”按响度在本机找出最热闹的几段，导出成一个视频。"
-      },
-      "poster": "media/posters/clipexport-9.webp",
-      "sources": [
-        {
-          "src": "media/clips/clipexport-9.webm",
-          "type": "video/webm; codecs=av01.0.09M.08"
-        },
-        {
-          "src": "media/clips/clipexport-9.mp4",
-          "type": "video/mp4; codecs=avc1.64002A"
-        }
-      ]
-    },
-    {
-      "id": "vestratube",
-      "fullscreen": {
-        "width": 1728,
-        "height": 1080
-      },
-      "title": {
-        "en": "YouTube in the sidebar: VestraTube",
-        "zh-Hans": "侧栏里的 YouTube：VestraTube"
-      },
-      "caption": {
-        "en": "Search YouTube in the sidebar and double-click a result to play it. Only the first result is shown here.",
-        "zh-Hans": "在侧栏搜索 YouTube，双击结果直接播放。这里只拍了第一条结果。"
-      },
-      "poster": "media/posters/vestratube-9.webp",
-      "sources": [
-        {
-          "src": "media/clips/vestratube-9.webm",
-          "type": "video/webm; codecs=av01.0.09M.08"
-        },
-        {
-          "src": "media/clips/vestratube-9.mp4",
-          "type": "video/mp4; codecs=avc1.64002A"
-        }
-      ]
-    },
-    {
-      "id": "ask",
-      "area": "client",
-      "title": {
-        "en": "Ask Vestra: say it in your own words",
-        "zh-Hans": "Ask Vestra：用自己的话说"
-      },
-      "caption": {
-        "en": "Type a request in the Command Palette. “turn on AI upscaling” runs Picture: AI Upscaling. A request that needs a plugin's command asks first: “Run these 2 commands?” Uses your own AI key.",
-        "zh-Hans": "在命令面板里输入请求。“turn on AI upscaling”会执行“Picture: AI Upscaling”。需要用到插件命令的请求会先问你：“Run these 2 commands?”使用你自己的 AI 密钥。"
-      },
-      "poster": "media/posters/ask-9.webp",
-      "sources": [
-        {
-          "src": "media/clips/ask-9.webm",
-          "type": "video/webm; codecs=av01.0.09M.08"
-        },
-        {
-          "src": "media/clips/ask-9.mp4",
-          "type": "video/mp4; codecs=avc1.64002A"
-        }
-      ]
-    },
-    {
-      "id": "ai",
-      "area": "client",
-      "title": {
-        "en": "Describe a plugin, and AI builds it",
-        "zh-Hans": "说出想要的插件，AI 帮你做"
-      },
-      "caption": {
-        "en": "Say what you want, and Vestra Player AI writes and tests the plugin with your own AI key. One click installs it.",
-        "zh-Hans": "说出你想要什么，Vestra Player AI 就用你自己的 AI 密钥写好插件并测试，一键即可安装。"
-      },
-      "poster": "media/posters/ai-5.webp",
-      "sources": [
-        {
-          "src": "media/clips/ai-5.webm",
-          "type": "video/webm; codecs=av01.0.09M.08"
-        },
-        {
-          "src": "media/clips/ai-5.mp4",
-          "type": "video/mp4; codecs=avc1.64002A"
-        }
-      ]
-    },
-    {
-      "id": "nes-3",
-      "area": "client",
-      "title": {
-        "en": "Even games: VestraNES",
-        "zh-Hans": "还能玩游戏：VestraNES"
-      },
-      "caption": {
-        "en": "A plugin can be a whole emulator. Load a ROM from the Games menu and play with the keyboard.",
-        "zh-Hans": "插件甚至可以是一个完整的模拟器。从“游戏”菜单加载 ROM，用键盘就能玩。"
-      },
-      "poster": "media/posters/nes-3.webp",
-      "sources": [
-        {
-          "src": "media/clips/nes-3.webm",
-          "type": "video/webm; codecs=av01.0.09M.08"
-        },
-        {
-          "src": "media/clips/nes-3.mp4",
-          "type": "video/mp4; codecs=avc1.64002A"
         }
       ]
     }

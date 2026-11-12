@@ -28,8 +28,6 @@
     "tour.kicker": "Features",
     "tour.title": "Made to be explored",
     "tour.lede": "A complete player from the first launch. Then it grows: with plugins from the store, and with AI.",
-    "tour.watch": "Watch the full clip",
-    "tour.watchLabel": "Watch the full clip: {title}",
     "media.pause": "Pause video",
     "media.play": "Play video",
 
@@ -105,8 +103,6 @@
     "tour.kicker": "功能",
     "tour.title": "处处都值得一试",
     "tour.lede": "第一次打开就是完整的播放器。然后它继续成长：靠商城里的插件，也靠 AI。",
-    "tour.watch": "观看完整片段",
-    "tour.watchLabel": "观看完整片段：{title}",
     "media.pause": "暂停视频",
     "media.play": "播放视频",
 
