@@ -299,7 +299,7 @@
         "zh-Hans": "说出想做的事，让画面更清晰，或者让它替你写一个插件。助手用你自己的 AI 密钥，超分在你自己的显卡上运行。"
       },
       "rail": "chips",
-      "duration": 17,
+      "duration": 14.8,
       "poster": "media/posters/theme-ai.webp",
       "sources": [
         {
@@ -357,7 +357,7 @@
           "id": "build",
           "glyph": "build",
           "start": 7.6,
-          "end": 17,
+          "end": 14.8,
           "label": {
             "en": "Vestra Player AI",
             "zh-Hans": "Vestra Player AI"
