@@ -1,5 +1,5 @@
 {
-  "$comment": "Theme 03 'And with AI' (SPEC 3.4). Rebuilt 2026-11-12 so cause and effect read (user rulings): explainers rendered by the promo's pipeline (C:/vestra/marketing/video/v9/main/explain.html at 1728x1080). Ask Vestra: R15 through a camera (the palette and 'turn on AI upscaling' zoomed to read), the sentence turned into the command chip 'Picture: AI Upscaling', R15's real 'Done' strip, the pull-out. AI Upscaling: two real player captures of one 360p Caminandes 2 frame, AI Upscaling off and on (RTX 4070), whole picture, zoom on a detail, wipe. Vestra Player AI: five captioned steps (the real request, the package's real files and code with the real run time, the real 'complete and verified (... 7 tests ...)' line and seven ticks, the real Install click, Colour Wheels at work). Highlights stays hidden until the sound model ships (R18).",
+  "$comment": "Theme 03 'And with AI' (SPEC 3.4). Rebuilt 2026-11-12 so cause and effect read (user rulings): explainers rendered by the promo's pipeline (C:/vestra/marketing/video/v9/main/explain.html at 1728x1080). Ask Vestra: R15b (re-recorded 2026-11-12 on a 360p Caminandes 2 copy) through a camera (the palette and 'turn on AI upscaling' zoomed to read), the sentence turned into the command chip 'Picture: AI Upscaling', R15's real 'Done' strip, the pull-out. AI Upscaling: two real player captures of the frame R15b ends on, AI Upscaling off and on (RTX 4070), whole picture, zoom on a detail, wipe. Vestra Player AI: four captioned steps (the real request, the real 'complete and verified (... 7 tests ...)' line zoomed with a green outline and a '7 tests pass' chip; the code-writing step was cut by the user, the real Install click, Colour Wheels as a before/after: ungraded, then the Highlights drag). Highlights stays hidden until the sound model ships (R18).",
   "size": [
     1728,
     1080
@@ -46,12 +46,12 @@
     },
     {
       "id": "build",
-      "dur": 9.6,
+      "dur": 7.2,
       "parts": [
         {
           "src": "C:/vestra/marketing/video/v9/work/explain/x-build-p.mp4",
           "in": 0,
-          "out": 9.6,
+          "out": 7.2,
           "speed": 1,
           "crop": [
             0,

@@ -1,5 +1,5 @@
 {
-  "$comment": "Theme 02 'It grows with its community' (SPEC 3.4, without VestraBili: user ruling 2026-11-12). Rebuilt 2026-11-12 for readability (user rulings: one idea per beat; explain an effect with motion design outside any player UI). Clip Export and Auto Frame are explainers rendered by the promo's pipeline (C:/vestra/marketing/video/v9/main/explain.html at 1728x1080; real Sintel frames, Sintel's real loudness curve, the real Auto Frame file and R12's after frame). Shader Upscale: Anime4K (Mode A+A, Ultra), a zoomed wipe between two real player captures of one 240p Caminandes 2 frame. VestraTube: R9's sidebar with the search and about six result rows (user ruling 2026-11-12, overrides D8), the double-click, then Spring playing. VestraNES: the existing take. Outro: the five plugin icons with their names and 'All from the Plugin Store.' (replaces the store window).",
+  "$comment": "Theme 02 'It grows with its community' (SPEC 3.4, without VestraBili: user ruling 2026-11-12). Rebuilt 2026-11-12 for readability (user rulings: one idea per beat; explain an effect with motion design outside any player UI). Clip Export and Auto Frame are explainers rendered by the promo's pipeline (C:/vestra/marketing/video/v9/main/explain.html at 1728x1080; real Sintel frames, Sintel's real loudness curve, the real Auto Frame file and R12's after frame). Shader Upscale: Anime4K (Mode A+A, Ultra), a zoomed wipe between two real player captures of one 240p frame of Morevna Episode 3 (CC BY-SA 4.0). VestraTube: R9's sidebar with the search and about six result rows (user ruling 2026-11-12, overrides D8), the double-click, then 3.4 s of Spring's girl from the middle of the film (R9b, played through VestraTube in an isolated profile, user ruling 2026-11-12). VestraNES: the existing take. Outro: the five plugin icons with their names and 'All from the Plugin Store.' (replaces the store window).",
   "size": [
     1728,
     1080
@@ -40,7 +40,7 @@
     },
     {
       "id": "vestratube",
-      "dur": 3.2,
+      "dur": 6,
       "parts": [
         {
           "src": "C:/vestra/rec/v9/ptr/R9-t1-ptr.mkv",
@@ -82,15 +82,15 @@
           "fit": 860
         },
         {
-          "src": "C:/vestra/rec/v9/ptr/R9-t1-ptr.mkv",
-          "in": 11.8,
-          "out": 12.4,
+          "src": "C:/vestra/rec/v9/R9b-spring.mkv",
+          "in": 9.5,
+          "out": 12.9,
           "speed": 1,
           "crop": [
-            330,
-            308,
-            1338,
-            836
+            500,
+            265,
+            1322,
+            826
           ]
         }
       ]

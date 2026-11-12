@@ -12,7 +12,7 @@ line containing "(hero backdrop)" is left out while the template shows no
 backdrop; the marker itself is never shown. Keep this list in step with the
 record table.
 
-- [Big Buck Bunny](https://peach.blender.org/about/), [Sintel](https://durian.blender.org/sharing/) and [Caminandes 2](https://studio.blender.org/films/caminandes-2/) © Blender Foundation, [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/); [Elephants Dream](https://orange.blender.org/) © 2006 Blender Foundation / Netherlands Media Art Institute, [CC BY 2.5](https://creativecommons.org/licenses/by/2.5/); [Spring](https://studio.blender.org/films/spring/pages/about/) © Blender Foundation, [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/); [Sita Sings the Blues](https://archive.org/details/Sita_Sings_the_Blues) by Nina Paley, its visuals dedicated to the public domain ([CC0](https://creativecommons.org/publicdomain/zero/1.0/)).
+- [Big Buck Bunny](https://peach.blender.org/about/), [Sintel](https://durian.blender.org/sharing/) and [Caminandes 2](https://studio.blender.org/films/caminandes-2/) © Blender Foundation, [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/); [Elephants Dream](https://orange.blender.org/) © 2006 Blender Foundation / Netherlands Media Art Institute, [CC BY 2.5](https://creativecommons.org/licenses/by/2.5/); [Spring](https://studio.blender.org/films/spring/pages/about/) © Blender Foundation, [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/); [Morevna Episode 3](https://morevnaproject.org/anime/episode-3/) by the Morevna Project, [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
 - [Twin Dragons](https://github.com/Garydos/twin-dragons-nes) by Garydos, surt and Shiru: code under [zlib](https://zlib.net/zlib_license.html), [graphics](https://opengameart.org/content/twin-dragons) under [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/).
 - (hero backdrop) [Aurora timelapse](https://www.pexels.com/video/stunning-aurora-borealis-in-night-sky-timelapse-28889010/) by [Frank Cone](https://www.pexels.com/@frank-cone-140140/) on Pexels.
 
@@ -21,7 +21,7 @@ record table.
 The same lines for the Chinese page: titles, names and licence names stay as
 they are; only the connecting words are Chinese.
 
-- [Big Buck Bunny](https://peach.blender.org/about/)、[Sintel](https://durian.blender.org/sharing/) 和 [Caminandes 2](https://studio.blender.org/films/caminandes-2/)：© Blender Foundation，采用 [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/)；[Elephants Dream](https://orange.blender.org/)：© 2006 Blender Foundation / Netherlands Media Art Institute，采用 [CC BY 2.5](https://creativecommons.org/licenses/by/2.5/)；[Spring](https://studio.blender.org/films/spring/pages/about/)：© Blender Foundation，采用 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)；[Sita Sings the Blues](https://archive.org/details/Sita_Sings_the_Blues)，作者 Nina Paley，画面以 [CC0](https://creativecommons.org/publicdomain/zero/1.0/) 捐献到公共领域。
+- [Big Buck Bunny](https://peach.blender.org/about/)、[Sintel](https://durian.blender.org/sharing/) 和 [Caminandes 2](https://studio.blender.org/films/caminandes-2/)：© Blender Foundation，采用 [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/)；[Elephants Dream](https://orange.blender.org/)：© 2006 Blender Foundation / Netherlands Media Art Institute，采用 [CC BY 2.5](https://creativecommons.org/licenses/by/2.5/)；[Spring](https://studio.blender.org/films/spring/pages/about/)：© Blender Foundation，采用 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)；[Morevna 第 3 集](https://morevnaproject.org/anime/episode-3/)，作者 Morevna Project，采用 [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)。
 - [Twin Dragons](https://github.com/Garydos/twin-dragons-nes)，作者 Garydos、surt 和 Shiru：代码采用 [zlib](https://zlib.net/zlib_license.html)，[图形](https://opengameart.org/content/twin-dragons)采用 [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/)。
 - (hero backdrop) [极光延时摄影](https://www.pexels.com/video/stunning-aurora-borealis-in-night-sky-timelapse-28889010/)，作者 [Frank Cone](https://www.pexels.com/@frank-cone-140140/)，来自 Pexels。
 
@@ -33,12 +33,12 @@ are kept outside the repository (`SOURCES.md` next to them).
 
 | Title | Author | Licence | Source | Attribution |
 | --- | --- | --- | --- | --- |
-| Big Buck Bunny (in the hero, the Picture, Sound, Seek preview, Playlist, Command Palette, Ask Vestra and AI recordings, the AI Upscaling comparison and the window stills) | Blender Foundation | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | [peach.blender.org](https://peach.blender.org/about/) | (c) copyright 2008, Blender Foundation / www.bigbuckbunny.org |
+| Big Buck Bunny (in the hero, the Picture, Sound, Seek preview, Playlist, Command Palette, AI recordings and the window stills) | Blender Foundation | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | [peach.blender.org](https://peach.blender.org/about/) | (c) copyright 2008, Blender Foundation / www.bigbuckbunny.org |
 | Spring (the first of the VestraTube search results and its first seconds played through VestraTube) | Blender Animation Studio | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | [studio.blender.org/films/spring](https://studio.blender.org/films/spring/pages/about/) | © Blender Foundation \| cloud.blender.org/spring |
-| Sita Sings the Blues (the Shader Upscale comparison: one frame at 36:00 of the archive.org 320 x 176 copy) | Nina Paley | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) (the visuals; the film's old songs are not CC0 and are not used) | [archive.org/details/Sita_Sings_the_Blues](https://archive.org/details/Sita_Sings_the_Blues) | Sita Sings the Blues by Nina Paley (none required under CC0) |
+| Morevna Episode 3 ("Underground", the Shader Upscale comparison: one frame at 2:22, scaled to 426 x 240) | The Morevna Project | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) | [morevnaproject.org/anime/episode-3](https://morevnaproject.org/anime/episode-3/), file from [archive.org/details/morevna-ep.-3-0-2-english](https://archive.org/details/morevna-ep.-3-0-2-english) | Morevna Episode 3, Morevna Project, CC BY-SA 4.0 |
 | Elephants Dream (a playlist row and its thumbnail in the playlist recording) | Blender Foundation | [CC BY 2.5](https://creativecommons.org/licenses/by/2.5/) | [orange.blender.org](https://orange.blender.org/) | (c) copyright 2006, Blender Foundation / Netherlands Media Art Institute / www.elephantsdream.org |
 | Sintel (the Clip Export and Highlights explainers: its frames, a GIF loop and its measured loudness; the Clip Export full clip; a playlist row and its opening seconds after the double-click) | Blender Foundation | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | [durian.blender.org](https://durian.blender.org/sharing/) | (c) copyright Blender Foundation \| durian.blender.org |
-| Caminandes 2: Gran Dillama (the Auto Frame explainer, a playlist row and its thumbnail, a part in the Clip Export Collection) | Blender Institute | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | [studio.blender.org/films/caminandes-2](https://studio.blender.org/films/caminandes-2/) | (CC) Blender Foundation \| www.caminandes.com |
+| Caminandes 2: Gran Dillama (the Auto Frame explainer, Ask Vestra and the AI Upscaling comparison, a playlist row and its thumbnail, a part in the Clip Export Collection) | Blender Institute | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | [studio.blender.org/films/caminandes-2](https://studio.blender.org/films/caminandes-2/) | (CC) Blender Foundation \| www.caminandes.com |
 | Stunning Aurora Borealis in Night Sky Timelapse (hero backdrop) | [Frank Cone](https://www.pexels.com/@frank-cone-140140/) | [Pexels License](https://www.pexels.com/license/) | [Pexels](https://www.pexels.com/video/stunning-aurora-borealis-in-night-sky-timelapse-28889010/) | Video by Frank Cone from Pexels |
 | Twin Dragons (open-source NES homebrew, in the VestraNES recording) | Garydos (music and design), surt (art), Shiru (SFX) | [zlib](https://zlib.net/zlib_license.html) (code), [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) (graphics) | [github.com/Garydos/twin-dragons-nes](https://github.com/Garydos/twin-dragons-nes), graphics: [opengameart.org/content/twin-dragons](https://opengameart.org/content/twin-dragons) | |
 
@@ -85,16 +85,18 @@ are kept outside the repository (`SOURCES.md` next to them).
     rows as YouTube returned them (Blender Studio's upload first, then other
     channels' titles and thumbnails: user ruling 2026-11-12, so that viewers
     see search results; it overrides D8), then the film's first seconds playing.
-  - Big Buck Bunny, AI Upscaling comparison: the frame Ask Vestra's recording
-    ends on (`bbb-480p-web.mp4` at 0:26.03, held), played in the player with AI
-    Upscaling off and on and captured, shown whole and zoomed on a detail.
-  - Sita Sings the Blues (Nina Paley, 2008; the visuals CC0 since 18 January
-    2013, the old songs still under copyright and not used): one frame at 36:00
-    of `Sita_Sings_the_Blues_small.mp4` (320 x 176) from
-    https://archive.org/details/Sita_Sings_the_Blues, held and played in the
-    player with Shader Upscale off and Anime4K A+A on, captured, shown whole and
-    zoomed on a detail (`C:/vestra/testmedia/upscale-demo` outside the
-    repository). No sound is used.
+  - Caminandes 2, Ask Vestra and AI Upscaling: a 360p copy of the first minute
+    (`caminandes2-360p-web.mp4`) opened in the player for the Ask Vestra recording
+    (R15b), and its frame 595 (0:24.8, the frame that recording ends on), held and
+    played with AI Upscaling off and on, captured, shown whole and zoomed.
+  - Morevna Episode 3 (the Morevna Project; CC BY-SA 4.0 as the project's episode
+    pages state; the copy used is the archive.org upload
+    `morevna-ep.-3-0-2-english`, which carries the same licence): one frame at 2:22
+    scaled to 426 x 240, held and played in the player with Shader Upscale off and
+    Anime4K A+A on, captured, shown whole and zoomed on a detail
+    (`C:/vestra/testmedia/upscale-demo` outside the repository). The comparison
+    (crop, zoom, wipe) is an adaptation of that frame and is offered under CC BY-SA
+    4.0 too. No sound is used.
 - Licence sources (checked 2026-11-04): Big Buck Bunny,
   https://peach.blender.org/about/ (CC BY 3.0; for reused parts of the movie
   the credit "(c) copyright 2008, Blender Foundation / www.bigbuckbunny.org").
