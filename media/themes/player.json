@@ -1,5 +1,5 @@
 {
-  "$comment": "Theme 01 'It starts complete' (SPEC 3.4). Subtitles left out (user ruling 2026-11-12: a basic feature, not featured). Player 0.8.0 takes of 2026-11-12 (C:/vestra/rec/v9, real arrow replaced by the brand pointer: rec/tools/track.mjs + pointer.mjs -> v9/ptr/<take>-ptr.mkv). R1, R2 fullscreen 2560x1600; the others maximized (client area 2560x1476 at y 40; the taskbar below it is never in a crop). Composed by scripts/compose-theme.mjs; see README 'Feature themes'. Rebuild 2026-11-12 (readability: UI text at least 16 px on desktop and about 12 px on a phone): Sound is cropped closer to the equalizer; the Command Palette beat is the explainer 'palette' (R6 through a camera: zoom in while 'reset pic' is typed, the 'Reset: Picture' row outlined, pull back on the grey picture with the palette still open, Enter, the colour returns; captions 'Find any command' and 'Enter: the colour comes back').",
+  "$comment": "Theme 01 'It starts complete' (SPEC 3.4). Dual subtitles (user ruling 2026-11-12, later the same day): R21b, Sintel with English and Chinese (the official zh-Hans file muxed in) stacked at the bottom, zoomed on the lines. Player 0.8.0 takes of 2026-11-12 (C:/vestra/rec/v9, real arrow replaced by the brand pointer: rec/tools/track.mjs + pointer.mjs -> v9/ptr/<take>-ptr.mkv). R1, R2 fullscreen 2560x1600; the others maximized (client area 2560x1476 at y 40; the taskbar below it is never in a crop). Composed by scripts/compose-theme.mjs; see README 'Feature themes'. Rebuild 2026-11-12 (readability: UI text at least 16 px on desktop and about 12 px on a phone): Sound is cropped closer to the equalizer; the Command Palette beat is the explainer 'palette' (R6 through a camera: zoom in while 'reset pic' is typed, the 'Reset: Picture' row outlined, pull back on the grey picture with the palette still open, Enter, the colour returns; captions 'Find any command' and 'Enter: the colour comes back').",
   "size": [
     1728,
     1080
@@ -37,6 +37,24 @@
             330,
             1060,
             662
+          ]
+        }
+      ]
+    },
+    {
+      "id": "subtitles",
+      "dur": 2.6,
+      "parts": [
+        {
+          "src": "C:/vestra/rec/v9/R21b-subs.mkv",
+          "in": 14.27,
+          "out": 16.87,
+          "speed": 1,
+          "crop": [
+            720,
+            600,
+            1120,
+            700
           ]
         }
       ]

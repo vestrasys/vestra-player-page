@@ -83,7 +83,7 @@
         "zh-Hans": "画面、声音、字幕、播放列表、命令面板，第一次打开就都在。播放由 libmpv 负责。"
       },
       "rail": "chips",
-      "duration": 14,
+      "duration": 16.6,
       "poster": "media/posters/theme-player.webp",
       "sources": [
         {
@@ -130,10 +130,24 @@
           }
         },
         {
+          "id": "subtitles",
+          "glyph": "subtitles",
+          "label": {
+            "en": "Dual subtitles",
+            "zh-Hans": "双语字幕"
+          },
+          "caption": {
+            "en": "Two subtitle tracks at once, one above the other.",
+            "zh-Hans": "两条字幕同时显示，上下排列。"
+          },
+          "start": 5.6,
+          "end": 8.2
+        },
+        {
           "id": "seek",
           "glyph": "seek",
-          "start": 5.6,
-          "end": 8,
+          "start": 8.2,
+          "end": 10.6,
           "label": {
             "en": "Seek preview",
             "zh-Hans": "进度条预览"
@@ -146,8 +160,8 @@
         {
           "id": "playlist",
           "glyph": "playlist",
-          "start": 8,
-          "end": 10.4,
+          "start": 10.6,
+          "end": 13,
           "label": {
             "en": "Playlist",
             "zh-Hans": "播放列表"
@@ -160,8 +174,8 @@
         {
           "id": "palette",
           "glyph": "palette",
-          "start": 10.4,
-          "end": 14,
+          "start": 13,
+          "end": 16.6,
           "label": {
             "en": "Command Palette",
             "zh-Hans": "命令面板"
