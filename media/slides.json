@@ -83,7 +83,7 @@
         "zh-Hans": "画面、声音、字幕、播放列表、命令面板，第一次打开就都在。播放由 libmpv 负责。"
       },
       "rail": "chips",
-      "duration": 13.4,
+      "duration": 14,
       "poster": "media/posters/theme-player.webp",
       "sources": [
         {
@@ -164,7 +164,7 @@
           "id": "palette",
           "glyph": "palette",
           "start": 10.4,
-          "end": 13.4,
+          "end": 14,
           "clip": "palette",
           "label": {
             "en": "Command Palette",
@@ -189,7 +189,7 @@
         "zh-Hans": "功能来自插件商城。每个插件都开源，装上马上就能用。"
       },
       "rail": "icons",
-      "duration": 20.4,
+      "duration": 20.8,
       "poster": "media/posters/theme-store.webp",
       "sources": [
         {
@@ -226,7 +226,7 @@
           "id": "vestratube",
           "icon": "media/icons/vestratube.webp",
           "start": 5.6,
-          "end": 8.4,
+          "end": 8.8,
           "clip": "vestratube",
           "label": {
             "en": "VestraTube",
@@ -240,8 +240,8 @@
         {
           "id": "shaderupscale",
           "icon": "media/icons/shaderupscale.webp",
-          "start": 8.4,
-          "end": 11.8,
+          "start": 8.8,
+          "end": 12.2,
           "label": {
             "en": "Shader Upscale",
             "zh-Hans": "着色器超分"
@@ -254,8 +254,8 @@
         {
           "id": "autoframe",
           "icon": "media/icons/autoframe.webp",
-          "start": 11.8,
-          "end": 14.8,
+          "start": 12.2,
+          "end": 15.2,
           "label": {
             "en": "Auto Frame",
             "zh-Hans": "自动取景"
@@ -268,8 +268,8 @@
         {
           "id": "vestranes",
           "icon": "media/icons/vestranes.webp",
-          "start": 14.8,
-          "end": 17.8,
+          "start": 15.2,
+          "end": 18.2,
           "clip": "nes-3",
           "label": {
             "en": "VestraNES",
@@ -282,8 +282,8 @@
         }
       ],
       "outro": {
-        "start": 17.8,
-        "end": 20.4,
+        "start": 18.2,
+        "end": 20.8,
         "name": {
           "en": "All from the Plugin Store",
           "zh-Hans": "全部来自插件商城"

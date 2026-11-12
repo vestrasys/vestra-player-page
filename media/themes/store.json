@@ -1,5 +1,5 @@
 {
-  "$comment": "Theme 02 'It grows with its community' (SPEC 3.4, without VestraBili: user ruling 2026-11-12). Rebuilt 2026-11-12 for readability (user rulings: one idea per beat; explain an effect with motion design outside any player UI). Clip Export and Auto Frame are explainers rendered by the promo's pipeline (C:/vestra/marketing/video/v9/main/explain.html at 1728x1080; real Sintel frames, Sintel's real loudness curve, the real Auto Frame file and R12's after frame). Shader Upscale: Anime4K (Mode A+A, Ultra), a zoomed wipe between two real player captures of one 240p Caminandes 2 frame. VestraTube: R9 framed on the search field and the first result row only (D8), then Spring playing. VestraNES: the existing take. Outro: the five plugin icons with their names and 'All from the Plugin Store.' (replaces the store window).",
+  "$comment": "Theme 02 'It grows with its community' (SPEC 3.4, without VestraBili: user ruling 2026-11-12). Rebuilt 2026-11-12 for readability (user rulings: one idea per beat; explain an effect with motion design outside any player UI). Clip Export and Auto Frame are explainers rendered by the promo's pipeline (C:/vestra/marketing/video/v9/main/explain.html at 1728x1080; real Sintel frames, Sintel's real loudness curve, the real Auto Frame file and R12's after frame). Shader Upscale: Anime4K (Mode A+A, Ultra), a zoomed wipe between two real player captures of one 240p Caminandes 2 frame. VestraTube: R9's sidebar with the search and about six result rows (user ruling 2026-11-12, overrides D8), the double-click, then Spring playing. VestraNES: the existing take. Outro: the five plugin icons with their names and 'All from the Plugin Store.' (replaces the store window).",
   "size": [
     1728,
     1080
@@ -40,38 +40,51 @@
     },
     {
       "id": "vestratube",
-      "dur": 2.8,
+      "dur": 3.2,
       "parts": [
         {
           "src": "C:/vestra/rec/v9/ptr/R9-t1-ptr.mkv",
-          "in": 1.4,
-          "out": 4.4,
+          "in": 2.4,
+          "out": 4.2,
           "speed": 3,
           "crop": [
             2002,
-            86,
+            40,
             558,
-            180
+            700
           ],
-          "fit": 1600
+          "fit": 860
         },
         {
           "src": "C:/vestra/rec/v9/ptr/R9-t1-ptr.mkv",
-          "in": 6.6,
-          "out": 7.4,
+          "in": 4.4,
+          "out": 6,
           "speed": 1,
           "crop": [
             2002,
-            86,
+            40,
             558,
-            180
+            700
           ],
-          "fit": 1600
+          "fit": 860
+        },
+        {
+          "src": "C:/vestra/rec/v9/ptr/R9-t1-ptr.mkv",
+          "in": 6.4,
+          "out": 7.4,
+          "speed": 2.5,
+          "crop": [
+            2002,
+            40,
+            558,
+            700
+          ],
+          "fit": 860
         },
         {
           "src": "C:/vestra/rec/v9/ptr/R9-t1-ptr.mkv",
           "in": 11.8,
-          "out": 12.8,
+          "out": 12.4,
           "speed": 1,
           "crop": [
             330,

@@ -248,8 +248,8 @@ the before/after wipe) and encoded with a key frame at every beat start:
 
 ```sh
 node scripts/compose-theme.mjs media/themes/store.json     # prints the beat times and the encode line
-npm run encode -- C:/vestra/rec/page-v2/store.mp4 --id theme-store --keyframes 0,4.4,7.2,10,12.6,15.6 \
-  --sm 960x600 --poster-at 14.5 --crf-av1 46 --crf-sm 50 --crf-h264 28 --poster-quality 50
+npm run encode -- C:/vestra/rec/page-v2/store.mp4 --id theme-store --keyframes 0,5.6,8.8,12.2,15.2,18.2 \
+  --sm 960x600 --poster-at 11.0 --crf-av1 46 --crf-sm 50 --crf-h264 28 --poster-quality 50
 ```
 
 Copy the printed times into the theme's beats in `media/slides.json`.
@@ -268,9 +268,9 @@ which track.mjs does not know, is covered by a pointer parked on it).
 
 | Theme | Beats | Waiting for |
 | --- | --- | --- |
-| player | Picture (R1), Sound (R2, cropped to the equalizer), Seek preview (R4), Playlist (R5), Command Palette (R6: the palette at about 1.5x while "reset pic" is typed, then the whole picture). Subtitles left out (user ruling 2026-11-12: a basic feature) | |
-| store | Clip Export (explainers `gif` and `reel`), VestraTube (R9: the search field and the first result row only, as a strip centred on black, `"fit"`; then Spring playing), Shader Upscale (explainer `shader`: Anime4K off and on, two player captures of one 240p frame), Auto Frame (explainer `autoframe`), VestraNES (`nes-td-cut`), outro (explainer `outro`: the five icons and names, "All from the Plugin Store.") | |
-| ai | Ask Vestra (explainer `ask`: R15 through a camera, the sentence turned into the command), AI Upscaling (explainer `vsr`: AI Upscaling off and on, two player captures of one 360p frame), Vestra Player AI (explainer `build`, five captioned steps) | Highlights hidden until the sound model (R18) |
+| player | Picture (R1), Sound (R2, cropped to the equalizer), Seek preview (R4), Playlist (R5), Command Palette (explainer `palette`: R6 through a camera, "Reset: Picture" outlined, Enter on the whole picture). Subtitles left out (user ruling 2026-11-12: a basic feature) | |
+| store | Clip Export (explainers `gif` and `reel`), VestraTube (R9: the sidebar with the search and about six result rows, centred on black, `"fit"`; the double-click; then Spring playing), Shader Upscale (explainer `shader`: Anime4K A+A off and on, two player captures of one frame of Sita Sings the Blues at 320x176), Auto Frame (explainer `autoframe`), VestraNES (`nes-td-cut`), outro (explainer `outro`: the five icons and names, "All from the Plugin Store.") | |
+| ai | Ask Vestra (explainer `ask`: R15 through a camera, the sentence turned into the command), AI Upscaling (explainer `vsr`: AI Upscaling off and on, two player captures of the bbb-480p frame R15 ends on), Vestra Player AI (explainer `build`, five captioned steps) | Highlights hidden until the sound model (R18) |
 
 Explainers (2026-11-12): motion graphics that explain what a feature does, with real frames, real data and real
 player captures inside and no drawn player UI. They are the promo video's `main/explain.html` scenes
