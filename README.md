@@ -214,8 +214,8 @@ into `media/slides.json`. Replacing one item is one command plus that edit.
   `slides` is now optional and only a stage entry may name one. Media files get
   content-hashed names in `dist/` (as the CSS and JS), so a re-encoded clip is
   never served from a browser cache under its old name.
-- `themes` are the feature section: per theme `id`, `title` and `lede`
-  (`en`, `zh-Hans`), `rail` (`icons`: each beat has an `icon`, the
+- `themes` are the feature section: per theme `id` and `title`
+  (`en`, `zh-Hans`; no lede: the heading stands alone, user ruling 2026-11-12), `rail` (`icons`: each beat has an `icon`, the
   plugin's icon as 104 px WebP in `media/icons/`; `chips`: each beat has a
   `glyph` from `GLYPHS` in `scripts/build.mjs`), `duration`, `poster`
   and `sources` (a `"media": "(max-width: 640px)"` source first, for

@@ -78,10 +78,6 @@
         "en": "It starts complete",
         "zh-Hans": "开箱即完整"
       },
-      "lede": {
-        "en": "Picture, sound, subtitles, playlists and a command palette are there from the first launch. Playback is by libmpv.",
-        "zh-Hans": "画面、声音、字幕、播放列表、命令面板，第一次打开就都在。播放由 libmpv 负责。"
-      },
       "rail": "chips",
       "duration": 16.6,
       "poster": "media/posters/theme-player.webp",
@@ -194,10 +190,6 @@
         "en": "It grows with its community",
         "zh-Hans": "随社区一起成长"
       },
-      "lede": {
-        "en": "Features come from the Plugin Store. Every plugin is open source, and it is ready to use right after you install it.",
-        "zh-Hans": "功能来自插件商城。每个插件都开源，装上马上就能用。"
-      },
       "rail": "icons",
       "duration": 23.6,
       "poster": "media/posters/theme-store.webp",
@@ -307,10 +299,6 @@
       "title": {
         "en": "And with AI",
         "zh-Hans": "也随 AI 一起成长"
-      },
-      "lede": {
-        "en": "Ask for what you want, sharpen the picture, or have a plugin written for you. The assistants use your own AI key; upscaling runs on your own GPU.",
-        "zh-Hans": "说出想做的事，让画面更清晰，或者让它替你写一个插件。助手用你自己的 AI 密钥，超分在你自己的显卡上运行。"
       },
       "rail": "chips",
       "duration": 14.8,

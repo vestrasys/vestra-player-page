@@ -316,7 +316,6 @@ main { overflow-x: clip; }
 .ch-num span { margin-left: 6px; color: var(--faint); }
 .th-head h3 { font-size: clamp(1.75rem, 2.8vw, 2.5rem); font-weight: 720; line-height: 1.08; letter-spacing: -0.025em; }
 :root[lang="zh-Hans"] .th-head h3 { letter-spacing: 0; line-height: 1.22; }
-.th-lede { margin: 0; justify-self: end; max-width: 32em; color: var(--muted); font-size: 17px; line-height: 1.55; }
 
 .th-win { display: flex; justify-content: center; }
 /* The window: the poster underneath, the loop on top once it plays. */
@@ -368,6 +367,13 @@ main { overflow-x: clip; }
 .th-items.all .th-item { opacity: 1; color: var(--text); }
 .th-items.all .th-item .pg b { transform: scaleX(1); }
 .th-items.all .th-item .ic { box-shadow: 0 0 0 2px #fa0aa8, 0 0 22px -6px rgba(250, 10, 168, 0.7); transition-delay: calc(var(--k) * 60ms); }
+
+/* From 641 to about 670px the five plugin icons with their labels and the pause button do not fit one line;
+   there the items narrow instead of wrapping (the rail stays one line, as approved). Wider, nothing changes. */
+@media (min-width: 641px) {
+  .th-icons .th-items { flex-wrap: nowrap; min-width: 0; }
+  .th-icons .th-item { flex: 0 1 92px; min-width: 60px; }
+}
 
 /* Chip rails (themes without plugin icons): a line glyph and the label; the bar is the chip's bottom edge. */
 .th-chips .th-item {
@@ -507,7 +513,6 @@ main { overflow-x: clip; }
   .theme { padding: 22px 0 26px; }
   .th-head { grid-template-columns: minmax(0, 1fr); gap: 10px; margin-bottom: 16px; }
   .th-head h3 { font-size: 28px; }
-  .th-lede { justify-self: start; font-size: 15px; }
   .theme { --win-w: 100%; }
   .th-cap { flex-direction: column; align-items: flex-start; gap: 3px; min-height: 92px; }
   .th-name { font-size: 17px; }

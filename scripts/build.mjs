@@ -382,7 +382,7 @@ function checkThemes(themes, slideIds) {
     const where = `media/slides.json theme "${th.id}"`;
     if (!/^[a-z0-9-]+$/.test(th.id ?? "") || ids.has(th.id)) fail(`${where}: id must be unique [a-z0-9-]`);
     ids.add(th.id);
-    for (const lang of LANGS) if (!th.title?.[lang] || !th.lede?.[lang]) fail(`${where}: title and lede need "${lang}"`);
+    for (const lang of LANGS) if (!th.title?.[lang]) fail(`${where}: title needs "${lang}"`);
     if (th.rail !== "icons" && th.rail !== "chips") fail(`${where}: "rail" must be "icons" or "chips"`);
     if (!th.poster || !th.sources?.length) fail(`${where}: needs a "poster" and "sources"`);
     if (!(th.duration > 0)) fail(`${where}: "duration" (seconds, the length of its video) is required`);
@@ -667,7 +667,7 @@ function renderStage() {
 }
 
 /**
- * The feature themes (layout A): per theme a head (number, title, lede), one window that plays the
+ * The feature themes (layout A): per theme a head (number and title; no lede beside it, user ruling 2026-11-12), one window that plays the
  * theme's pre-composited loop, and under it the active beat's caption and a rail of the beats (plugin
  * icons or chips) whose progress follows the video's clock (main.js). Without script, with reduced motion
  * or Save-Data the poster stays and a list of every beat (icon, name, sentence) replaces the caption and the rail;
@@ -695,7 +695,6 @@ function renderThemes(lang) {
     return `    <article class="theme th-${th.rail}${th.beats.length > 4 ? " th-many" : ""}" id="theme-${th.id}" data-theme="${i}" aria-labelledby="theme-${th.id}-title">
       <div class="th-head reveal">
         <div><p class="ch-num" aria-hidden="true">${n(i + 1)}<span>/${n(count)}</span></p><h3 id="theme-${th.id}-title">${escape(L(th.title))}</h3></div>
-        <p class="th-lede">${escape(L(th.lede))}</p>
       </div>
       <div class="th-main">
         <div class="th-win">
