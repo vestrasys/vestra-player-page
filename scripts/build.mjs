@@ -19,9 +19,8 @@ const OG_LOCALE = { en: "en_US", "zh-Hans": "zh_CN" };
 const SIZES = {
   hero: "(max-width: 860px) calc(100vw - 32px), min(605px, 45vw)",
   near: "(max-width: 860px) 1px, min(605px, 45vw)",
-  // A theme's window (styles.css .th-win): the content width, 1168px at most, and short enough that the head,
-  // window, caption and rail fit one screen; 560px in the static layout (no video).
-  theme: "(max-width: 640px) calc(100vw - 32px), min(1168px, calc(100vw - 32px), calc((100vh - 394px) * 1.6))",
+  // The themes' sticky window (styles.css .th-grid): 7/12 of the content width less the gap, 639px at most.
+  theme: "(max-width: 860px) calc(100vw - 32px), min(640px, calc(55.42vw - 19px))",
 };
 // A theme's outro counts its visible beats in words ("Five plugins today").
 const NUMBERS = {
@@ -168,7 +167,6 @@ function renderPage(lang) {
     githubIcon: GITHUB_ICON,
     stage: renderStage(),
     themes: renderThemes(lang),
-    pauseHero: renderPause("hero"),
     openSource: renderOpenSource(),
     platforms: renderPlatforms(),
     links: renderLinks(),
@@ -177,7 +175,6 @@ function renderPage(lang) {
     // Only what the script needs at run time; every other string is in the HTML already.
     // Each theme's beat times (the captions are in the HTML).
     data: JSON.stringify({
-      strings: Object.fromEntries(["media.pause", "media.play"].map((k) => [k, en[k]])),
       themes: manifest.themes.map((th) => ({
         beats: th.beats.map((b) => ({ start: b.start, end: b.end })),
         ...(th.outro ? { outro: { start: th.outro.start, end: th.outro.end } } : {}),
@@ -638,11 +635,6 @@ function cardClass(base, slide) {
   return `card ${base}${slide.fullscreen ? " is-full" : ""}`;
 }
 
-/** The pause control beside every playing window (one state for the whole page; main.js shows it). */
-function renderPause(where) {
-  return `<button type="button" class="pp pp-${where}" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path class="i-pause" d="M8 5v14M16 5v14"/><path class="i-play" d="M7 4.5v15l12-7.5z"/></svg>${t("media.pause")}</button>`;
-}
-
 /** Five windows fanned in depth, standing still (a short entrance on load, a mouse tilt). */
 function renderStage() {
   const st = manifest.stage;
@@ -667,10 +659,14 @@ function renderStage() {
 }
 
 /**
- * The feature themes (layout A): per theme a head (number and title; no lede beside it, user ruling 2026-11-12), one window that plays the
- * theme's pre-composited loop, and under it the active beat's caption and a rail of the beats (plugin
- * icons or chips) whose progress follows the video's clock (main.js). Without script, with reduced motion
- * or Save-Data the poster stays and a list of every beat (icon, name, sentence) replaces the caption and the rail;
+ * The feature themes as a sticky scroll showcase (the layout of 1d56f43; user request 2026-11-13):
+ * the three themes scroll on the left, one entry each: a head (number and title; no lede, user ruling
+ * 2026-11-12), the active beat's caption and a rail of the beats (plugin icons or chips) whose
+ * progress follows the video's clock (main.js). One sticky window on the right holds a layer per
+ * theme and shows the theme at the reading line, playing its pre-composited loop (its beats in
+ * sequence). Only the themes scroll, not the beats (user, 2026-11-13). Phones: the window sticks
+ * under the header, the themes scroll beneath. Without script, with reduced motion or Save-Data the
+ * poster stays and a list of every beat (icon, name, sentence) replaces the caption and the rail;
  * the list is in the HTML either way, for search engines.
  */
 function renderThemes(lang) {
@@ -681,37 +677,47 @@ function renderThemes(lang) {
     ? `<img src="${escape(beat.icon)}" width="52" height="52" loading="lazy" decoding="async" alt="">`
     : `<svg viewBox="0 0 24 24" aria-hidden="true">${GLYPHS[beat.glyph]}</svg>`;
   const fine = (beat) => (beat.fine ? ` <small class="th-fine">${escape(L(beat.fine))}</small>` : "");
-  return manifest.themes.map((th, i) => {
+  const layers = manifest.themes.map((th, i) => {
+    const sources = th.sources.map((s) => `<source data-src="${escape(s.src)}" type="${escape(s.type)}"${s.media ? ` media="${escape(s.media)}"` : ""}>`).join("");
+    return `<div class="th-frame" data-theme="${i}"${i === 0 ? " data-on" : ""}><img ${imgSrc(th.poster, "theme")} width="1728" height="1080" loading="lazy" decoding="async" alt=""><video muted loop playsinline preload="none" aria-hidden="true" tabindex="-1">${sources}</video></div>`;
+  }).join("\n            ");
+  const entries = manifest.themes.map((th, i) => {
     const first = th.beats[0];
     const outro = th.outro && {
       name: L(th.outro.name),
       caption: format(L(th.outro.caption), { n: NUMBERS[lang][th.beats.length] ?? String(th.beats.length) }),
     };
     const items = th.beats.map((beat, k) =>
-      `<button type="button" class="th-item" data-k="${k}" style="--k:${k}" aria-label="${escape(L(beat.label))}"${k === 0 ? ' aria-current="true"' : ""}><span class="ic">${icon(th, beat)}</span><span class="lb">${escape(L(beat.label))}</span><i class="pg"><b></b></i></button>`).join("");
+      `<button type="button" class="th-item" data-k="${k}" style="--k:${k}" aria-label="${escape(L(beat.label))}"${k === 0 ? ' aria-current="true"' : ""}><span class="ic">${icon(th, beat)}</span>${th.rail === "icons" ? "" : `<span class="lb">${escape(L(beat.label))}</span>`}<i class="pg"><b></b></i></button>`).join("");
     const list = th.beats.map((beat) =>
       `          <li><span class="ic">${icon(th, beat)}</span><span class="tx"><b>${escape(L(beat.label))}</b> <span>${escape(L(beat.caption))}</span>${fine(beat)}</span></li>`).join("\n");
-    const sources = th.sources.map((s) => `<source data-src="${escape(s.src)}" type="${escape(s.type)}"${s.media ? ` media="${escape(s.media)}"` : ""}>`).join("");
-    return `    <article class="theme th-${th.rail}${th.beats.length > 4 ? " th-many" : ""}" id="theme-${th.id}" data-theme="${i}" aria-labelledby="theme-${th.id}-title">
-      <div class="th-head reveal">
-        <div><p class="ch-num" aria-hidden="true">${n(i + 1)}<span>/${n(count)}</span></p><h3 id="theme-${th.id}-title">${escape(L(th.title))}</h3></div>
-      </div>
-      <div class="th-main">
-        <div class="th-win">
-          <div class="th-frame"><img ${imgSrc(th.poster, "theme")} width="1728" height="1080" loading="lazy" decoding="async" alt=""><video muted loop playsinline preload="none" aria-hidden="true" tabindex="-1">${sources}</video></div>
-        </div>
-        <div class="th-live js-only">
-          <p class="th-cap"><b class="th-name">${escape(L(first.label))}</b> <span class="th-text">${escape(L(first.caption))}${fine(first)}</span></p>
-          <div class="th-rail"><div class="th-items" role="group" aria-label="${escape(L(th.title))}">${items}</div>${renderPause("theme")}</div>
-        </div>
-        <div class="th-static">
-          <ul class="th-list">
+    return `        <article class="theme th-${th.rail}${th.beats.length > 4 ? " th-many" : ""}" id="theme-${th.id}" data-theme="${i}"${i === 0 ? " data-on" : ""} aria-labelledby="theme-${th.id}-title">
+          <div class="th-head">
+            <p class="ch-num" aria-hidden="true">${n(i + 1)}<span>/${n(count)}</span></p><h3 id="theme-${th.id}-title">${escape(L(th.title))}</h3>
+          </div>
+          <div class="th-live js-only">
+            <p class="th-cap"><b class="th-name">${escape(L(first.label))}</b> <span class="th-text">${escape(L(first.caption))}${fine(first)}</span></p>
+            <div class="th-rail"><div class="th-items" role="group" aria-label="${escape(L(th.title))}">${items}</div></div>
+          </div>
+          <div class="th-static">
+            <ul class="th-list">
 ${list}
-          </ul>${outro ? `\n          <p class="th-outro"><b>${escape(outro.name)}</b> <span>${escape(outro.caption)}</span></p>` : ""}
+            </ul>${outro ? `\n            <p class="th-outro"><b>${escape(outro.name)}</b> <span>${escape(outro.caption)}</span></p>` : ""}
+          </div>
+        </article>`;
+  }).join("\n");
+  return `    <div class="th-grid">
+      <div class="th-steps">
+${entries}
+      </div>
+      <div class="th-media">
+        <div class="th-sticky">
+          <div class="th-window">
+            ${layers}
+          </div>
         </div>
       </div>
-    </article>`;
-  }).join("\n");
+    </div>`;
 }
 
 // ---- Open source ----

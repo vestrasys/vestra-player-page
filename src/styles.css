@@ -200,18 +200,6 @@ a.cta-btn:hover { transform: translateY(-1px); }
 .shot video { opacity: 0; transition: opacity 0.4s ease; }
 .shot.is-live video { opacity: 1; }
 
-/* The pause control: one state for every window on the page. */
-.pp {
-  display: inline-flex; align-items: center; gap: 8px; padding: 7px 14px 7px 11px; border-radius: 999px;
-  border: 1px solid var(--line-2); background: rgba(11, 13, 19, 0.82); color: var(--muted); font-size: 0.8rem;
-}
-.pp:hover { color: var(--text); border-color: var(--accent); }
-.pp svg { width: 14px; height: 14px; flex: none; }
-.pp .i-pause { fill: none; stroke: currentColor; stroke-width: 3; stroke-linecap: round; }
-.pp .i-play { fill: currentColor; display: none; }
-.pp.is-paused .i-pause { display: none; }
-.pp.is-paused .i-play { display: inline; }
-.pp-hero { position: absolute; z-index: 3; right: max(var(--gutter), calc(50% - var(--wide) / 2 + var(--gutter))); bottom: 22px; }
 
 /* ---- The depth stage (wide screens): five windows fanned in depth, standing still ---- */
 
@@ -294,21 +282,32 @@ main { overflow-x: clip; }
     radial-gradient(620px 360px at 14% 42%, rgba(16, 168, 252, 0.12), transparent 70%),
     radial-gradient(560px 340px at 86% 62%, rgba(122, 10, 250, 0.12), transparent 70%);
 }
-/* ---- Features: three themes. Each theme is a head, one window playing the theme's loop, the
-   active beat's caption and a rail of its beats (main.js follows the video's clock). Without
-   motion (no script, reduced motion, Save-Data) the poster stays and a list of every beat
-   replaces the caption and the rail. ---- */
+/* ---- Features: three themes as a sticky scroll showcase. The themes scroll on the left, one
+   entry each: a head, the active beat's caption and a rail of its beats (main.js follows the
+   video's clock). One sticky window on the right shows the theme at the reading line, playing its
+   loop (its beats in sequence). Without motion (no script, reduced motion, Save-Data) the poster
+   stays and a list of every beat replaces the caption and the rail. ---- */
 
 .chapters { max-width: var(--wide); margin: 0 auto; padding: 96px var(--gutter) 60px; }
 .themes .section-head { margin-bottom: 16px; }
-.theme {
-  /* The window: the content width, 1168px at most, and short enough that the head, window,
-     caption and rail fit one screen (810px wide at 1440 x 900); never below 560px. */
-  --win-w: max(min(100%, 1168px, (100vh - var(--header) - 330px) * 1.6), min(100%, 560px));
-  padding: 40px 0 34px;
+/* The window's geometry, shared by the grid, the window and its sticky offset: it takes 7 of 12
+   parts of the content width (--wide less the gutters) after the gap, at 16 / 10. */
+.themes {
+  --th-gap: clamp(32px, 5vw, 72px);
+  --th-win-h: calc((min(var(--wide), 100vw) - 2 * var(--gutter) - var(--th-gap)) * 7 / 12 / 1.6);
 }
-.theme + .theme { border-top: 1px solid var(--line); }
-.th-head { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 6fr); gap: 40px; align-items: end; margin-bottom: 22px; }
+.th-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--th-gap); }
+
+/* An entry: tall enough that the reading line rests on it while its loop plays. */
+.theme {
+  min-height: 80vh; display: flex; flex-direction: column; justify-content: center; padding: 40px 0;
+  transition: opacity 0.4s ease;
+}
+.theme:last-child { min-height: 88vh; }
+/* While the window plays, the other themes sit dimmer (without motion every entry shows in full). */
+:root.motion .theme { opacity: 0.32; }
+:root.motion .theme[data-on] { opacity: 1; }
+.th-head { margin-bottom: 20px; }
 .ch-num { margin: 0 0 12px; font: 700 0.8125rem/1 var(--mono); letter-spacing: 0.14em; color: var(--accent); width: fit-content; }
 @supports (background-clip: text) or (-webkit-background-clip: text) {
   .ch-num { background: var(--brand); -webkit-background-clip: text; background-clip: text; color: transparent; }
@@ -317,33 +316,34 @@ main { overflow-x: clip; }
 .th-head h3 { font-size: clamp(1.75rem, 2.8vw, 2.5rem); font-weight: 720; line-height: 1.08; letter-spacing: -0.025em; }
 :root[lang="zh-Hans"] .th-head h3 { letter-spacing: 0; line-height: 1.22; }
 
-.th-win { display: flex; justify-content: center; }
-/* The window: the poster underneath, the loop on top once it plays. */
-.th-frame {
-  position: relative; display: block; width: var(--win-w); aspect-ratio: 16 / 10; padding: 0; border: 0;
-  border-radius: var(--win-radius); overflow: hidden; background: #000; color: inherit; font: inherit;
+/* Centred in the screen under the header. */
+.th-sticky { position: sticky; top: calc(var(--header) + max(16px, (100vh - var(--header) - var(--th-win-h)) / 2)); }
+/* The window: one layer per theme, cross-fading; each its poster underneath, its loop on top once it plays. */
+.th-window {
+  position: relative; width: 100%; aspect-ratio: 16 / 10; border-radius: var(--win-radius); overflow: hidden; background: #000;
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.07), 0 40px 100px -30px rgba(0, 0, 0, 0.95), 0 0 90px -24px rgba(250, 10, 168, 0.22);
 }
+.th-frame { position: absolute; inset: 0; opacity: 0; transition: opacity 0.5s ease; }
+.th-frame[data-on] { opacity: 1; }
 .th-frame img, .th-frame video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
 .th-frame video { opacity: 0; transition: opacity 0.4s ease; }
 .th-frame.is-live video { opacity: 1; }
 
-/* Caption: one line under the window; a minimum height so the rail never moves. */
-.th-live { width: var(--win-w); margin: 0 auto; container-type: inline-size; }
-.th-cap { display: flex; align-items: baseline; gap: 12px; min-height: 28px; margin: 16px 0 0; }
-.th-name { font: 700 18px/1.3 var(--display); letter-spacing: -0.01em; white-space: nowrap; }
-.th-text { color: var(--muted); font-size: 15.5px; line-height: 1.45; }
-.th-fine { color: var(--faint); font-size: 12.5px; white-space: nowrap; }
+/* Caption: the beat's name over its sentence; a minimum height so the rail never moves. */
+.th-live { container-type: inline-size; }
+.th-cap { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; min-height: 112px; margin: 0; }
+.th-name { font: 700 1.3rem/1.3 var(--display); letter-spacing: -0.01em; }
+.th-text { color: var(--muted); font-size: 1.04rem; line-height: 1.5; }
+.th-fine { display: block; margin-top: 4px; color: var(--faint); font-size: 0.82rem; }
 /* Beat change: out in 120 ms, in over 240 ms from 8 px below (outExpo). */
 .th-cap > * { transition: opacity 0.12s linear; }
 .th-cap.out > * { opacity: 0; }
 .th-cap.in > * { animation: cap-in 0.24s cubic-bezier(0.16, 1, 0.3, 1) both; }
 @keyframes cap-in { from { opacity: 0; transform: translateY(8px); } }
 
-/* Rail: one button per beat, then the pause button. */
+/* Rail: one button per beat. */
 .th-rail { display: flex; align-items: flex-start; gap: 16px; margin-top: 14px; }
 .th-items { display: flex; flex-wrap: wrap; gap: 10px; }
-.th-rail .pp { flex: none; margin-left: auto; align-self: center; }
 .th-item {
   flex: 0 0 auto; width: 92px; display: flex; flex-direction: column; align-items: center; gap: 7px; padding: 0; border: 0;
   background: none; color: var(--faint); font: 600 11.5px/1.2 var(--font); text-align: center; opacity: 0.62;
@@ -368,12 +368,10 @@ main { overflow-x: clip; }
 .th-items.all .th-item .pg b { transform: scaleX(1); }
 .th-items.all .th-item .ic { box-shadow: 0 0 0 2px #fa0aa8, 0 0 22px -6px rgba(250, 10, 168, 0.7); transition-delay: calc(var(--k) * 60ms); }
 
-/* From 641 to about 670px the five plugin icons with their labels and the pause button do not fit one line;
-   there the items narrow instead of wrapping (the rail stays one line, as approved). Wider, nothing changes. */
-@media (min-width: 641px) {
-  .th-icons .th-items { flex-wrap: nowrap; min-width: 0; }
-  .th-icons .th-item { flex: 0 1 92px; min-width: 60px; }
-}
+/* Plugin rails: the logos alone, evenly spaced on one line (no names under them, user request
+   2026-11-13; each name stays its button's accessible label). */
+.th-icons .th-items { flex-wrap: nowrap; gap: 16px; }
+.th-icons .th-item { width: 52px; }
 
 /* Chip rails (themes without plugin icons): a line glyph and the label; the bar is the chip's bottom edge. */
 .th-chips .th-item {
@@ -384,29 +382,34 @@ main { overflow-x: clip; }
 .th-chips .th-item .pg { position: absolute; left: 0; right: 0; bottom: 0; width: auto; border-radius: 0; background: transparent; }
 .th-chips .th-item[aria-current] { box-shadow: 0 0 0 1.5px #fa0aa8, 0 0 24px -8px rgba(250, 10, 168, 0.8); }
 .th-chips .th-item[aria-current] .ic { transform: none; box-shadow: none; color: var(--accent-hi); }
-/* A long chip rail beside the pause button needs about 900px: narrower, only the active chip keeps its label. */
+/* A long chip rail needs about 900px: narrower, only the active chip keeps its label. */
 @container (max-width: 900px) {
   .th-chips.th-many .th-item:not([aria-current]) .lb { display: none; }
 }
 
-/* Without motion: the poster beside a list of every beat. */
+/* Without motion: a list of every beat in place of the caption and the rail. */
 :root.motion .th-static, :root:not(.motion) .th-live { display: none; }
-:root:not(.motion) .th-main { display: grid; grid-template-columns: minmax(0, 560px) minmax(0, 1fr); gap: 36px; align-items: start; }
-:root:not(.motion) .th-frame { width: 100%; }
-.th-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 28px; }
+.th-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
 .th-list li { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 12px; align-items: start; }
 .th-list .ic { width: 44px; height: 44px; border-radius: 12px; overflow: hidden; display: grid; place-items: center; background: var(--ink-2); box-shadow: 0 0 0 1px var(--line-2); color: var(--accent-hi); }
 .th-list .ic img { display: block; width: 100%; height: 100%; }
-.th-list .tx { font-size: 13.5px; line-height: 1.45; color: var(--muted); }
-.th-list .tx b { display: block; font: 700 15px/1.3 var(--display); color: var(--text); }
+.th-list .tx { font-size: 14.5px; line-height: 1.45; color: var(--muted); }
+.th-list .tx b { display: block; font: 700 16px/1.3 var(--display); color: var(--text); }
 .th-list .th-fine { display: block; white-space: normal; }
-.th-outro { margin: 18px 0 0; font-size: 13.5px; color: var(--muted); }
+.th-outro { margin: 18px 0 0; font-size: 14.5px; color: var(--muted); }
 .th-outro b { color: var(--text); font-family: var(--display); }
 
-@media (max-width: 1023px) {
-  .th-head { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); }
+/* Narrow screens (as 1d56f43): the window sticks under the header, the themes scroll beneath. */
+@media (max-width: 860px) {
+  .th-grid { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .th-media {
+    order: -1; position: sticky; top: var(--header); z-index: 4; margin: 0 calc(-1 * var(--gutter)); padding: 12px var(--gutter) 10px;
+    background: linear-gradient(var(--ink) 88%, rgba(9, 8, 13, 0));
+  }
+  .th-sticky { position: static; }
+  .theme { min-height: 60vh; justify-content: flex-start; padding: 32px 0; }
+  .theme:last-child { min-height: 70vh; }
 }
-
 
 /* ---- Open source ---- */
 
@@ -489,7 +492,6 @@ main { overflow-x: clip; }
   .os-grid { grid-template-columns: minmax(0, 1fr); }
   .os-card, .os-card + .os-card { padding: 22px 0; border-left: 0; }
   .os-card + .os-card { border-top: 1px solid var(--line); }
-  .pp-hero { position: static; display: flex; margin: 14px 0 0 auto; }
   .floor { height: 46%; }
   /* The edges are narrow here: fainter dots. */
   .chapters::before { opacity: 0.6; }
@@ -507,33 +509,27 @@ main { overflow-x: clip; }
   .end { padding: 96px var(--gutter) 110px; }
 }
 
-/* ---- Phones: the themes stack; fixed caption height so the rail does not jump ---- */
+/* ---- Phones: smaller head, caption and rail ---- */
 
 @media (max-width: 640px) {
-  .theme { padding: 22px 0 26px; }
-  .th-head { grid-template-columns: minmax(0, 1fr); gap: 10px; margin-bottom: 16px; }
+  .theme { padding: 24px 0; }
+  .th-head { margin-bottom: 14px; }
   .th-head h3 { font-size: 28px; }
-  .theme { --win-w: 100%; }
-  .th-cap { flex-direction: column; align-items: flex-start; gap: 3px; min-height: 92px; }
-  .th-name { font-size: 17px; }
-  .th-text { font-size: 14.5px; }
-  .th-fine { white-space: normal; }
+  .th-cap { gap: 3px; min-height: 104px; }
+  .th-name { font-size: 18px; }
+  .th-text { font-size: 15px; }
   .th-rail { flex-direction: column; align-items: stretch; gap: 12px; }
-  .th-rail .pp { align-self: flex-end; }
-  /* Icon rail: the icons without labels, spread across the width. */
+  /* Icon rail: smaller logos, spread across the width. */
   .th-icons .th-items { flex-wrap: nowrap; justify-content: space-between; gap: 0; }
   .th-icons .th-item { width: 44px; }
   .th-icons .th-item .ic { width: 44px; height: 44px; border-radius: 12px; }
   .th-icons .th-item .pg { width: 44px; }
-  .th-icons .th-item .lb { display: none; }
   /* Chip rails: a long rail shows glyphs only, the active chip with its label. */
   .th-chips .th-items { gap: 6px; }
   .th-chips .th-item { gap: 6px; padding: 8px 9px 8px 7px; font-size: 12.5px; }
   .th-chips .th-item .ic { width: 20px; height: 20px; }
   .th-chips .th-item svg { width: 19px; height: 19px; }
   .th-chips.th-many .th-item:not([aria-current]) .lb { display: none; }
-  :root:not(.motion) .th-main { grid-template-columns: minmax(0, 1fr); gap: 20px; }
-  .th-list { grid-template-columns: minmax(0, 1fr); }
 }
 
 @media (prefers-reduced-motion: reduce) {

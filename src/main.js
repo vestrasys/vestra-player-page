@@ -15,7 +15,6 @@
   const saveData = Boolean(navigator.connection && navigator.connection.saveData);
   const hasIO = "IntersectionObserver" in window;
 
-  const text = (key) => data.strings[key] ?? key;
 
   // ---- Visitor's system: its button first (Linux only once it has one), else Windows ----
 
@@ -81,13 +80,13 @@
   })();
 
   // ---- Media: one window plays at a time ----
-  // Every [data-media] window (the stage's front window) and each feature theme's window holds a
-  // poster and a muted video. The most visible window plays (a theme's from 60 % visible)
+  // Every [data-media] window (the stage's front window) and the features' sticky window (a layer
+  // per theme) holds a poster and a muted video. The most visible window plays (the features' from 60 % visible)
   // and every other one is paused, so only one window decodes at a time. Its companions
   // ([data-companion] cards, the stage's side windows) play with it: they load only once its own
   // clip is playing, and only while they are shown (wide screens; the cards are display: none
-  // below). Nothing loads or plays with reduced motion, Save-Data, a hidden tab or after the visitor
-  // pressed pause (one state for the whole page).
+  // below). Nothing loads or plays with reduced motion, Save-Data or a hidden tab (no pause button:
+  // removed on 2026-11-13, user request).
 
   const mayMove = () => !reduce.matches && !saveData && !document.hidden;
   function safePlay(video) {
@@ -103,16 +102,16 @@
     }
     video.load();
   }
-  // The feature themes: each window loops its theme's pre-composited video. On every video frame
+  // The feature themes: each theme's layer in the sticky window loops its pre-composited video. On every video frame
   // (requestVideoFrameCallback, else animation frames reading currentTime) the beat under the
   // clock is found; its rail item takes the ring, its bar is scaled to the beat's progress, and the
   // caption changes (out 120 ms ending 60 ms after the boundary, in 240 ms). A click on an item
-  // seeks to its beat, which starts on a key frame. The media logic below decides which window plays.
-
+  // seeks to its beat, which starts on a key frame. The tour below picks the theme; the media logic
+  // below decides whether the window plays.
 
   const themes = $$(".theme").map((el, ti) => {
     const spec = data.themes[ti];
-    const frame = $(".th-frame", el);
+    const frame = $(`.th-frame[data-theme="${ti}"]`);
     const video = $("video", frame);
     const cap = $(".th-cap", el);
     const name = $(".th-name", cap);
@@ -212,7 +211,7 @@
     });
 
     return {
-      el: frame,
+      el,
       video,
       activate(on) {
         if (on === active) return;
@@ -223,6 +222,71 @@
     };
   });
 
+  // The tour (the sticky scroll showcase of 1d56f43): the theme whose entry has passed the reading
+  // line (mid-screen; on narrow screens the middle of the room under the sticky window) shows its
+  // layer in the window and plays while the media logic lets the window play. A click on a rail
+  // item of another theme scrolls its entry to the reading line first.
+  const tour = (() => {
+    const win = $(".th-window");
+    if (!win || !themes.length) return null;
+    const media = $(".th-media");
+    const layers = $$(".th-frame", win);
+    const wideTour = window.matchMedia("(min-width: 861px)");
+    let index = 0;
+    let active = false;
+    let lock = -1;
+    let lockTimer = 0;
+    const line = () => {
+      if (wideTour.matches) return innerHeight * 0.5;
+      const bottom = Math.max(0, media.getBoundingClientRect().bottom);
+      return bottom + (innerHeight - bottom) * 0.4;
+    };
+    function set(i) {
+      if (i === index) return;
+      themes[index].activate(false);
+      index = i;
+      layers.forEach((l, k) => l.toggleAttribute("data-on", k === i));
+      themes.forEach((t, k) => t.el.toggleAttribute("data-on", k === i));
+      themes[i].activate(active);
+    }
+    function pick() {
+      if (lock >= 0) return;
+      const at = line();
+      let i = 0;
+      themes.forEach((t, k) => { if (t.el.getBoundingClientRect().top <= at) i = k; });
+      set(i);
+    }
+    function release() {
+      clearTimeout(lockTimer);
+      if (lock < 0) return;
+      lock = -1;
+      pick();
+    }
+    themes.forEach((t, i) => {
+      t.el.addEventListener("click", (event) => {
+        if (i === index || !event.target.closest(".th-item")) return;
+        const top = t.el.getBoundingClientRect().top - line() + 2;
+        lock = i;
+        set(i);
+        window.scrollBy({ top, behavior: reduce.matches ? "auto" : "smooth" });
+        clearTimeout(lockTimer);
+        lockTimer = setTimeout(release, 1200);
+      }, true);
+    });
+    if ("onscrollend" in window) addEventListener("scrollend", () => { if (lock >= 0) release(); });
+    let queued = 0;
+    addEventListener("scroll", () => { if (!queued) queued = requestAnimationFrame(() => { queued = 0; pick(); }); }, { passive: true });
+    addEventListener("resize", pick);
+    pick();
+    return {
+      el: win,
+      activate(on) {
+        active = on;
+        themes.forEach((t, k) => t.activate(on && k === index));
+      },
+    };
+  })();
+
   (() => {
     const units = $$("[data-media]")
       .map((el) => ({
@@ -232,13 +296,11 @@
           .filter((c) => c.video),
       }))
       .filter((u) => u.video);
-    // Each theme's window is one more window, played by its theme (from 60 % visible).
-    for (const theme of themes) units.push({ el: theme.el, theme, ratio: 0, min: 0.6, companions: [] });
+    // The features' sticky window is one more window, played by the tour (from 60 % visible).
+    if (tour) units.push({ el: tour.el, tour, ratio: 0, min: 0.6, companions: [] });
     // The stage's side windows are shown from this width on (styles.css).
     const wide = window.matchMedia("(min-width: 861px)");
-    const buttons = $$(".pp");
     if (!units.length || !hasIO) return;
-    let userPaused = false;
 
     const load = (u) => loadVideo(u.video);
 
@@ -255,11 +317,11 @@
       if (!ready) return;
       let best = null;
       for (const u of units) if (u.ratio >= (u.min ?? 0.35) && (!best || u.ratio > best.ratio)) best = u;
-      const allowed = mayMove() && !userPaused;
+      const allowed = mayMove();
       for (const u of units) {
         const on = u === best && allowed;
-        if (u.theme) {
-          u.theme.activate(on);
+        if (u.tour) {
+          u.tour.activate(on);
           continue;
         }
         if (on) {
@@ -275,23 +337,13 @@
       }
     }
 
-    function labels() {
-      const key = userPaused ? "media.play" : "media.pause";
-      for (const b of buttons) {
-        $("span", b).textContent = text(key);
-        b.classList.toggle("is-paused", userPaused);
-      }
-    }
-
+    // .motion: something may play (styles.css shows the live captions and rails then).
     function controls() {
-      // The control exists only while something may play.
-      const show = !reduce.matches && !saveData;
-      for (const b of buttons) b.hidden = !show;
-      root.classList.toggle("motion", show);
+      root.classList.toggle("motion", !reduce.matches && !saveData);
     }
 
     for (const u of units) {
-      if (u.theme) continue;
+      if (u.tour) continue;
       // The video fades in over its poster once frames arrive.
       u.video.addEventListener("playing", () => u.shot.classList.add("is-live"));
       for (const c of u.companions) c.video.addEventListener("playing", () => c.shot.classList.add("is-live"));
@@ -304,13 +356,6 @@
         });
       }
     }
-    for (const b of buttons) {
-      b.addEventListener("click", () => {
-        userPaused = !userPaused;
-        labels();
-        sync();
-      });
-    }
 
     const io = new IntersectionObserver((entries) => {
       for (const entry of entries) {
@@ -320,16 +365,16 @@
       sync();
     }, { threshold: [0, 0.2, 0.35, 0.5, 0.65, 0.8, 1] });
     for (const u of units) io.observe(u.el);
-    // A theme's video is fetched once its band is within one screen of the viewport.
+    // A theme's video is fetched once its entry is within one screen of the viewport.
     const near = new IntersectionObserver((entries) => {
       for (const entry of entries) {
         if (!entry.isIntersecting || !mayMove()) continue;
-        const u = units.find((x) => x.el === entry.target);
-        if (u && u.theme) u.theme.prefetch();
+        const theme = themes.find((t) => t.el === entry.target);
+        if (theme) theme.prefetch();
         near.unobserve(entry.target);
       }
     }, { rootMargin: "100% 0px" });
-    for (const u of units) if (u.theme) near.observe(u.el);
+    for (const theme of themes) near.observe(theme.el);
 
     document.addEventListener("visibilitychange", sync);
     reduce.addEventListener?.("change", () => { controls(); sync(); });
