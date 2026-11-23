@@ -305,17 +305,55 @@
           "en": "{n} plugins today, each one open source. The next can be yours.",
           "zh-Hans": "目前{n}个插件，个个开源。下一个可以是你的。"
         }
-      }
+      },
+      "more": [
+        {
+          "id": "loudness",
+          "icon": "media/icons/loudness.webp",
+          "label": {
+            "en": "Loudness",
+            "zh-Hans": "响度计"
+          },
+          "caption": {
+            "en": "Measures how loud the film plays, the way broadcasters do (EBU R128).",
+            "zh-Hans": "按广播标准（EBU R128）测量正在播放的影片有多响。"
+          }
+        },
+        {
+          "id": "silenceskip",
+          "icon": "media/icons/silenceskip.webp",
+          "label": {
+            "en": "Silence Skipper",
+            "zh-Hans": "静音跳过"
+          },
+          "caption": {
+            "en": "Jumps over the pauses in lectures, talks and recordings.",
+            "zh-Hans": "自动跳过讲座、访谈和录屏里的停顿。"
+          }
+        },
+        {
+          "id": "amdmotion",
+          "icon": "media/icons/amdmotion.webp",
+          "label": {
+            "en": "AMD Motion Smoothing",
+            "zh-Hans": "AMD 超帧"
+          },
+          "caption": {
+            "en": "Doubles the frame rate on an AMD Radeon GPU, with real in-between frames.",
+            "zh-Hans": "在 AMD Radeon 显卡上把帧率翻倍，补的是真正的中间帧。"
+          }
+        }
+      ]
     },
     {
       "id": "ai",
-      "$comment": "Composed from media/themes/ai.json: explainers of 2026-11-12 (R15 through a camera and the sentence-to-command flow; real player captures of AI Upscaling off and on; Vestra Player AI in five captioned steps). Highlights waits for the sound model (R18): hidden, and absent from the video.",
+      "$comment": "Composed from media/themes/ai.json: explainers of 2026-11-12 (R15 through a camera and the sentence-to-command flow; real player captures of AI Upscaling off and on; Vestra Player AI in five captioned steps). Highlights waits for the sound model (R18): hidden, and absent from the video. 2026-11-23: Ask Vestra turns on NVIDIA Motion Smoothing and the comparison follows (replaces AI Upscaling).",
       "title": {
         "en": "And with AI",
         "zh-Hans": "也随 AI 一起成长"
       },
       "rail": "chips",
-      "duration": 14.8,
+      "duration": 16.8,
       "poster": "media/posters/theme-ai.webp",
       "sources": [
         {
@@ -337,7 +375,7 @@
           "id": "ask",
           "glyph": "ask",
           "start": 0,
-          "end": 4.2,
+          "end": 4.8,
           "label": {
             "en": "Ask Vestra",
             "zh-Hans": "Ask Vestra"
@@ -352,28 +390,28 @@
           }
         },
         {
-          "id": "upscale",
-          "glyph": "upscale",
-          "start": 4.2,
-          "end": 7.6,
+          "id": "motion",
+          "glyph": "motion",
+          "start": 4.8,
+          "end": 9.6,
           "label": {
-            "en": "AI Upscaling",
-            "zh-Hans": "AI 超分"
+            "en": "Motion Smoothing",
+            "zh-Hans": "超帧"
           },
           "caption": {
-            "en": "RTX Video Super Resolution sharpens low-resolution video as it plays.",
-            "zh-Hans": "RTX 视频超分辨率，边播边把低分辨率画面变清晰。"
+            "en": "Asked once, it doubles the frame rate with real in-between frames, made by your GPU.",
+            "zh-Hans": "说一句，它就用显卡补出真正的中间帧，把帧率翻倍。"
           },
           "fine": {
-            "en": "Windows, NVIDIA RTX.",
-            "zh-Hans": "Windows，NVIDIA RTX 显卡。"
+            "en": "Windows, NVIDIA RTX 30+ or AMD Radeon.",
+            "zh-Hans": "Windows，NVIDIA RTX 30 系列以上或 AMD Radeon 显卡。"
           }
         },
         {
           "id": "build",
           "glyph": "build",
-          "start": 7.6,
-          "end": 14.8,
+          "start": 9.6,
+          "end": 16.8,
           "label": {
             "en": "Vestra Player AI",
             "zh-Hans": "Vestra Player AI"

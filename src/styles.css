@@ -372,6 +372,10 @@ main { overflow-x: clip; }
    2026-11-13; each name stays its button's accessible label). */
 .th-icons .th-items { flex-wrap: nowrap; gap: 16px; }
 .th-icons .th-item { width: 52px; }
+/* More than six plugins (2026-11-23: the store theme lists all nine): two even rows of five and four, every icon the
+   same size; the ones without a beat (.th-xtra) are not buttons and light up with the others in the outro. */
+.th-icons.th-rows .th-items { flex-wrap: wrap; row-gap: 14px; max-width: calc(5 * 52px + 4 * 16px); }
+.th-xtra { cursor: default; }
 
 /* Chip rails (themes without plugin icons): a line glyph and the label; the bar is the chip's bottom edge. */
 .th-chips .th-item {

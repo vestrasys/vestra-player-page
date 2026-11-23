@@ -36,6 +36,7 @@ const GLYPHS = {
   playlist: '<rect x="3" y="4.5" width="6" height="4.5" rx="1"/><rect x="3" y="14.5" width="6" height="4.5" rx="1"/><path d="M12.5 6.7H21M12.5 16.7H21"/>',
   palette: '<circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5.5 5.5"/>',
   ask: '<path d="M11 3.5l1.8 5.2 5.2 1.8-5.2 1.8L11 17.5l-1.8-5.2L4 10.5l5.2-1.8zM18.5 15l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z"/>',
+  motion: '<rect x="2.5" y="6" width="6" height="12" rx="1.5" opacity=".45"/><rect x="9" y="6" width="6" height="12" rx="1.5" opacity=".7"/><rect x="15.5" y="6" width="6" height="12" rx="1.5"/>',
   upscale: '<rect x="3" y="12" width="9" height="9" rx="1.5"/><path d="M12 4h9v9M21 4l-7.5 7.5"/>',
   build: '<path d="M8.5 7L4 12l4.5 5M15.5 7L20 12l-4.5 5M13.3 5l-2.6 14"/>',
   highlights: '<path d="M3 18l3-6 3 3 3.5-9 3 7 2.5-3 3 8"/>',
@@ -398,6 +399,11 @@ function checkThemes(themes, slideIds) {
       if (Math.abs(beat.start - t) > frame || !(beat.end > beat.start)) fail(`${at}: starts at ${beat.start} s, expected ${t} s (visible beats tile the video; a hidden beat's span must be cut out of it)`);
       t = beat.end;
     }
+    for (const p of th.more ?? []) {
+      for (const lang of LANGS) if (!p.label?.[lang] || !p.caption?.[lang]) fail(`${where} more "${p.id}": label and caption need "${lang}"`);
+      if (!p.icon) fail(`${where} more "${p.id}": needs an "icon"`);
+      files.push(p.icon);
+    }
     if (th.outro) {
       for (const lang of LANGS) if (!th.outro.name?.[lang] || !th.outro.caption?.[lang]) fail(`${where} outro: name and caption need "${lang}"`);
       if (Math.abs(th.outro.start - t) > frame || !(th.outro.end > th.outro.start)) fail(`${where} outro: starts at ${th.outro.start} s, expected ${t} s`);
@@ -433,7 +439,7 @@ function copyMedia() {
   for (const th of manifest.themes) {
     files.add(th.poster);
     for (const source of th.sources) files.add(source.src);
-    for (const beat of th.beats) if (beat.icon) files.add(beat.icon);
+    for (const beat of [...th.beats, ...(th.more ?? [])]) if (beat.icon) files.add(beat.icon);
   }
   for (const file of [...files]) {
     const smallCopy = file.replace(/\.webp$/, ".sm.webp");
@@ -685,19 +691,23 @@ function renderThemes(lang) {
     const first = th.beats[0];
     const outro = th.outro && {
       name: L(th.outro.name),
-      caption: format(L(th.outro.caption), { n: NUMBERS[lang][th.beats.length] ?? String(th.beats.length) }),
+      caption: format(L(th.outro.caption), { n: NUMBERS[lang][th.beats.length + (th.more?.length ?? 0)] ?? String(th.beats.length + (th.more?.length ?? 0)) }),
     };
     const items = th.beats.map((beat, k) =>
       `<button type="button" class="th-item" data-k="${k}" style="--k:${k}" aria-label="${escape(L(beat.label))}"${k === 0 ? ' aria-current="true"' : ""}><span class="ic">${icon(th, beat)}</span>${th.rail === "icons" ? "" : `<span class="lb">${escape(L(beat.label))}</span>`}<i class="pg"><b></b></i></button>`).join("");
-    const list = th.beats.map((beat) =>
+    // Plugins a theme lists without a beat ("more", 2026-11-23): the same icon at the same size in the rail, not a
+    // button (they have no part of the video); in the list for no-motion visitors like the beats.
+    const more = (th.more ?? []).map((p) =>
+      `<span class="th-item th-xtra" title="${escape(L(p.label))}"><span class="ic">${icon(th, p)}</span><i class="pg"><b></b></i></span>`).join("");
+    const list = [...th.beats, ...(th.more ?? [])].map((beat) =>
       `          <li><span class="ic">${icon(th, beat)}</span><span class="tx"><b>${escape(L(beat.label))}</b> <span>${escape(L(beat.caption))}</span>${fine(beat)}</span></li>`).join("\n");
-    return `        <article class="theme th-${th.rail}${th.beats.length > 4 ? " th-many" : ""}" id="theme-${th.id}" data-theme="${i}"${i === 0 ? " data-on" : ""} aria-labelledby="theme-${th.id}-title">
+    return `        <article class="theme th-${th.rail}${th.beats.length > 4 ? " th-many" : ""}${th.beats.length + (th.more?.length ?? 0) > 6 ? " th-rows" : ""}" id="theme-${th.id}" data-theme="${i}"${i === 0 ? " data-on" : ""} aria-labelledby="theme-${th.id}-title">
           <div class="th-head">
             <p class="ch-num" aria-hidden="true">${n(i + 1)}<span>/${n(count)}</span></p><h3 id="theme-${th.id}-title">${escape(L(th.title))}</h3>
           </div>
           <div class="th-live js-only">
             <p class="th-cap"><b class="th-name">${escape(L(first.label))}</b> <span class="th-text">${escape(L(first.caption))}${fine(first)}</span></p>
-            <div class="th-rail"><div class="th-items" role="group" aria-label="${escape(L(th.title))}">${items}</div></div>
+            <div class="th-rail"><div class="th-items" role="group" aria-label="${escape(L(th.title))}">${items}${more}</div></div>
           </div>
           <div class="th-static">
             <ul class="th-list">

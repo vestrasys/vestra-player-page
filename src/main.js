@@ -117,9 +117,9 @@
     const name = $(".th-name", cap);
     const textEl = $(".th-text", cap);
     const rail = $(".th-items", el);
-    const items = $$(".th-item", rail);
-    // The caption of each beat (and the outro), from the prerendered list.
-    const texts = $$(".th-list li", el).map((li) => ({
+    const items = $$(".th-item:not(.th-xtra)", rail);   // th-xtra: listed plugins without a beat
+    // The caption of each beat (and the outro), from the prerendered list (beats first, then the listed plugins).
+    const texts = $$(".th-list li", el).slice(0, items.length).map((li) => ({
       name: $("b", li).textContent,
       text: $(".tx > span", li).textContent,
       fine: $(".th-fine", li)?.textContent ?? "",

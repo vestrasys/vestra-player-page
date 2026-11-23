@@ -1,5 +1,5 @@
 {
-  "$comment": "Theme 03 'And with AI' (SPEC 3.4). Rebuilt 2026-11-12 so cause and effect read (user rulings): explainers rendered by the promo's pipeline (C:/vestra/marketing/video/v9/main/explain.html at 1728x1080). Ask Vestra: R15b (re-recorded 2026-11-12 on a 360p Caminandes 2 copy) through a camera (the palette and 'turn on AI upscaling' zoomed to read), the sentence turned into the command chip 'Picture: AI Upscaling', R15's real 'Done' strip, the pull-out. AI Upscaling: two real player captures of the frame R15b ends on, AI Upscaling off and on (RTX 4070), whole picture, zoom on a detail, wipe. Vestra Player AI: four captioned steps (the real request, the real 'complete and verified (... 7 tests ...)' line zoomed with a green outline and a '7 tests pass' chip; the code-writing step was cut by the user, the real Install click, then the promo video's v8e ending exactly (user ruling 2026-11-12): Video > Colour Wheels... clicked, then the Colour Wheels window grading the film, labelled 'Colour Wheels · written by the AI'). Highlights stays hidden until the sound model ships (R18).",
+  "$comment": "Theme 03 'And with AI' (SPEC 3.4). Rebuilt 2026-11-12 so cause and effect read (user rulings): explainers rendered by the promo's pipeline (C:/vestra/marketing/video/v9/main/explain.html at 1728x1080). Ask Vestra: R15b (re-recorded 2026-11-12 on a 360p Caminandes 2 copy) through a camera (the palette and 'turn on AI upscaling' zoomed to read), the sentence turned into the command chip 'Picture: AI Upscaling', R15's real 'Done' strip, the pull-out. AI Upscaling: two real player captures of the frame R15b ends on, AI Upscaling off and on (RTX 4070), whole picture, zoom on a detail, wipe. Vestra Player AI: four captioned steps (the real request, the real 'complete and verified (... 7 tests ...)' line zoomed with a green outline and a '7 tests pass' chip; the code-writing step was cut by the user, the real Install click, then the promo video's v8e ending exactly (user ruling 2026-11-12): Video > Colour Wheels... clicked, then the Colour Wheels window grading the film, labelled 'Colour Wheels · written by the AI'). Highlights stays hidden until the sound model ships (R18). 2026-11-23 (user, promo v10d): Ask Vestra and the comparison it leads to are cut from the promo video v10d (main-v10d.mp4 34.8-39.6 s and 39.6-44.4 s, the S5a window with its step pills, crop 1200x750 at 360,150): the real palette with \"turn on NVIDIA motion smoothing\", the real answer with the command row outlined, Run, Done; then the same crop of Big Buck Bunny 30 fps vs the real fruc_vulkan 60 fps, real time then slowed 4x. AI Upscaling is replaced.",
   "size": [
     1728,
     1080
@@ -10,36 +10,36 @@
   "beats": [
     {
       "id": "ask",
-      "dur": 4.2,
+      "dur": 4.8,
       "parts": [
         {
-          "src": "C:/vestra/marketing/video/v9/work/explain/x-ask-p.mp4",
-          "in": 0,
-          "out": 4.2,
+          "src": "C:/vestra/marketing/video/v10/main-v10d.mp4",
+          "in": 34.8,
+          "out": 39.6,
           "speed": 1,
           "crop": [
-            0,
-            0,
-            1728,
-            1080
+            360,
+            150,
+            1200,
+            750
           ]
         }
       ]
     },
     {
-      "id": "upscale",
-      "dur": 3.4,
+      "id": "motion",
+      "dur": 4.8,
       "parts": [
         {
-          "src": "C:/vestra/marketing/video/v9/work/explain/x-vsr-p.mp4",
-          "in": 0,
-          "out": 3.4,
+          "src": "C:/vestra/marketing/video/v10/main-v10d.mp4",
+          "in": 39.6,
+          "out": 44.4,
           "speed": 1,
           "crop": [
-            0,
-            0,
-            1728,
-            1080
+            360,
+            150,
+            1200,
+            750
           ]
         }
       ]
