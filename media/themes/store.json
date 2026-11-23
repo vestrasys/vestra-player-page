@@ -1,5 +1,5 @@
 {
-  "$comment": "Theme 02 'It grows with its community' (SPEC 3.4, without VestraBili: user ruling 2026-11-12). Rebuilt 2026-11-12 for readability (user rulings: one idea per beat; explain an effect with motion design outside any player UI). Clip Export and Auto Frame are explainers rendered by the promo's pipeline (C:/vestra/marketing/video/v9/main/explain.html at 1728x1080; real Sintel frames, Sintel's real loudness curve, the real Auto Frame file and R12's after frame). Shader Upscale: Anime4K (Mode A+A, Ultra), a zoomed wipe between two real player captures of one 240p frame of Morevna Episode 3 (CC BY-SA 4.0). VestraTube: R9's sidebar with the search and about six result rows (user ruling 2026-11-12, overrides D8), the pointer's double-click on the Spring row (click ripple), the row selected, 'Opening...' zoomed, then 2.5 s of Spring's girl from the middle of the film (R9b, played through VestraTube in an isolated profile, user ruling 2026-11-12). VestraNES: the existing take. Outro: the five plugin icons with their names and 'All from the Plugin Store.' (replaces the store window).",
+  "$comment": "Theme 02 'It grows with its community' (SPEC 3.4, without VestraBili: user ruling 2026-11-12). Rebuilt 2026-11-12 for readability (user rulings: one idea per beat; explain an effect with motion design outside any player UI). Clip Export and Auto Frame are explainers rendered by the promo's pipeline (C:/vestra/marketing/video/v9/main/explain.html at 1728x1080; real Sintel frames, Sintel's real loudness curve, the real Auto Frame file and R12's after frame). Shader Upscale: Anime4K (Mode A+A, Ultra), a zoomed wipe between two real player captures of one 240p frame of Morevna Episode 3 (CC BY-SA 4.0). VestraTube: R9's sidebar with the search and about six result rows (user ruling 2026-11-12, overrides D8), the pointer's double-click on the Spring row (click ripple), the row selected, 'Opening...' zoomed, then 2.5 s of Spring's girl from the middle of the film (R9b, played through VestraTube in an isolated profile, user ruling 2026-11-12). VestraNES: the existing take. Outro: the five plugin icons with their names and 'All from the Plugin Store.' (replaces the store window). 2026-11-23 (user-approved design, promo v10): NVIDIA Motion Smoothing after Auto Frame, a 4.0 s beat rendered by the promo pipeline (v10/main/explain.html?s=motion at 1728x1080, d=4.0): the same crop of Big Buck Bunny's 6:03 pan side by side, the 30 fps file vs the real fruc_vulkan output (RTX 4070, FFmpeg 9.1), then slowed 4x with a frame rail.",
   "size": [
     1728,
     1080
@@ -133,6 +133,24 @@
           "src": "C:/vestra/marketing/video/v9/work/explain/x-autoframe-p.mp4",
           "in": 0,
           "out": 3,
+          "speed": 1,
+          "crop": [
+            0,
+            0,
+            1728,
+            1080
+          ]
+        }
+      ]
+    },
+    {
+      "id": "nvidiamotion",
+      "dur": 4,
+      "parts": [
+        {
+          "src": "C:/vestra/marketing/video/v10/work/explain/x-motion-p.mp4",
+          "in": 0,
+          "out": 4,
           "speed": 1,
           "crop": [
             0,

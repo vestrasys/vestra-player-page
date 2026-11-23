@@ -185,13 +185,13 @@
     },
     {
       "id": "store",
-      "$comment": "Composed from media/themes/store.json: Clip Export and Auto Frame explainers of 2026-11-12, VestraTube (R9), Shader Upscale (Anime4K wipe of two real player captures), VestraNES, the icons-and-names outro. No VestraBili (user ruling 2026-11-12).",
+      "$comment": "Composed from media/themes/store.json: Clip Export and Auto Frame explainers of 2026-11-12, VestraTube (R9), Shader Upscale (Anime4K wipe of two real player captures), VestraNES, the icons-and-names outro. No VestraBili (user ruling 2026-11-12). 2026-11-23: NVIDIA Motion Smoothing after Auto Frame (18-22 s), the same crop of one pan, the 30 fps file vs the real fruc_vulkan output, then slowed 4x with a frame rail; VestraNES and the outro move 4 s later.",
       "title": {
         "en": "It grows with its community",
         "zh-Hans": "随社区一起成长"
       },
       "rail": "icons",
-      "duration": 23.6,
+      "duration": 27.6,
       "poster": "media/posters/theme-store.webp",
       "sources": [
         {
@@ -266,10 +266,24 @@
           }
         },
         {
+          "id": "nvidiamotion",
+          "icon": "media/icons/nvidiamotion.webp",
+          "start": 18,
+          "end": 22,
+          "label": {
+            "en": "NVIDIA Motion Smoothing",
+            "zh-Hans": "NVIDIA 超帧"
+          },
+          "caption": {
+            "en": "Doubles the frame rate on an RTX GPU, with real in-between frames.",
+            "zh-Hans": "在 RTX 显卡上把帧率翻倍，补的是真正的中间帧。"
+          }
+        },
+        {
           "id": "vestranes",
           "icon": "media/icons/vestranes.webp",
-          "start": 18,
-          "end": 21,
+          "start": 22,
+          "end": 25,
           "label": {
             "en": "VestraNES",
             "zh-Hans": "VestraNES"
@@ -281,8 +295,8 @@
         }
       ],
       "outro": {
-        "start": 21,
-        "end": 23.6,
+        "start": 25,
+        "end": 27.6,
         "name": {
           "en": "All from the Plugin Store",
           "zh-Hans": "全部来自插件商城"
