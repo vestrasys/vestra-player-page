@@ -524,10 +524,13 @@ main { overflow-x: clip; }
   .th-text { font-size: 15px; }
   .th-rail { flex-direction: column; align-items: stretch; gap: 12px; }
   /* Icon rail: smaller logos, spread across the width. */
-  .th-icons .th-items { flex-wrap: nowrap; justify-content: space-between; gap: 0; }
-  .th-icons .th-item { width: 44px; }
-  .th-icons .th-item .ic { width: 44px; height: 44px; border-radius: 12px; }
-  .th-icons .th-item .pg { width: 44px; }
+  /* One row of equal columns, each logo centred in its column (2026-11-27: the desktop rows rule, 5 per row with
+     space-between, left a short last row pinned to both edges on phones). */
+  .th-icons .th-items, .th-icons.th-rows .th-items { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); justify-items: center; max-width: none; gap: 0; }
+  /* Sized to the column so seven logos keep a gap at 360 px, and the lit one (scaled 1.1) does not touch its neighbours. */
+  .th-icons .th-item { width: auto; --ic: clamp(32px, 10vw, 44px); }
+  .th-icons .th-item .ic { width: var(--ic); height: var(--ic); border-radius: 12px; }
+  .th-icons .th-item .pg { width: var(--ic); }
   /* Chip rails: a long rail shows glyphs only, the active chip with its label. */
   .th-chips .th-items { gap: 6px; }
   .th-chips .th-item { gap: 6px; padding: 8px 9px 8px 7px; font-size: 12.5px; }

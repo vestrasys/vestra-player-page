@@ -689,9 +689,12 @@ function renderThemes(lang) {
   }).join("\n            ");
   const entries = manifest.themes.map((th, i) => {
     const first = th.beats[0];
+    // outro.plugins: the store's plugin count when tiles and plugins differ (one Motion Smoothing tile stands for two
+    // plugins, 2026-11-27); otherwise every tile is one plugin.
+    const plugins = th.outro?.plugins ?? th.beats.length + (th.more?.length ?? 0);
     const outro = th.outro && {
       name: L(th.outro.name),
-      caption: format(L(th.outro.caption), { n: NUMBERS[lang][th.beats.length + (th.more?.length ?? 0)] ?? String(th.beats.length + (th.more?.length ?? 0)) }),
+      caption: format(L(th.outro.caption), { n: NUMBERS[lang][plugins] ?? String(plugins) }),
     };
     const items = th.beats.map((beat, k) =>
       `<button type="button" class="th-item" data-k="${k}" style="--k:${k}" aria-label="${escape(L(beat.label))}"${k === 0 ? ' aria-current="true"' : ""}><span class="ic">${icon(th, beat)}</span>${th.rail === "icons" ? "" : `<span class="lb">${escape(L(beat.label))}</span>`}<i class="pg"><b></b></i></button>`).join("");

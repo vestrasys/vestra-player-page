@@ -185,13 +185,13 @@
     },
     {
       "id": "store",
-      "$comment": "Composed from media/themes/store.json: Clip Export and Auto Frame explainers of 2026-11-12, VestraTube (R9), Shader Upscale (Anime4K wipe of two real player captures), VestraNES, the icons-and-names outro. No VestraBili (user ruling 2026-11-12). 2026-11-23: NVIDIA Motion Smoothing after Auto Frame (18-22 s), the same crop of one pan, the 30 fps file vs the real fruc_vulkan output, then slowed 4x with a frame rail; VestraNES and the outro move 4 s later.",
+      "$comment": "Composed from media/themes/store.json: Clip Export and Auto Frame explainers of 2026-11-12, VestraTube (R9), Shader Upscale (Anime4K wipe of two real player captures), VestraNES, the icons-and-names outro. No VestraBili (user ruling 2026-11-12). 2026-11-23: NVIDIA Motion Smoothing after Auto Frame (18-22 s), the same crop of one pan, the 30 fps file vs the real fruc_vulkan output, then slowed 4x with a frame rail; VestraNES and the outro move 4 s later. 2026-11-27 (owner): one Motion Smoothing tile (18-22 s, the NVIDIA segment; the store has an NVIDIA RTX and an AMD Radeon plugin), Loudness (22-25.4 s, the meter over Sintel), no Silence Skipper; VestraNES and the outro move 3.4 s later. outro.plugins is the store's plugin count for the outro line, since tiles and plugins no longer match one to one.",
       "title": {
         "en": "It grows with its community",
         "zh-Hans": "随社区一起成长"
       },
       "rail": "icons",
-      "duration": 27.6,
+      "duration": 31,
       "poster": "media/posters/theme-store.webp",
       "sources": [
         {
@@ -267,23 +267,37 @@
         },
         {
           "id": "nvidiamotion",
-          "icon": "media/icons/nvidiamotion.webp",
+          "icon": "media/icons/motion.webp",
           "start": 18,
           "end": 22,
           "label": {
-            "en": "NVIDIA Motion Smoothing",
-            "zh-Hans": "NVIDIA 超帧"
+            "en": "Motion Smoothing",
+            "zh-Hans": "超帧"
           },
           "caption": {
-            "en": "Doubles the frame rate on an RTX GPU, with real in-between frames.",
-            "zh-Hans": "在 RTX 显卡上把帧率翻倍，补的是真正的中间帧。"
+            "en": "Doubles the frame rate with real in-between frames, on an NVIDIA RTX or AMD Radeon GPU.",
+            "zh-Hans": "在 NVIDIA RTX 或 AMD Radeon 显卡上把帧率翻倍，补的是真正的中间帧。"
+          }
+        },
+        {
+          "id": "loudness",
+          "icon": "media/icons/loudness.webp",
+          "start": 22,
+          "end": 25.4,
+          "label": {
+            "en": "Loudness",
+            "zh-Hans": "响度计"
+          },
+          "caption": {
+            "en": "Measures how loud the film plays, the way broadcasters do (EBU R128).",
+            "zh-Hans": "按广播标准（EBU R128）测量正在播放的影片有多响。"
           }
         },
         {
           "id": "vestranes",
           "icon": "media/icons/vestranes.webp",
-          "start": 22,
-          "end": 25,
+          "start": 25.4,
+          "end": 28.4,
           "label": {
             "en": "VestraNES",
             "zh-Hans": "VestraNES"
@@ -295,8 +309,8 @@
         }
       ],
       "outro": {
-        "start": 25,
-        "end": 27.6,
+        "start": 28.4,
+        "end": 31,
         "name": {
           "en": "All from the Plugin Store",
           "zh-Hans": "全部来自插件商城"
@@ -304,46 +318,9 @@
         "caption": {
           "en": "{n} plugins today, each one open source. The next can be yours.",
           "zh-Hans": "目前{n}个插件，个个开源。下一个可以是你的。"
-        }
-      },
-      "more": [
-        {
-          "id": "loudness",
-          "icon": "media/icons/loudness.webp",
-          "label": {
-            "en": "Loudness",
-            "zh-Hans": "响度计"
-          },
-          "caption": {
-            "en": "Measures how loud the film plays, the way broadcasters do (EBU R128).",
-            "zh-Hans": "按广播标准（EBU R128）测量正在播放的影片有多响。"
-          }
         },
-        {
-          "id": "silenceskip",
-          "icon": "media/icons/silenceskip.webp",
-          "label": {
-            "en": "Silence Skipper",
-            "zh-Hans": "静音跳过"
-          },
-          "caption": {
-            "en": "Jumps over the pauses in lectures, talks and recordings.",
-            "zh-Hans": "自动跳过讲座、访谈和录屏里的停顿。"
-          }
-        },
-        {
-          "id": "amdmotion",
-          "icon": "media/icons/amdmotion.webp",
-          "label": {
-            "en": "AMD Motion Smoothing",
-            "zh-Hans": "AMD 超帧"
-          },
-          "caption": {
-            "en": "Doubles the frame rate on an AMD Radeon GPU, with real in-between frames.",
-            "zh-Hans": "在 AMD Radeon 显卡上把帧率翻倍，补的是真正的中间帧。"
-          }
-        }
-      ]
+        "plugins": 7
+      }
     },
     {
       "id": "ai",
