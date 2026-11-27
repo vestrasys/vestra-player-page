@@ -5,6 +5,7 @@
 // private release repository), RELEASE_OFFLINE=1 (skip the network; the page
 // uses its fallback), RELEASE_INCLUDE_PRERELEASES=1 (preview with a prerelease; github
 // provider), RELEASE_LATEST_JSON=<file> (read this latest.json instead of the release's).
+import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { copyFileSync, cpSync, existsSync, mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -44,6 +45,8 @@ const GLYPHS = {
 const BUDGET = 150 * 1024; // HTML + CSS + JS, media and images excluded
 const MAX_FILE = 25 * 1024 * 1024; // Cloudflare Pages per-file limit
 const OS_NAMES = { windows: "Windows", macos: "macOS", linux: "Linux" };
+// The developer, as structured data and llms.txt name it.
+const ORG_NAME = "Vestra";
 // The GitHub mark (Octicons mark-github, MIT).
 const GITHUB_ICON = '<svg class="gh-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"/></svg>';
 
@@ -184,8 +187,7 @@ function renderPage(lang) {
   };
   // The front window's frame image (its poster for a fullscreen take, which has no frame) is the
   // largest paint (LCP) of the first screen: preloaded at high priority.
-  const front = stageCard(manifest.stage.center);
-  const lcp = front.fullscreen ? front.poster : frame.image;
+  const lcp = heroImage();
   const vars = {
     css, js, lang,
     lcpImage: lcp,
@@ -244,11 +246,31 @@ function renderSeo(lang) {
     `<meta name="twitter:card" content="summary_large_image">`,
     `<meta name="twitter:title" content="${escape(en["meta.title"])}">`,
     `<meta name="twitter:description" content="${escape(en["meta.description"])}">`,
+    `<meta name="twitter:image" content="${escape(image)}">`,
   );
-  // schema.org SoftwareApplication: facts only (no ratings or reviews exist, so none are claimed).
+  // schema.org: the developer, the site and the application, linked by @id (with site.url). Facts only:
+  // no ratings or reviews exist, so none are claimed; no FAQPage, since the page shows no FAQ.
+  const id = (path, name) => (siteUrl ? { "@id": `${path}#${name}` } : {});
+  const org = {
+    "@type": "Organization",
+    ...id(siteUrl, "organization"),
+    name: ORG_NAME,
+    ...(siteUrl ? { url: siteUrl, logo: `${siteUrl}icon-512.png` } : {}),
+    ...(repoLinks().length ? { sameAs: repoLinks() } : {}),
+  };
+  const orgRef = siteUrl ? { "@id": org["@id"] } : org;
+  const website = {
+    "@type": "WebSite",
+    ...id(pageUrl(lang), "website"),
+    name: "Vestra Player",
+    ...(siteUrl ? { url: pageUrl(lang) } : {}),
+    inLanguage: lang,
+    publisher: orgRef,
+  };
+  const screenshot = siteUrl && absoluteMedia(heroImage());
   const app = {
-    "@context": "https://schema.org",
     "@type": "SoftwareApplication",
+    ...id(pageUrl(lang), "software"),
     name: "Vestra Player",
     description: en["meta.description"],
     applicationCategory: "MultimediaApplication",
@@ -258,13 +280,40 @@ function renderSeo(lang) {
     isAccessibleForFree: true,
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
     license: site.playerLicense.url,
-    ...(release.ok ? { softwareVersion: release.version, ...(release.date ? { datePublished: release.date } : {}), releaseNotes: release.notesUrl } : {}),
+    ...(release.ok ? { softwareVersion: release.version, ...(release.date ? { datePublished: release.date } : {}) } : {}),
+    releaseNotes: `${releaseConfig.releasesPage.replace(/\/$/, "")}/latest`,
     downloadUrl: buttonSystems.map(stableUrl),
-    ...(siteUrl ? { url: pageUrl(lang), image: image } : {}),
+    featureList: featureNames(lang),
+    ...(siteUrl ? { url: pageUrl(lang), image, screenshot } : {}),
+    author: orgRef,
+    publisher: orgRef,
     ...(site.links.playerRepo ? { sameAs: [site.links.playerRepo] } : {}),
   };
-  lines.push(`<script type="application/ld+json">${JSON.stringify(app).replace(/</g, "\\u003c")}</script>`);
+  const graph = { "@context": "https://schema.org", "@graph": [org, website, app] };
+  lines.push(`<script type="application/ld+json">${JSON.stringify(graph).replace(/</g, "\\u003c")}</script>`);
   return lines.join("\n");
+}
+
+/** The repositories the developer is known by (site.config.json links). */
+function repoLinks() {
+  return [site.links.playerRepo, site.links.pluginsRepo].filter(Boolean);
+}
+
+/** The front window's picture (the LCP image): the frame screenshot, or a fullscreen take's poster. */
+function heroImage() {
+  const front = stageCard(manifest.stage.center);
+  return front.fullscreen ? front.poster : frame.image;
+}
+
+/** A copied media file's absolute URL under its content-hashed name (siteUrl must be set). */
+function absoluteMedia(path) {
+  return siteUrl + (mediaNames.get(path) ?? path);
+}
+
+/** The feature names the themes show (their beats and extra plugins), once each, in the page's language. */
+function featureNames(lang) {
+  const names = manifest.themes.flatMap((th) => [...th.beats, ...(th.more ?? [])].map((b) => b.label[lang]));
+  return [...new Set(names)];
 }
 
 /** robots.txt always; sitemap.xml (with hreflang alternates) only when site.url is set. */
@@ -273,14 +322,124 @@ function writeSeoFiles() {
   if (siteUrl) robots.push("", `Sitemap: ${siteUrl}sitemap.xml`);
   writeFileSync(join(dist, "robots.txt"), robots.join("\n") + "\n");
   if (!siteUrl) return;
+  writeFileSync(join(dist, "llms.txt"), renderLlms());
   const alternates = LANGS.map((l) => `    <xhtml:link rel="alternate" hreflang="${l}" href="${escape(siteUrl + PAGES[l])}"/>`)
     .concat(`    <xhtml:link rel="alternate" hreflang="x-default" href="${escape(siteUrl)}"/>`).join("\n");
-  const urls = LANGS.map((l) => `  <url>\n    <loc>${escape(siteUrl + PAGES[l])}</loc>${release.ok && release.date ? `\n    <lastmod>${escape(release.date)}</lastmod>` : ""}\n${alternates}\n  </url>`);
+  const modified = lastModified();
+  const urls = LANGS.map((l) => `  <url>\n    <loc>${escape(siteUrl + PAGES[l])}</loc>${modified ? `\n    <lastmod>${modified}</lastmod>` : ""}\n${alternates}\n  </url>`);
   writeFileSync(join(dist, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
 ${urls.join("\n")}
 </urlset>
 `);
+}
+
+/**
+ * The pages' last change for the sitemap: the later of the release date (the page shows the release)
+ * and the page repository's last commit (its content). null when neither is known.
+ */
+function lastModified() {
+  const dates = release.ok && release.date ? [release.date] : [];
+  try {
+    const commit = execFileSync("git", ["log", "-1", "--format=%cs"], { cwd: fromRoot(), encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }).trim();
+    dates.push(commit);
+  } catch {
+    // Not a git checkout: the release date alone.
+  }
+  return dates.filter((d) => /^\d{4}-\d{2}-\d{2}$/.test(d)).sort().at(-1) ?? null;
+}
+
+/**
+ * dist/llms.txt (https://llmstxt.org): what the page says, as plain Markdown for language models and
+ * AI search. Built from the same configuration and strings as the page; English only.
+ */
+function renderLlms() {
+  const text = dict.en;
+  const words = (s, where) => {
+    const n = s.split(/\s+/).filter(Boolean).length;
+    if (n < 10 || n > 30) fail(`llms.txt: the description of ${where} has ${n} words (10 to 30)`);
+    return s;
+  };
+  const item = (title, url, description) => url && `- [${title}](${url}): ${words(description, title)}`;
+  const list = (items) => items.filter(Boolean).join("\n");
+  const summary = text["meta.description"];
+  if (summary.length >= 200) fail(`llms.txt: the summary (meta.description) is ${summary.length} characters (under 200)`);
+
+  const req = (os) => releaseConfig.requirements[os]?.en;
+  const platforms = systems.map((os) => req(os) ?? OS_NAMES[os]).join("; ");
+  const noLinux = stableUrl("linux") ? "" : " There is no Linux build yet; one is in progress.";
+  const player = site.playerLicense.name;
+  const sdk = site.pluginsLicense.name;
+  const repos = [
+    ["the player", site.links.playerRepo], ["the plugins", site.links.pluginsRepo],
+    ["the plugin SDK", site.links.sdkRepo], ["the download page", site.links.pageRepo],
+  ].filter(([, url]) => url);
+  const ai = manifest.themes.find((th) => th.id === "ai");
+  const features = new Map();
+  for (const th of manifest.themes) for (const b of [...th.beats, ...(th.more ?? [])]) if (!features.has(b.label.en)) features.set(b.label.en, b.caption.en);
+  const latest = `${releaseConfig.releasesPage.replace(/\/$/, "")}/latest`;
+  const architecture = site.links.playerRepo && `${site.links.playerRepo}/blob/main/doc/architecture.md`;
+  const download = { windows: "installer", macos: "disk image" };
+
+  const qa = [
+    ["Is Vestra Player free?", `Yes. It is free and open source: the player is licensed under ${player}, the plugin SDK and the plugin repository under ${sdk}.`],
+    ["Which systems does it run on?", `${platforms}.${noLinux}`],
+    ["How is it related to mpv?", "Vestra Player plays video with libmpv, the playback library of mpv. Every feature beyond playback is a plugin."],
+    ["What are plugins?", `Plugins are TypeScript on the public API of the plugin SDK (${sdk}). They are installed and updated from the Plugin Store inside the player; third-party plugins are reviewed as pull requests in the plugin repository, and anyone can run their own plugin store.`],
+    ...(ai ? [["How does Vestra Player use AI?", ai.beats.map((b) => `${b.label.en}: ${b.caption.en}`).join(" ")]] : []),
+    ...(repos.length ? [["Where is the source code?", `On GitHub: ${repos.map(([what, url]) => `${what} at ${url}`).join(", ")}.`]] : []),
+  ];
+
+  return `# Vestra Player
+
+> ${summary}
+
+## Key facts
+
+- Developer: ${ORG_NAME}
+- Platforms: ${systems.map((os) => `${OS_NAMES[os]} ${primary[os].arch}`).join(", ")} (${platforms}).${noLinux}
+- License: the player is ${player}; the plugin SDK and the plugin repository are ${sdk}.
+- Price: free.
+- Open source: ${repos.map(([what]) => what).join(", ").replace(/, ([^,]*)$/, " and $1")}, all on GitHub.
+- Playback: libmpv plays the video; every feature beyond playback is a plugin.
+- Plugin Store: plugins install and update from the store inside the player; anyone can host their own store.
+- AI: ${ai ? ai.beats.map((b) => b.label.en).join(", ") : "Ask Vestra"} (see the answers below).${site.links.playerRepo ? `\n- Contact: ${site.links.playerRepo}` : ""}
+
+## Features
+
+${[...features].map(([label, caption]) => `- ${label}: ${caption}`).join("\n")}
+
+## Download
+
+${list([
+  item("Download page", siteUrl, "The official Vestra Player download page in English, with the installers for Windows and macOS, the feature tour and links to the source code."),
+  item("Download page (Simplified Chinese)", siteUrl + PAGES["zh-Hans"], "The same download page in Simplified Chinese, with the same downloads, feature tour and links to the source code and plugin SDK."),
+  item("Latest release", latest, "Release notes and every download of the newest Vestra Player version on GitHub, including the portable Windows build and the checksums."),
+  ...buttonSystems.filter((os) => os !== "linux").map((os) =>
+    item(`${OS_NAMES[os]} ${download[os] ?? "download"}`, stableUrl(os), `A direct link to the latest Vestra Player ${download[os] ?? "download"} for ${req(os) ?? OS_NAMES[os]}, always the newest release.`)),
+])}
+
+## Source and documentation
+
+${list([
+  item("Player source code", site.links.playerRepo, `The Vestra Player repository on GitHub: the player itself, which plays video with libmpv and runs every other feature as a plugin, licensed under ${player}.`),
+  item("Architecture", architecture, "The architecture document in the player repository: how the player, its plugins and the public plugin API fit together."),
+  item("Plugin repository", site.links.pluginsRepo, `The source of the plugins in the Plugin Store, where third-party plugins are reviewed as pull requests before they reach the signed store index; ${sdk}.`),
+  item("Plugin SDK", site.links.sdkRepo, `The plugin SDK repository: the public TypeScript API that every Vestra Player plugin is written against, with tested examples, licensed under ${sdk}.`),
+  item("SDK documentation", site.links.sdkDocs, "Guides, the API reference and tested examples for writing Vestra Player plugins in TypeScript with the plugin SDK."),
+])}
+
+## Questions and answers
+
+${qa.map(([q, a]) => `### ${q}\n\n${a}`).join("\n\n")}
+
+## Optional
+
+${list([
+  item("Host your own plugin store", site.links.sdkOwnStore, "How to run your own Vestra Player plugin store, even on GitHub, so the player installs and updates your plugins without anyone's approval."),
+  item("Website source", site.links.pageRepo, "The source of this download page: a static site built with plain Node from the release metadata and the feature tour's media."),
+])}
+`;
 }
 
 // ---------------------------------------------------------------------------

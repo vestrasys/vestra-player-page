@@ -67,7 +67,11 @@ engines need absolute addresses for canonical links, `hreflang` alternates,
 against the local preview). Without it the pages have no canonical or
 `hreflang` links and `dist/robots.txt` (always written) has no `Sitemap`
 line; with it the build also writes `dist/sitemap.xml` with both pages and
-their alternates.
+their alternates (`lastmod`: the later of the release date and the last
+commit), absolute `og:image` and structured data (`@graph`: the Organization,
+the WebSite and the SoftwareApplication, linked by `@id`), and `dist/llms.txt`
+(https://llmstxt.org): the page's facts, features and links as Markdown for
+language models, built from the same configuration and strings.
 
 ## Release metadata
 
