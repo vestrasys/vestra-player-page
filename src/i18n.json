@@ -1,7 +1,7 @@
 {
   "en": {
-    "meta.title": "Vestra Player: a video player where every feature is a plugin",
-    "meta.description": "Next-generation media player. Built to extend, enhanced by AI. Open source, for Windows and macOS: playback by libmpv, and every feature beyond playback is a plugin.",
+    "meta.title": "Vestra Player: Next-generation media player for Windows and macOS",
+    "meta.description": "Vestra Player is a next-generation, free and open-source media player for Windows and macOS, built to extend and enhanced by AI.",
     "skip": "Skip to content",
     "nav.label": "Sections",
     "nav.features": "Features",
@@ -74,8 +74,8 @@
     "ft.trademark": "YouTube is a trademark of Google LLC. Vestra Player is not affiliated with YouTube or Google."
   },
   "zh-Hans": {
-    "meta.title": "Vestra Player：每个功能都是插件的视频播放器",
-    "meta.description": "新一代媒体播放器。为扩展而生，由 AI 加持。开源，适用于 Windows 和 macOS，由 libmpv 负责播放，播放之外的每个功能都是插件。",
+    "meta.title": "Vestra Player：新一代媒体播放器，支持 Windows 和 macOS",
+    "meta.description": "Vestra Player 是一款免费开源的新一代媒体播放器，支持 Windows 和 macOS，可自由扩展，由 AI 增强。",
     "skip": "跳到正文",
     "nav.label": "页面导航",
     "nav.features": "功能",
