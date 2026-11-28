@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+{{slot:langRedirect}}
 <title>{{t:meta.title}}</title>
 <meta name="description" content="{{t:meta.description}}">
 <meta name="color-scheme" content="dark">
@@ -32,7 +33,7 @@
     </nav>
     <div class="nav-actions">
       <a class="nav-gh" href="{{var:github}}" aria-label="GitHub">{{slot:githubIcon}}</a>
-      <a class="lang" id="lang-toggle" href="{{var:otherHref}}" hreflang="{{var:otherLang}}" lang="{{var:otherLang}}" aria-label="{{t:nav.langLabel}}">{{t:nav.lang}}</a>
+      {{slot:langMenu}}
       <a class="nav-dl" id="nav-dl" href="{{var:navHref}}" inert>{{t:nav.download}}</a>
     </div>
   </div>

@@ -31,6 +31,41 @@
   const detected = detectOS();
   root.dataset.visitor = $(`.cta-btn.os-${detected}`) ? detected : "windows";
 
+  // ---- Language menu: a <details> (works without script); Escape, outside click, arrows; the choice is saved ----
+
+  (() => {
+    const menu = $("#lang-menu");
+    if (!menu) return;
+    const button = $("summary", menu);
+    const links = $$("a[data-lang]", menu);
+    const close = (focus) => {
+      if (!menu.open) return;
+      menu.open = false;
+      if (focus) button.focus();
+    };
+    // The root page's redirect (build.mjs langRedirect) follows a saved choice; English stays on "/".
+    for (const link of links) link.addEventListener("click", () => {
+      try { localStorage.setItem("vestra-lang", link.dataset.lang); } catch { /* storage blocked: no memory */ }
+    });
+    menu.addEventListener("toggle", () => {
+      if (menu.open) (links.find((a) => a.hasAttribute("aria-current")) ?? links[0]).focus({ preventScroll: true });
+    });
+    menu.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") { event.preventDefault(); close(true); return; }
+      if (!menu.open || !["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) return;
+      event.preventDefault();
+      const at = links.indexOf(document.activeElement);
+      const last = links.length - 1;
+      const next = event.key === "Home" ? 0 : event.key === "End" ? last
+        : event.key === "ArrowDown" ? (at < 0 || at === last ? 0 : at + 1) : (at <= 0 ? last : at - 1);
+      links[next].focus();
+    });
+    document.addEventListener("click", (event) => { if (!menu.contains(event.target)) close(false); });
+    menu.addEventListener("focusout", (event) => { if (event.relatedTarget && !menu.contains(event.relatedTarget)) close(false); });
+    // Back from another language page (bfcache): the menu starts closed.
+    window.addEventListener("pageshow", () => close(false));
+  })();
+
   // ---- One download entry on screen: the nav button shows only when no other is visible ----
 
   (() => {

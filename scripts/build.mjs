@@ -1,5 +1,5 @@
 // npm run build: renders src/index.html into dist/ with the release metadata,
-// the slide manifest and both languages baked in. No dependencies.
+// the slide manifest and every language baked in. No dependencies.
 //
 // Environment: GITHUB_TOKEN (optional, raises the API rate limit and reads a
 // private release repository), RELEASE_OFFLINE=1 (skip the network; the page
@@ -12,10 +12,17 @@ import { dirname, join } from "node:path";
 import { fail, fromRoot, kib, readJson, webpSize } from "./lib.mjs";
 import { loadRelease } from "./release.mjs";
 
-const LANGS = ["en", "zh-Hans"];
+// Every language (BCP 47 tags, as in <html lang> and hreflang), in the language menu's order.
+const LANGS = ["en", "zh-Hans", "zh-Hant", "ja", "ko", "de", "es", "fr", "pt-BR", "ru"];
 // One prerendered page per language (crawlable, linked with hreflang): its folder under dist/.
-const PAGES = { en: "", "zh-Hans": "zh-hans/" };
-const OG_LOCALE = { en: "en_US", "zh-Hans": "zh_CN" };
+const PAGES = { en: "", "zh-Hans": "zh-hans/", "zh-Hant": "zh-hant/", ja: "ja/", ko: "ko/", de: "de/", es: "es/", fr: "fr/", "pt-BR": "pt-br/", ru: "ru/" };
+const OG_LOCALE = { en: "en_US", "zh-Hans": "zh_CN", "zh-Hant": "zh_TW", ja: "ja_JP", ko: "ko_KR", de: "de_DE", es: "es_ES", fr: "fr_FR", "pt-BR": "pt_BR", ru: "ru_RU" };
+// Each language in its own name, for the language menu (the same on every page).
+const LANG_NAMES = { en: "English", "zh-Hans": "简体中文", "zh-Hant": "繁體中文", ja: "日本語", ko: "한국어", de: "Deutsch", es: "Español", fr: "Français", "pt-BR": "Português (Brasil)", ru: "Русский" };
+// The visitor's saved language menu choice (main.js writes it, the root page's redirect reads it).
+const LANG_KEY = "vestra-lang";
+for (const table of [PAGES, OG_LOCALE, LANG_NAMES])
+  for (const lang of LANGS) if (!(lang in table)) fail(`build.mjs: ${lang} is missing from a language table`);
 // Displayed widths (CSS px) for the srcset choice; they follow styles.css.
 const SIZES = {
   hero: "(max-width: 860px) calc(100vw - 32px), min(605px, 45vw)",
@@ -23,11 +30,22 @@ const SIZES = {
   // The themes' sticky window (styles.css .th-grid): 7/12 of the content width less the gap, 639px at most.
   theme: "(max-width: 860px) calc(100vw - 32px), min(640px, calc(55.42vw - 19px))",
 };
-// A theme's outro counts its visible beats in words ("Five plugins today").
+// A theme's outro counts its plugins in words ("Five plugins today"); Japanese and Korean copy uses digits.
+const DIGITS = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"];
 const NUMBERS = {
   en: ["No", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve"],
   "zh-Hans": ["零", "一", "两", "三", "四", "五", "六", "七", "八", "九", "十", "十一", "十二"],
+  "zh-Hant": ["零", "一", "兩", "三", "四", "五", "六", "七", "八", "九", "十", "十一", "十二"],
+  ja: DIGITS,
+  ko: DIGITS,
+  de: ["Kein", "Ein", "Zwei", "Drei", "Vier", "Fünf", "Sechs", "Sieben", "Acht", "Neun", "Zehn", "Elf", "Zwölf"],
+  es: ["Ningún", "Un", "Dos", "Tres", "Cuatro", "Cinco", "Seis", "Siete", "Ocho", "Nueve", "Diez", "Once", "Doce"],
+  fr: ["Aucun", "Un", "Deux", "Trois", "Quatre", "Cinq", "Six", "Sept", "Huit", "Neuf", "Dix", "Onze", "Douze"],
+  "pt-BR": ["Nenhum", "Um", "Dois", "Três", "Quatro", "Cinco", "Seis", "Sete", "Oito", "Nove", "Dez", "Onze", "Doze"],
+  // Lower case: the Russian outro puts the number after a colon ("Плагинов сейчас: семь").
+  ru: ["ноль", "один", "два", "три", "четыре", "пять", "шесть", "семь", "восемь", "девять", "десять", "одиннадцать", "двенадцать"],
 };
+for (const lang of LANGS) if (NUMBERS[lang]?.length !== 13) fail(`build.mjs: NUMBERS needs 0 to 12 for ${lang}`);
 // Line glyphs for the chip rails (24 x 24, stroked; styles.css .th-item svg).
 const GLYPHS = {
   picture: '<path d="M4 7h10M18 7h2M4 12h3M11 12h9M4 17h12"/><circle cx="16" cy="7" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="18" cy="17" r="2"/>',
@@ -78,15 +96,18 @@ const licences = {
 };
 const dict = structuredClone(i18n);
 for (const lang of LANGS) {
+  if (!dict[lang]) fail(`src/i18n.json has no "${lang}" strings`);
+  if (!credits[lang]?.length) fail(`media/CREDITS.md has no "## Footer (${lang})" lines`);
   for (const slide of manifest.slides) {
     dict[lang][`slide.${slide.id}.title`] = slide.title[lang];
     dict[lang][`slide.${slide.id}.caption`] = slide.caption[lang];
   }
   for (const [os, text] of Object.entries(releaseConfig.requirements)) dict[lang][`req.${os}`] = text[lang];
   dict[lang]["frame.alt"] = manifest.frame.alt[lang];
-  for (const key of ["ft.licence", "os.player.text", "os.sdk.text"]) dict[lang][key] = format(dict[lang][key], licences);
-  const missing = Object.keys(dict.en).filter((key) => !(key in dict[lang]));
+  // A string is missing when its key is absent or its text empty (an untranslated manifest field).
+  const missing = Object.keys(dict.en).filter((key) => typeof dict[lang][key] !== "string" || !dict[lang][key]);
   if (missing.length) fail(`${lang} lacks strings: ${missing.join(", ")}`);
+  for (const key of ["ft.licence", "os.player.text", "os.sdk.text"]) dict[lang][key] = format(dict[lang][key], licences);
 }
 // The strings of the page being rendered (renderPage switches it per language).
 let en = dict.en;
@@ -148,6 +169,7 @@ for (const lang of LANGS) {
   sizes[file] = Buffer.byteLength(html);
 }
 writeSeoFiles();
+allowRedirectScript();
 
 // Budget and size report: one page load is one HTML file plus the CSS and JS.
 const largest = Math.max(...LANGS.map((lang) => sizes[`${PAGES[lang]}index.html`]));
@@ -160,11 +182,12 @@ console.log(`built ${LANGS.map((l) => `dist/${PAGES[l]}index.html`).join(", ")}$
 
 function renderPage(lang) {
   en = dict[lang];
-  const other = LANGS.find((l) => l !== lang);
   const prefix = "../".repeat(PAGES[lang].split("/").filter(Boolean).length);
   const slots = {
     backdrop: renderBackdrop(),
+    langRedirect: lang === "en" ? `<script>${langRedirect()}</script>` : "",
     seo: renderSeo(lang),
+    langMenu: renderLangMenu(lang, prefix),
     cta: renderCta("hero"),
     ctaEnd: renderCta("end"),
     heroSource: renderHeroSource(),
@@ -198,9 +221,6 @@ function renderPage(lang) {
     releasesPage: releaseConfig.releasesPage,
     // "All downloads" in the nav: the platforms dialog with script, else the release page.
     allDownloadsHref: releasesPage(),
-    otherLang: other,
-    // The other language's page, relative to this one.
-    otherHref: PAGES[other] ? prefix + PAGES[other] : prefix || "./",
   };
   const html = template.replace(/\{\{(t|h|var|slot):([\w.-]+)\}\}/g, (_, kind, key) => {
     if (kind === "slot") return key in slots ? slots[key] : fail(`unknown slot ${key}`);
@@ -219,6 +239,53 @@ function rebase(html, prefix) {
     (attr.includes("content") ? /\.(png|jpe?g|webp)$/.test(url) && own(url) : own(url)) ? `${attr}${prefix}${url}"` : m);
   return html.replace(/(\s(?:srcset|imagesrcset)=")([^"]*)"/g, (m, attr, list) =>
     `${attr}${list.split(",").map((part) => { const p = part.trim(); return own(p) ? prefix + p : p; }).join(", ")}"`);
+}
+
+/**
+ * The header's language menu: a <details> disclosure (it opens and its links work without script;
+ * main.js adds Escape, outside click and arrow keys), the current language's short name on the
+ * button, every language in its own name in the list, each a link to its page.
+ */
+function renderLangMenu(lang, prefix) {
+  const globe = '<svg class="lang-globe" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></svg>';
+  const check = '<svg class="lang-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+  const items = LANGS.map((l) => {
+    const href = PAGES[l] ? prefix + PAGES[l] : prefix || "./";
+    const current = l === lang ? ' aria-current="page"' : "";
+    return `          <li><a href="${escape(href)}" hreflang="${l}" lang="${l}" data-lang="${l}"${current}>${check}${escape(LANG_NAMES[l])}</a></li>`;
+  });
+  return `<details class="lang-menu" id="lang-menu">
+        <summary class="lang" aria-label="${escape(en["nav.langLabel"])}">${globe}<span>${escape(en["nav.lang"])}</span></summary>
+        <ul class="lang-list">
+${items.join("\n")}
+        </ul>
+      </details>`;
+}
+
+/**
+ * The root page's language choice, inline at the top of its <head> (so a redirect shows no flash):
+ * a saved menu choice wins (English stays); without one, the first of navigator.languages that has
+ * a page (zh-TW/HK/MO/Hant: Traditional, other zh: Simplified, any pt: Brazilian), stopping at
+ * English. No preference list (crawlers): stay. The language pages never redirect.
+ */
+function langRedirect() {
+  const pages = Object.fromEntries(LANGS.filter((l) => l !== "en").map((l) => [l, PAGES[l]]));
+  return `(function(){var p=${JSON.stringify(pages)},s=null,l=navigator.languages,i,t,m;` +
+    `function go(x){location.replace(p[x]+location.search+location.hash)}` +
+    `try{s=localStorage.getItem(${JSON.stringify(LANG_KEY)})}catch(e){}` +
+    `if(s){if(p[s])go(s);return}if(!l||!l.length)return;` +
+    `for(i=0;i<l.length;i++){t=String(l[i]).toLowerCase();m=t.split("-")[0];` +
+    `if(m==="zh")m=/^zh-(tw|hk|mo|hant)\\b/.test(t)?"zh-Hant":"zh-Hans";else if(m==="pt")m="pt-BR";` +
+    `if(m==="en")return;if(p[m]){go(m);return}}})();`;
+}
+
+/** The Content-Security-Policy (dist/_headers) allows the inline redirect by its hash, nothing else inline. */
+function allowRedirectScript() {
+  const file = join(dist, "_headers");
+  const headers = readFileSync(file, "utf8");
+  const hash = createHash("sha256").update(langRedirect()).digest("base64");
+  if (!/script-src 'self'(?=[;\s])/.test(headers)) fail("public/_headers: no \"script-src 'self'\" to add the language redirect's hash to");
+  writeFileSync(file, headers.replace(/script-src 'self'(?=[;\s])/, `script-src 'self' 'sha256-${hash}'`));
 }
 
 /** <head> lines for search engines and link previews. */

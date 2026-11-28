@@ -19,7 +19,15 @@
     "height": 1516,
     "alt": {
       "en": "The Vestra Player window",
-      "zh-Hans": "Vestra Player 窗口"
+      "zh-Hans": "Vestra Player 窗口",
+      "zh-Hant": "Vestra Player 視窗",
+      "ja": "Vestra Player のウィンドウ",
+      "ko": "Vestra Player 창",
+      "de": "Das Fenster von Vestra Player",
+      "es": "La ventana de Vestra Player",
+      "fr": "La fenêtre de Vestra Player",
+      "pt-BR": "A janela do Vestra Player",
+      "ru": "Окно Vestra Player"
     },
     "areas": {
       "client": {
@@ -76,7 +84,15 @@
       "$comment": "Composed from media/themes/player.json (scripts/compose-theme.mjs): player 0.8.0 takes of 2026-11-12 (R1-R6). Subtitles left out (user ruling 2026-11-12: a basic feature, not featured).",
       "title": {
         "en": "It starts complete",
-        "zh-Hans": "开箱即完整"
+        "zh-Hans": "开箱即完整",
+        "zh-Hant": "開箱即完整",
+        "ja": "最初から、すべてそろう",
+        "ko": "처음부터 완성형",
+        "de": "Sofort komplett",
+        "es": "Completo de serie",
+        "fr": "Complet dès le départ",
+        "pt-BR": "Completo desde o início",
+        "ru": "Сразу всё на месте"
       },
       "rail": "chips",
       "duration": 16.6,
@@ -104,11 +120,27 @@
           "end": 3,
           "label": {
             "en": "Picture",
-            "zh-Hans": "画面"
+            "zh-Hans": "画面",
+            "zh-Hant": "畫面",
+            "ja": "映像",
+            "ko": "화면",
+            "de": "Bild",
+            "es": "Imagen",
+            "fr": "Image",
+            "pt-BR": "Imagem",
+            "ru": "Изображение"
           },
           "caption": {
             "en": "Colour, effects and framing, changed while the film plays.",
-            "zh-Hans": "调色、特效、取景，边播边改。"
+            "zh-Hans": "调色、特效、取景，边播边改。",
+            "zh-Hant": "調色、特效、取景，邊播邊調。",
+            "ja": "色調、エフェクト、画角を、再生しながら調整。",
+            "ko": "색감, 효과, 화면 구도를 재생하면서 바로 조정.",
+            "de": "Farbe, Effekte und Bildausschnitt, geändert, während der Film läuft.",
+            "es": "Color, efectos y encuadre, ajustados mientras se reproduce.",
+            "fr": "Couleurs, effets et cadrage, réglés pendant la lecture.",
+            "pt-BR": "Cor, efeitos e enquadramento, ajustados durante a reprodução.",
+            "ru": "Цвет, эффекты и кадрирование меняются прямо во время просмотра."
           }
         },
         {
@@ -118,11 +150,27 @@
           "end": 5.6,
           "label": {
             "en": "Sound",
-            "zh-Hans": "声音"
+            "zh-Hans": "声音",
+            "zh-Hant": "聲音",
+            "ja": "音声",
+            "ko": "소리",
+            "de": "Ton",
+            "es": "Sonido",
+            "fr": "Son",
+            "pt-BR": "Som",
+            "ru": "Звук"
           },
           "caption": {
             "en": "A ten-band equalizer with presets, and every track and output a click away.",
-            "zh-Hans": "十段均衡器自带预设，音轨和输出设备一点就换。"
+            "zh-Hans": "十段均衡器自带预设，音轨和输出设备一点就换。",
+            "zh-Hant": "十段等化器附帶預設，音軌和輸出裝置一鍵切換。",
+            "ja": "プリセット付きの 10 バンドイコライザ。音声トラックも出力デバイスもワンクリックで。",
+            "ko": "프리셋을 갖춘 10밴드 이퀄라이저, 트랙과 출력 장치도 클릭 한 번으로.",
+            "de": "Ein 10-Band-Equalizer mit Voreinstellungen, jede Spur und jedes Ausgabegerät nur einen Klick entfernt.",
+            "es": "Un ecualizador de diez bandas con preajustes, y cada pista y salida a un clic.",
+            "fr": "Un égaliseur dix bandes avec préréglages, et chaque piste ou sortie à portée de clic.",
+            "pt-BR": "Equalizador de dez bandas com predefinições, e cada faixa e saída a um clique.",
+            "ru": "Десятиполосный эквалайзер с пресетами, а любая дорожка и выход — в один клик."
           }
         },
         {
@@ -130,11 +178,27 @@
           "glyph": "subtitles",
           "label": {
             "en": "Dual subtitles",
-            "zh-Hans": "双语字幕"
+            "zh-Hans": "双语字幕",
+            "zh-Hant": "雙語字幕",
+            "ja": "デュアル字幕",
+            "ko": "이중 자막",
+            "de": "Zwei Untertitel",
+            "es": "Subtítulos dobles",
+            "fr": "Double sous-titrage",
+            "pt-BR": "Legendas duplas",
+            "ru": "Двойные субтитры"
           },
           "caption": {
             "en": "Two subtitle tracks at once, one above the other.",
-            "zh-Hans": "两条字幕同时显示，上下排列。"
+            "zh-Hans": "两条字幕同时显示，上下排列。",
+            "zh-Hant": "兩條字幕同時顯示，上下排列。",
+            "ja": "2 つの字幕を上下に並べて同時に表示。",
+            "ko": "두 개의 자막을 위아래로 동시에 표시.",
+            "de": "Zwei Untertitelspuren gleichzeitig, übereinander.",
+            "es": "Dos pistas de subtítulos a la vez, una sobre otra.",
+            "fr": "Deux pistes de sous-titres à la fois, l’une au-dessus de l’autre.",
+            "pt-BR": "Duas faixas de legenda ao mesmo tempo, uma acima da outra.",
+            "ru": "Две дорожки субтитров одновременно, одна над другой."
           },
           "start": 5.6,
           "end": 8.2
@@ -146,11 +210,27 @@
           "end": 10.6,
           "label": {
             "en": "Seek preview",
-            "zh-Hans": "进度条预览"
+            "zh-Hans": "进度条预览",
+            "zh-Hant": "進度列預覽",
+            "ja": "シークプレビュー",
+            "ko": "탐색 미리보기",
+            "de": "Zeitleisten-Vorschau",
+            "es": "Vista previa",
+            "fr": "Aperçu au survol",
+            "pt-BR": "Prévia na barra",
+            "ru": "Превью на шкале"
           },
           "caption": {
             "en": "Hover the seek bar to see where you are going.",
-            "zh-Hans": "鼠标移到进度条上，先看一眼再跳转。"
+            "zh-Hans": "鼠标移到进度条上，先看一眼再跳转。",
+            "zh-Hant": "滑鼠移到進度列上，先看一眼再跳轉。",
+            "ja": "シークバーにカーソルを合わせると、移動先が見える。",
+            "ko": "탐색 막대에 마우스를 올려 이동할 장면을 미리 확인.",
+            "de": "Fahren Sie über die Zeitleiste und sehen Sie, wohin es geht.",
+            "es": "Pasa el cursor por la barra de progreso y mira adónde vas.",
+            "fr": "Survolez la barre de progression pour voir où vous allez.",
+            "pt-BR": "Passe o mouse na barra de progresso e veja para onde vai.",
+            "ru": "Наведите курсор на шкалу и увидите, куда перейдёте."
           }
         },
         {
@@ -160,11 +240,27 @@
           "end": 13,
           "label": {
             "en": "Playlist",
-            "zh-Hans": "播放列表"
+            "zh-Hans": "播放列表",
+            "zh-Hant": "播放清單",
+            "ja": "プレイリスト",
+            "ko": "재생목록",
+            "de": "Wiedergabeliste",
+            "es": "Lista de reproducción",
+            "fr": "Liste de lecture",
+            "pt-BR": "Playlist",
+            "ru": "Плейлист"
           },
           "caption": {
             "en": "Every film gets a thumbnail, made on your own machine.",
-            "zh-Hans": "每部影片都有在本机生成的缩略图。"
+            "zh-Hans": "每部影片都有在本机生成的缩略图。",
+            "zh-Hant": "每部影片都有在本機產生的縮圖。",
+            "ja": "どの動画にも、手元の PC で作るサムネイル付き。",
+            "ko": "모든 영상에 내 컴퓨터에서 만든 썸네일이 붙습니다.",
+            "de": "Jeder Film bekommt ein Vorschaubild, erstellt auf Ihrem eigenen Rechner.",
+            "es": "Cada película tiene su miniatura, generada en tu propio equipo.",
+            "fr": "Chaque film a sa miniature, générée sur votre propre machine.",
+            "pt-BR": "Cada filme ganha uma miniatura, gerada no seu próprio computador.",
+            "ru": "У каждого фильма есть миниатюра, созданная на вашем компьютере."
           }
         },
         {
@@ -174,11 +270,27 @@
           "end": 16.6,
           "label": {
             "en": "Command Palette",
-            "zh-Hans": "命令面板"
+            "zh-Hans": "命令面板",
+            "zh-Hant": "命令面板",
+            "ja": "コマンドパレット",
+            "ko": "명령 팔레트",
+            "de": "Befehlspalette",
+            "es": "Paleta de comandos",
+            "fr": "Palette de commandes",
+            "pt-BR": "Paleta de comandos",
+            "ru": "Палитра команд"
           },
           "caption": {
             "en": "Any command is a few letters away.",
-            "zh-Hans": "敲几个字母，什么命令都找得到。"
+            "zh-Hans": "敲几个字母，什么命令都找得到。",
+            "zh-Hant": "敲幾個字母，什麼命令都找得到。",
+            "ja": "どのコマンドも、数文字打てば見つかる。",
+            "ko": "몇 글자만 입력하면 어떤 명령이든 찾을 수 있습니다.",
+            "de": "Jeder Befehl ist nur ein paar Buchstaben entfernt.",
+            "es": "Cualquier comando está a unas pocas letras.",
+            "fr": "Toute commande se trouve en quelques lettres.",
+            "pt-BR": "Qualquer comando está a poucas letras de distância.",
+            "ru": "Любая команда находится по паре букв."
           }
         }
       ]
@@ -188,7 +300,15 @@
       "$comment": "Composed from media/themes/store.json: Clip Export and Auto Frame explainers of 2026-11-12, VestraTube (R9), Shader Upscale (Anime4K wipe of two real player captures), VestraNES, the icons-and-names outro. No VestraBili (user ruling 2026-11-12). 2026-11-23: NVIDIA Motion Smoothing after Auto Frame (18-22 s), the same crop of one pan, the 30 fps file vs the real fruc_vulkan output, then slowed 4x with a frame rail; VestraNES and the outro move 4 s later. 2026-11-27 (owner): one Motion Smoothing tile (18-22 s, the NVIDIA segment; the store has an NVIDIA RTX and an AMD Radeon plugin), Loudness (22-25.4 s, the meter over Sintel), no Silence Skipper; VestraNES and the outro move 3.4 s later. outro.plugins is the store's plugin count for the outro line, since tiles and plugins no longer match one to one.",
       "title": {
         "en": "It grows with its community",
-        "zh-Hans": "随社区一起成长"
+        "zh-Hans": "随社区一起成长",
+        "zh-Hant": "隨社群一起成長",
+        "ja": "コミュニティとともに成長",
+        "ko": "커뮤니티와 함께 성장",
+        "de": "Wächst mit der Community",
+        "es": "Crece con su comunidad",
+        "fr": "Porté par sa communauté",
+        "pt-BR": "Cresce com a comunidade",
+        "ru": "Растёт с сообществом"
       },
       "rail": "icons",
       "duration": 31,
@@ -216,11 +336,27 @@
           "end": 5.6,
           "label": {
             "en": "Clip Export",
-            "zh-Hans": "片段导出"
+            "zh-Hans": "片段导出",
+            "zh-Hant": "片段匯出",
+            "ja": "クリップ書き出し",
+            "ko": "클립 내보내기",
+            "de": "Clip-Export",
+            "es": "Exportar clips",
+            "fr": "Export d’extraits",
+            "pt-BR": "Exportar clipes",
+            "ru": "Экспорт клипов"
           },
           "caption": {
             "en": "Cut a clip, a GIF or a WebP, or let Highlights find the loud moments and join them into one video.",
-            "zh-Hans": "导出片段、GIF 或 WebP；也可以让“高光”找出最热闹的几段，合成一个视频。"
+            "zh-Hans": "导出片段、GIF 或 WebP；也可以让“高光”找出最热闹的几段，合成一个视频。",
+            "zh-Hant": "匯出片段、GIF 或 WebP；也可以讓「精華」找出最熱鬧的幾段，合成一部影片。",
+            "ja": "クリップ、GIF、WebP を書き出し。「ハイライト」なら盛り上がる場面を見つけて 1 本の動画にまとめます。",
+            "ko": "클립, GIF, WebP로 잘라 내거나, ‘하이라이트’로 소리가 큰 장면을 찾아 하나의 영상으로 이어 붙입니다.",
+            "de": "Clips, GIFs oder WebPs schneiden, oder Highlights die lauten Momente finden und zu einem Video verbinden lassen.",
+            "es": "Corta un clip, un GIF o un WebP, o deja que Destacados encuentre los momentos más intensos y los una en un solo video.",
+            "fr": "Extrayez un clip, un GIF ou un WebP, ou laissez Temps forts repérer les moments intenses et les réunir en une seule vidéo.",
+            "pt-BR": "Corte um clipe, um GIF ou um WebP, ou deixe o Destaques achar os momentos mais animados e juntá-los num só vídeo.",
+            "ru": "Вырезайте клип, GIF или WebP — или пусть «Яркие моменты» найдут самые громкие сцены и соберут их в одно видео."
           }
         },
         {
@@ -230,11 +366,27 @@
           "end": 11.6,
           "label": {
             "en": "VestraTube",
-            "zh-Hans": "VestraTube"
+            "zh-Hans": "VestraTube",
+            "zh-Hant": "VestraTube",
+            "ja": "VestraTube",
+            "ko": "VestraTube",
+            "de": "VestraTube",
+            "es": "VestraTube",
+            "fr": "VestraTube",
+            "pt-BR": "VestraTube",
+            "ru": "VestraTube"
           },
           "caption": {
             "en": "Search YouTube in the sidebar and play videos right away.",
-            "zh-Hans": "在侧栏搜索 YouTube，点开就播。"
+            "zh-Hans": "在侧栏搜索 YouTube，点开就播。",
+            "zh-Hant": "在側邊欄搜尋 YouTube，點開就播。",
+            "ja": "サイドバーで YouTube を検索して、すぐに再生。",
+            "ko": "사이드바에서 YouTube를 검색하고 바로 재생.",
+            "de": "YouTube in der Seitenleiste durchsuchen und Videos sofort abspielen.",
+            "es": "Busca en YouTube desde la barra lateral y reproduce videos al instante.",
+            "fr": "Cherchez sur YouTube depuis la barre latérale et lancez les vidéos aussitôt.",
+            "pt-BR": "Pesquise no YouTube pela barra lateral e assista na hora.",
+            "ru": "Ищите на YouTube прямо в боковой панели и сразу смотрите."
           }
         },
         {
@@ -244,11 +396,27 @@
           "end": 15,
           "label": {
             "en": "Shader Upscale",
-            "zh-Hans": "着色器超分"
+            "zh-Hans": "着色器超分",
+            "zh-Hant": "著色器超解析",
+            "ja": "シェーダーアップスケール",
+            "ko": "셰이더 업스케일",
+            "de": "Shader-Upscaling",
+            "es": "Escalado por shaders",
+            "fr": "Upscaling par shaders",
+            "pt-BR": "Upscale por shaders",
+            "ru": "Шейдерный апскейл"
           },
           "caption": {
             "en": "Anime4K, FSR and other shaders sharpen the picture on your GPU as it plays.",
-            "zh-Hans": "Anime4K、FSR 等着色器，边播边在显卡上锐化放大。"
+            "zh-Hans": "Anime4K、FSR 等着色器，边播边在显卡上锐化放大。",
+            "zh-Hant": "Anime4K、FSR 等著色器，邊播邊在顯示卡上銳化放大。",
+            "ja": "Anime4K や FSR などのシェーダーが、再生中の映像を GPU で鮮明に。",
+            "ko": "Anime4K, FSR 등 셰이더가 재생 중인 화면을 GPU로 선명하게.",
+            "de": "Anime4K, FSR und andere Shader schärfen das Bild während der Wiedergabe auf Ihrer GPU.",
+            "es": "Anime4K, FSR y otros shaders afinan la imagen en tu GPU mientras se reproduce.",
+            "fr": "Anime4K, FSR et d’autres shaders affinent l’image sur votre GPU pendant la lecture.",
+            "pt-BR": "Anime4K, FSR e outros shaders deixam a imagem mais nítida na sua GPU durante a reprodução.",
+            "ru": "Anime4K, FSR и другие шейдеры повышают чёткость картинки на видеокарте прямо во время просмотра."
           }
         },
         {
@@ -258,11 +426,27 @@
           "end": 18,
           "label": {
             "en": "Auto Frame",
-            "zh-Hans": "自动取景"
+            "zh-Hans": "自动取景",
+            "zh-Hant": "自動取景",
+            "ja": "オートフレーム",
+            "ko": "자동 프레이밍",
+            "de": "Auto-Zuschnitt",
+            "es": "Encuadre automático",
+            "fr": "Cadrage auto",
+            "pt-BR": "Enquadramento automático",
+            "ru": "Автокадрирование"
           },
           "caption": {
             "en": "Crops away the solid border around a picture.",
-            "zh-Hans": "自动裁掉画面四周的纯色边框。"
+            "zh-Hans": "自动裁掉画面四周的纯色边框。",
+            "zh-Hant": "自動裁掉畫面四周的純色邊框。",
+            "ja": "映像のまわりの単色の枠を自動でカット。",
+            "ko": "화면 주변의 단색 테두리를 자동으로 잘라 냅니다.",
+            "de": "Schneidet einfarbige Ränder rund um das Bild weg.",
+            "es": "Recorta el borde de color liso alrededor de la imagen.",
+            "fr": "Supprime la bordure unie autour de l’image.",
+            "pt-BR": "Corta a borda de cor sólida em volta da imagem.",
+            "ru": "Обрезает однотонные поля вокруг изображения."
           }
         },
         {
@@ -272,11 +456,27 @@
           "end": 22,
           "label": {
             "en": "Motion Smoothing",
-            "zh-Hans": "超帧"
+            "zh-Hans": "超帧",
+            "zh-Hant": "補幀",
+            "ja": "フレーム補間",
+            "ko": "모션 스무딩",
+            "de": "Bewegungsglättung",
+            "es": "Suavizado de movimiento",
+            "fr": "Lissage des mouvements",
+            "pt-BR": "Suavização de movimento",
+            "ru": "Плавность движения"
           },
           "caption": {
             "en": "Doubles the frame rate with real in-between frames, on an NVIDIA RTX or AMD Radeon GPU.",
-            "zh-Hans": "在 NVIDIA RTX 或 AMD Radeon 显卡上把帧率翻倍，补的是真正的中间帧。"
+            "zh-Hans": "在 NVIDIA RTX 或 AMD Radeon 显卡上把帧率翻倍，补的是真正的中间帧。",
+            "zh-Hant": "在 NVIDIA RTX 或 AMD Radeon 顯示卡上把幀率翻倍，補的是真正的中間幀。",
+            "ja": "NVIDIA RTX や AMD Radeon の GPU で本物の中間フレームを作り、フレームレートを 2 倍に。",
+            "ko": "NVIDIA RTX 또는 AMD Radeon GPU에서 실제 중간 프레임을 만들어 프레임 속도를 두 배로.",
+            "de": "Verdoppelt die Bildrate mit echten Zwischenbildern, auf einer GPU von NVIDIA RTX oder AMD Radeon.",
+            "es": "Duplica los fotogramas por segundo con fotogramas intermedios reales, en una GPU NVIDIA RTX o AMD Radeon.",
+            "fr": "Double la fréquence d’images avec de vraies images intermédiaires, sur un GPU NVIDIA RTX ou AMD Radeon.",
+            "pt-BR": "Dobra a taxa de quadros com quadros intermediários reais, em uma GPU NVIDIA RTX ou AMD Radeon.",
+            "ru": "Удваивает частоту кадров настоящими промежуточными кадрами на видеокарте NVIDIA RTX или AMD Radeon."
           }
         },
         {
@@ -286,11 +486,27 @@
           "end": 25.4,
           "label": {
             "en": "Loudness",
-            "zh-Hans": "响度计"
+            "zh-Hans": "响度计",
+            "zh-Hant": "響度計",
+            "ja": "ラウドネスメーター",
+            "ko": "라우드니스 미터",
+            "de": "Lautheitsmesser",
+            "es": "Medidor de sonoridad",
+            "fr": "Mesure de sonie",
+            "pt-BR": "Medidor de loudness",
+            "ru": "Измеритель громкости"
           },
           "caption": {
             "en": "Measures how loud the film plays, the way broadcasters do (EBU R128).",
-            "zh-Hans": "按广播标准（EBU R128）测量正在播放的影片有多响。"
+            "zh-Hans": "按广播标准（EBU R128）测量正在播放的影片有多响。",
+            "zh-Hant": "依廣播標準（EBU R128）測量正在播放的影片有多大聲。",
+            "ja": "放送局と同じ方法 (EBU R128) で、再生中の音の大きさを測定。",
+            "ko": "방송사와 같은 방식(EBU R128)으로 재생 중인 영상의 음량을 측정합니다.",
+            "de": "Misst die Lautheit des Films so, wie es der Rundfunk tut (EBU R128).",
+            "es": "Mide la sonoridad de la película como lo hacen las emisoras (EBU R128).",
+            "fr": "Mesure la sonie du film comme le font les diffuseurs (EBU R128).",
+            "pt-BR": "Mede o volume do filme como fazem as emissoras (EBU R128).",
+            "ru": "Измеряет громкость фильма так, как это делают вещатели (EBU R128)."
           }
         },
         {
@@ -300,11 +516,27 @@
           "end": 28.4,
           "label": {
             "en": "VestraNES",
-            "zh-Hans": "VestraNES"
+            "zh-Hans": "VestraNES",
+            "zh-Hant": "VestraNES",
+            "ja": "VestraNES",
+            "ko": "VestraNES",
+            "de": "VestraNES",
+            "es": "VestraNES",
+            "fr": "VestraNES",
+            "pt-BR": "VestraNES",
+            "ru": "VestraNES"
           },
           "caption": {
             "en": "Even games: a plugin can be a whole emulator.",
-            "zh-Hans": "还能玩游戏：插件甚至可以是一个完整的模拟器。"
+            "zh-Hans": "还能玩游戏：插件甚至可以是一个完整的模拟器。",
+            "zh-Hant": "還能玩遊戲：外掛甚至可以是一個完整的模擬器。",
+            "ja": "ゲームだって遊べる。プラグインはエミュレーターにもなります。",
+            "ko": "게임까지: 플러그인 하나가 완전한 에뮬레이터가 될 수도 있습니다.",
+            "de": "Sogar Spiele: Ein Plugin kann ein ganzer Emulator sein.",
+            "es": "Incluso juegos: un complemento puede ser un emulador completo.",
+            "fr": "Même des jeux : un plugin peut être un émulateur complet.",
+            "pt-BR": "Até jogos: um plugin pode ser um emulador inteiro.",
+            "ru": "Даже игры: плагин может быть целым эмулятором."
           }
         }
       ],
@@ -313,11 +545,27 @@
         "end": 31,
         "name": {
           "en": "All from the Plugin Store",
-          "zh-Hans": "全部来自插件商城"
+          "zh-Hans": "全部来自插件商城",
+          "zh-Hant": "全部來自外掛商店",
+          "ja": "すべてプラグインストアから",
+          "ko": "모두 플러그인 스토어에서",
+          "de": "Alles aus dem Plugin-Store",
+          "es": "Todo de la Tienda de complementos",
+          "fr": "Tout vient du Catalogue de plugins",
+          "pt-BR": "Tudo da Loja de plugins",
+          "ru": "Всё из Магазина плагинов"
         },
         "caption": {
           "en": "{n} plugins today, each one open source. The next can be yours.",
-          "zh-Hans": "目前{n}个插件，个个开源。下一个可以是你的。"
+          "zh-Hans": "目前{n}个插件，个个开源。下一个可以是你的。",
+          "zh-Hant": "目前{n}個外掛，個個開源。下一個可以是你的。",
+          "ja": "現在 {n} 個のプラグイン、すべてオープンソース。次はあなたの番です。",
+          "ko": "현재 플러그인 {n}개, 모두 오픈 소스. 다음 주인공은 당신입니다.",
+          "de": "{n} Plugins bis heute, alle Open Source. Das nächste kann von Ihnen sein.",
+          "es": "{n} complementos por ahora, todos de código abierto. El próximo puede ser el tuyo.",
+          "fr": "{n} plugins à ce jour, tous open source. Le prochain peut être le vôtre.",
+          "pt-BR": "{n} plugins hoje, todos de código aberto. O próximo pode ser o seu.",
+          "ru": "Плагинов сейчас: {n}, и у всех открытый код. Следующий может быть вашим."
         },
         "plugins": 7
       }
@@ -327,7 +575,15 @@
       "$comment": "Composed from media/themes/ai.json: explainers of 2026-11-12 (R15 through a camera and the sentence-to-command flow; real player captures of AI Upscaling off and on; Vestra Player AI in five captioned steps). Highlights waits for the sound model (R18): hidden, and absent from the video. 2026-11-23: Ask Vestra turns on NVIDIA Motion Smoothing and the comparison follows (replaces AI Upscaling).",
       "title": {
         "en": "And with AI",
-        "zh-Hans": "也随 AI 一起成长"
+        "zh-Hans": "也随 AI 一起成长",
+        "zh-Hant": "也隨 AI 一起成長",
+        "ja": "そして AI とともに",
+        "ko": "그리고 AI와 함께",
+        "de": "Und mit KI",
+        "es": "Y con IA",
+        "fr": "Et avec l’IA",
+        "pt-BR": "E com IA",
+        "ru": "И вместе с ИИ"
       },
       "rail": "chips",
       "duration": 16.8,
@@ -355,15 +611,39 @@
           "end": 4.8,
           "label": {
             "en": "Ask Vestra",
-            "zh-Hans": "Ask Vestra"
+            "zh-Hans": "Ask Vestra",
+            "zh-Hant": "Ask Vestra",
+            "ja": "Vestra に頼む",
+            "ko": "Vestra에게 요청",
+            "de": "Vestra fragen",
+            "es": "Preguntar a Vestra",
+            "fr": "Demander à Vestra",
+            "pt-BR": "Ask Vestra",
+            "ru": "Ask Vestra"
           },
           "caption": {
             "en": "Say it in your own words in the Command Palette, and it runs the player's commands.",
-            "zh-Hans": "在命令面板里用自己的话说，它来执行播放器的命令。"
+            "zh-Hans": "在命令面板里用自己的话说，它来执行播放器的命令。",
+            "zh-Hant": "在命令面板裡用自己的話說，它來執行播放器的命令。",
+            "ja": "コマンドパレットに自分の言葉で入力すれば、プレーヤーのコマンドを実行してくれます。",
+            "ko": "명령 팔레트에 평소 말투로 입력하면 플레이어 명령을 대신 실행합니다.",
+            "de": "Sagen Sie es in der Befehlspalette mit eigenen Worten, und Vestra führt die Befehle des Players aus.",
+            "es": "Dilo con tus propias palabras en la Paleta de comandos y ejecutará los comandos del reproductor.",
+            "fr": "Dites-le avec vos mots dans la Palette de commandes, et il exécute les commandes du lecteur.",
+            "pt-BR": "Diga com suas palavras na Paleta de comandos, e ele executa os comandos do player.",
+            "ru": "Скажите своими словами в палитре команд, и он выполнит команды плеера."
           },
           "fine": {
             "en": "Uses your own AI key.",
-            "zh-Hans": "使用你自己的 AI 密钥。"
+            "zh-Hans": "使用你自己的 AI 密钥。",
+            "zh-Hant": "使用你自己的 AI 金鑰。",
+            "ja": "お手持ちの AI キーを使用します。",
+            "ko": "본인의 AI 키를 사용합니다.",
+            "de": "Nutzt Ihren eigenen KI-Schlüssel.",
+            "es": "Usa tu propia clave de IA.",
+            "fr": "Utilise votre propre clé d’IA.",
+            "pt-BR": "Usa sua própria chave de IA.",
+            "ru": "Использует ваш собственный ключ ИИ."
           }
         },
         {
@@ -373,15 +653,39 @@
           "end": 9.6,
           "label": {
             "en": "Motion Smoothing",
-            "zh-Hans": "超帧"
+            "zh-Hans": "超帧",
+            "zh-Hant": "補幀",
+            "ja": "フレーム補間",
+            "ko": "모션 스무딩",
+            "de": "Bewegungsglättung",
+            "es": "Suavizado de movimiento",
+            "fr": "Lissage des mouvements",
+            "pt-BR": "Suavização de movimento",
+            "ru": "Плавность движения"
           },
           "caption": {
             "en": "Asked once, it doubles the frame rate with real in-between frames, made by your GPU.",
-            "zh-Hans": "说一句，它就用显卡补出真正的中间帧，把帧率翻倍。"
+            "zh-Hans": "说一句，它就用显卡补出真正的中间帧，把帧率翻倍。",
+            "zh-Hant": "說一句，它就用顯示卡補出真正的中間幀，幀率翻倍。",
+            "ja": "ひと言頼めば、GPU が本物の中間フレームを作り、フレームレートを 2 倍に。",
+            "ko": "한 번만 요청하면 GPU가 실제 중간 프레임을 만들어 프레임 속도를 두 배로 높입니다.",
+            "de": "Ein Satz genügt, und Ihre GPU verdoppelt die Bildrate mit echten Zwischenbildern.",
+            "es": "Pídelo una vez y tu GPU duplica los FPS con fotogramas intermedios reales.",
+            "fr": "Une demande, et votre GPU double la cadence avec de vraies images intermédiaires.",
+            "pt-BR": "Basta pedir uma vez: sua GPU dobra a taxa de quadros com quadros intermediários reais.",
+            "ru": "Одна просьба, и видеокарта удваивает частоту кадров настоящими промежуточными кадрами."
           },
           "fine": {
             "en": "Windows, NVIDIA RTX 30+ or AMD Radeon.",
-            "zh-Hans": "Windows，NVIDIA RTX 30 系列以上或 AMD Radeon 显卡。"
+            "zh-Hans": "Windows，NVIDIA RTX 30 系列以上或 AMD Radeon 显卡。",
+            "zh-Hant": "Windows，NVIDIA RTX 30 系列以上或 AMD Radeon。",
+            "ja": "Windows、NVIDIA RTX 30 シリーズ以降または AMD Radeon。",
+            "ko": "Windows, NVIDIA RTX 30 시리즈 이상 또는 AMD Radeon.",
+            "de": "Windows, NVIDIA RTX 30 oder neuer oder AMD Radeon.",
+            "es": "Windows, NVIDIA RTX 30 o posterior, o AMD Radeon.",
+            "fr": "Windows, NVIDIA RTX 30 ou plus récent, ou AMD Radeon.",
+            "pt-BR": "Windows, NVIDIA RTX 30 ou superior, ou AMD Radeon.",
+            "ru": "Windows, NVIDIA RTX 30 и новее или AMD Radeon."
           }
         },
         {
@@ -391,15 +695,39 @@
           "end": 16.8,
           "label": {
             "en": "Vestra Player AI",
-            "zh-Hans": "Vestra Player AI"
+            "zh-Hans": "Vestra Player AI",
+            "zh-Hant": "Vestra Player AI",
+            "ja": "Vestra Player AI",
+            "ko": "Vestra Player AI",
+            "de": "Vestra Player AI",
+            "es": "Vestra Player AI",
+            "fr": "Vestra Player AI",
+            "pt-BR": "Vestra Player AI",
+            "ru": "Vestra Player AI"
           },
           "caption": {
             "en": "Describe a plugin; it writes it, tests it, and one click installs it.",
-            "zh-Hans": "说出想要的插件，它写好、测试，一键装上。"
+            "zh-Hans": "说出想要的插件，它写好、测试，一键装上。",
+            "zh-Hant": "說出想要的外掛，它寫好、測試，一鍵裝上。",
+            "ja": "欲しいプラグインを説明すれば、書いてテストし、ワンクリックでインストール。",
+            "ko": "원하는 플러그인을 설명하면 코드를 작성하고 테스트한 뒤, 클릭 한 번으로 설치합니다.",
+            "de": "Beschreiben Sie ein Plugin: Es wird geschrieben, getestet und mit einem Klick installiert.",
+            "es": "Describe un complemento: lo escribe, lo prueba y se instala con un clic.",
+            "fr": "Décrivez un plugin : il l’écrit, le teste, et un clic suffit pour l’installer.",
+            "pt-BR": "Descreva um plugin: ele escreve, testa e instala com um clique.",
+            "ru": "Опишите плагин, и он его напишет, протестирует и установит в один клик."
           },
           "fine": {
             "en": "Uses your own AI key.",
-            "zh-Hans": "使用你自己的 AI 密钥。"
+            "zh-Hans": "使用你自己的 AI 密钥。",
+            "zh-Hant": "使用你自己的 AI 金鑰。",
+            "ja": "お手持ちの AI キーを使用します。",
+            "ko": "본인의 AI 키를 사용합니다.",
+            "de": "Nutzt Ihren eigenen KI-Schlüssel.",
+            "es": "Usa tu propia clave de IA.",
+            "fr": "Utilise votre propre clé d’IA.",
+            "pt-BR": "Usa sua própria chave de IA.",
+            "ru": "Использует ваш собственный ключ ИИ."
           }
         },
         {
@@ -408,11 +736,27 @@
           "hidden": true,
           "label": {
             "en": "Highlights",
-            "zh-Hans": "高光"
+            "zh-Hans": "高光",
+            "zh-Hant": "精華",
+            "ja": "ハイライト",
+            "ko": "하이라이트",
+            "de": "Highlights",
+            "es": "Destacados",
+            "fr": "Temps forts",
+            "pt-BR": "Destaques",
+            "ru": "Яркие моменты"
           },
           "caption": {
             "en": "Clip Export listens for laughter and applause on your own computer and suggests the moments to keep. You choose what to export.",
-            "zh-Hans": "片段导出在本机听出笑声和掌声，把值得留下的片段列给你。导出什么，由你决定。"
+            "zh-Hans": "片段导出在本机听出笑声和掌声，把值得留下的片段列给你。导出什么，由你决定。",
+            "zh-Hant": "片段匯出在本機聽出笑聲和掌聲，把值得留下的片段列給你。匯出什麼，由你決定。",
+            "ja": "クリップ書き出しが笑い声や拍手を手元の PC で聞き取り、残したい場面を提案します。何を書き出すかはあなたが決められます。",
+            "ko": "클립 내보내기가 내 컴퓨터에서 웃음소리와 박수 소리를 찾아 남길 만한 장면을 추천합니다. 무엇을 내보낼지는 직접 고르세요.",
+            "de": "Clip-Export erkennt Lachen und Applaus direkt auf Ihrem Computer und schlägt die Momente vor, die sich lohnen. Was exportiert wird, entscheiden Sie.",
+            "es": "Exportar clips detecta risas y aplausos en tu propio equipo y te sugiere los momentos que vale la pena guardar. Tú eliges qué exportar.",
+            "fr": "Export d’extraits repère les rires et les applaudissements sur votre ordinateur et suggère les moments à garder. Vous choisissez ce qui est exporté.",
+            "pt-BR": "O Exportar clipes identifica risadas e aplausos no seu próprio computador e sugere os momentos para guardar. Você escolhe o que exportar.",
+            "ru": "Экспорт клипов прямо на вашем компьютере распознаёт смех и аплодисменты и предлагает моменты, которые стоит сохранить. Что экспортировать, решаете вы."
           }
         }
       ]

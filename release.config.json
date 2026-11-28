@@ -67,11 +67,27 @@
   "requirements": {
     "windows": {
       "en": "Windows 10 or 11, 64-bit (x64)",
-      "zh-Hans": "Windows 10 或 11，64 位（x64）"
+      "zh-Hans": "Windows 10 或 11，64 位（x64）",
+      "zh-Hant": "Windows 10 或 11，64 位元（x64）",
+      "ja": "Windows 10 または 11、64 ビット (x64)",
+      "ko": "Windows 10 또는 11, 64비트(x64)",
+      "de": "Windows 10 oder 11, 64 Bit (x64)",
+      "es": "Windows 10 u 11, 64 bits (x64)",
+      "fr": "Windows 10 ou 11, 64 bits (x64)",
+      "pt-BR": "Windows 10 ou 11, 64 bits (x64)",
+      "ru": "Windows 10 или 11, 64-разрядная (x64)"
     },
     "macos": {
       "en": "macOS 15 Sequoia or later, Apple silicon (M1 or newer)",
-      "zh-Hans": "macOS 15 Sequoia 或更高版本，Apple 芯片（M1 或更新）"
+      "zh-Hans": "macOS 15 Sequoia 或更高版本，Apple 芯片（M1 或更新）",
+      "zh-Hant": "macOS 15 Sequoia 或以上版本，Apple 晶片（M1 或更新）",
+      "ja": "macOS 15 Sequoia 以降、Apple シリコン (M1 以降)",
+      "ko": "macOS 15 Sequoia 이상, Apple 실리콘(M1 이상)",
+      "de": "macOS 15 Sequoia oder neuer, Apple Chip (M1 oder neuer)",
+      "es": "macOS 15 Sequoia o posterior, chip de Apple (M1 o posterior)",
+      "fr": "macOS 15 Sequoia ou ultérieur, puce Apple (M1 ou plus récente)",
+      "pt-BR": "macOS 15 Sequoia ou posterior, Apple Silicon (M1 ou mais recente)",
+      "ru": "macOS 15 Sequoia или новее, Apple Silicon (M1 или новее)"
     }
   }
 }

@@ -38,6 +38,19 @@
   --t-lede: clamp(1.02rem, 1.5vw, 1.2rem);
   color-scheme: dark;
 }
+/* CJK pages: the language's own fonts before the Simplified Chinese ones (Han characters differ in shape). */
+:root[lang="zh-Hant"] {
+  --font: system-ui, -apple-system, "Segoe UI Variable Text", "Segoe UI", "PingFang TC", "Microsoft JhengHei", "Noto Sans CJK TC", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --display: "SF Pro Display", "Segoe UI Variable Display", system-ui, -apple-system, "Segoe UI", "PingFang TC", "Microsoft JhengHei", "Noto Sans CJK TC", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+:root[lang="ja"] {
+  --font: system-ui, -apple-system, "Segoe UI Variable Text", "Segoe UI", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", Meiryo, "Noto Sans CJK JP", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --display: "SF Pro Display", "Segoe UI Variable Display", system-ui, -apple-system, "Segoe UI", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", Meiryo, "Noto Sans CJK JP", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+:root[lang="ko"] {
+  --font: system-ui, -apple-system, "Segoe UI Variable Text", "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans CJK KR", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --display: "SF Pro Display", "Segoe UI Variable Display", system-ui, -apple-system, "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans CJK KR", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
 
 /* The stage tilt (main.js): registered and not inherited, so writing them on the tilt layer
    does not restyle the windows inside it on every pointer move. */
@@ -61,7 +74,7 @@ a { color: var(--text); text-underline-offset: 3px; text-decoration-color: rgba(
 a:hover { text-decoration-color: var(--accent); }
 code { font-family: var(--mono); font-size: 0.88em; background: var(--ink-3); padding: 0.05em 0.35em; border-radius: 4px; }
 h1, h2, h3 { margin: 0; font-family: var(--display); line-height: 1.08; letter-spacing: -0.035em; font-weight: 680; text-wrap: balance; }
-:root[lang="zh-Hans"] h1, :root[lang="zh-Hans"] h2, :root[lang="zh-Hans"] h3 { letter-spacing: 0; line-height: 1.22; }
+:root:is([lang="zh-Hans"], [lang="zh-Hant"], [lang="ja"], [lang="ko"]) :is(h1, h2, h3) { letter-spacing: 0; line-height: 1.22; }
 img, video { max-width: 100%; }
 button { font: inherit; color: inherit; cursor: pointer; }
 [hidden] { display: none !important; }
@@ -99,8 +112,22 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .nav-gh { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; color: var(--muted); }
 .nav-gh:hover { color: var(--text); background: var(--ink-3); }
 .gh-icon { width: 20px; height: 20px; fill: currentColor; flex: none; }
-.lang { background: transparent; border: 1px solid var(--line-2); border-radius: 999px; padding: 4px 13px; font-size: 0.84rem; white-space: nowrap; color: var(--muted); }
-.lang:hover { color: var(--text); border-color: var(--muted); }
+/* The language menu: a pill (globe and the page's language) opening a list of every language. */
+.lang-menu { position: relative; }
+.lang { display: flex; align-items: center; justify-content: center; gap: 4px; min-width: 54.9px; background: transparent; border: 1px solid var(--line-2); border-radius: 999px; padding: 4px 9px; font-size: 0.84rem; white-space: nowrap; color: var(--muted); cursor: pointer; list-style: none; user-select: none; }
+.lang::-webkit-details-marker { display: none; }
+.lang:hover, .lang-menu[open] > .lang { color: var(--text); border-color: var(--muted); }
+.lang-globe { width: 14px; height: 14px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.lang-list {
+  position: absolute; right: 0; top: calc(100% + 10px); z-index: 40; margin: 0; padding: 6px; list-style: none; min-width: 210px;
+  background: var(--ink-2); border: 1px solid var(--line-2); border-radius: 14px; box-shadow: 0 18px 48px rgba(0, 0, 0, 0.55);
+}
+.lang-list a { display: flex; align-items: center; gap: 10px; padding: 7px 14px 7px 10px; border-radius: 9px; font-size: 0.9rem; line-height: 1.4; color: var(--muted); text-decoration: none; white-space: nowrap; }
+.lang-list a:hover, .lang-list a:focus-visible { color: var(--text); background: var(--ink-3); }
+.lang-list a:focus-visible { outline-offset: -2px; }
+.lang-list a[aria-current] { color: var(--text); }
+.lang-check { width: 16px; height: 16px; flex: none; fill: none; stroke: var(--accent-hi); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; visibility: hidden; }
+.lang-list a[aria-current] .lang-check { visibility: visible; }
 .nav-dl {
   padding: 5px 14px; border-radius: 999px; font-size: 0.86rem; font-weight: 650; white-space: nowrap;
   color: var(--text); text-decoration: none; border: 1.5px solid transparent; background: var(--dl-fill), var(--brand) border-box;
@@ -120,7 +147,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
   font: 600 0.74rem/1.2 var(--mono); letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent);
 }
 .kicker::before { content: ""; width: 24px; height: 2px; border-radius: 1px; background: var(--brand); }
-:root[lang="zh-Hans"] .kicker { letter-spacing: 0.08em; }
+:root:is([lang="zh-Hans"], [lang="zh-Hant"], [lang="ja"], [lang="ko"]) .kicker { letter-spacing: 0.08em; }
 .section-head { max-width: 760px; margin-bottom: 56px; }
 .section-head h2 { font-size: var(--t-h2); }
 .section-lede { margin: 20px 0 0; color: var(--muted); font-size: var(--t-lede); max-width: 640px; }
@@ -157,7 +184,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
    0.83rem line), so the stage starts exactly where it did. */
 .hero-copy::after { content: "\00a0"; display: block; margin-top: 18px; font-size: 0.83rem; }
 .hero h1 { font-size: var(--t-hero); font-weight: 700; letter-spacing: -0.045em; max-width: 19em; margin: 0 auto; }
-:root[lang="zh-Hans"] .hero h1 { letter-spacing: 0.01em; }
+:root:is([lang="zh-Hans"], [lang="zh-Hant"], [lang="ja"], [lang="ko"]) .hero h1 { letter-spacing: 0.01em; }
 .hero h1::after { content: ""; display: block; width: 96px; height: 3px; margin: 20px auto 0; border-radius: 2px; background: var(--brand); }
 .cta { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 12px; margin-top: 30px; }
 .cta-btn {
@@ -314,7 +341,7 @@ main { overflow-x: clip; }
 }
 .ch-num span { margin-left: 6px; color: var(--faint); }
 .th-head h3 { font-size: clamp(1.75rem, 2.8vw, 2.5rem); font-weight: 720; line-height: 1.08; letter-spacing: -0.025em; }
-:root[lang="zh-Hans"] .th-head h3 { letter-spacing: 0; line-height: 1.22; }
+:root:is([lang="zh-Hans"], [lang="zh-Hant"], [lang="ja"], [lang="ko"]) .th-head h3 { letter-spacing: 0; line-height: 1.22; }
 
 /* Centred in the screen under the header. */
 .th-sticky { position: sticky; top: calc(var(--header) + max(16px, (100vh - var(--header) - var(--th-win-h)) / 2)); }

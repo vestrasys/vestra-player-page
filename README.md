@@ -18,8 +18,8 @@ npm run build            # fetches the latest release, writes dist/
 npm run preview          # serves dist/ at http://127.0.0.1:4173/
 ```
 
-`dist/index.html` also works when opened directly from disk (the language link
-then opens the folder; use the preview). Builds without
+`dist/index.html` also works when opened directly from disk (the language menu
+then opens folders; use the preview). Builds without
 network access or release metadata still succeed (see below):
 
 ```sh
@@ -36,7 +36,7 @@ The build prints the size of the HTML, CSS and JS and fails above 150 KiB
 | Path | Contents |
 | --- | --- |
 | `src/index.html` | Page template: `{{t:key}}` text, `{{h:key}}` HTML text, `{{var:…}}` values, `{{slot:…}}` sections rendered by the build |
-| `src/i18n.json` | Every string, `en` and `zh-Hans` (the build fails if a key is missing in one); the build renders one page per language |
+| `src/i18n.json` | Every string, in each of the ten languages (the build fails if a string is missing in one); the build renders one page per language |
 | `src/styles.css`, `src/main.js` | Styles and the page script (language, download buttons, platforms dialog, playing windows, stage parallax, plugin filter) |
 | `media/slides.json` | The hero stage, the feature themes (copy, beat times, posters, video sources); the full clips were removed on 2026-11-12 |
 | `media/themes/*.json` | How each theme's loop is composed from recordings and stills (`scripts/compose-theme.mjs`) |
@@ -52,13 +52,26 @@ The build prints the size of the HTML, CSS and JS and fails above 150 KiB
 ## Languages and search engines
 
 Each language is its own page, built from the same template: `dist/index.html`
-(English, also `x-default`) and `dist/zh-hans/index.html`. Both carry their
+(English, also `x-default`) and `dist/<folder>/index.html` for Simplified and
+Traditional Chinese (`zh-hans`, `zh-hant`), Japanese (`ja`), Korean (`ko`),
+German (`de`), Spanish (`es`), French (`fr`), Brazilian Portuguese (`pt-br`)
+and Russian (`ru`); `LANGS` and `PAGES` in `scripts/build.mjs` list them. Each
+carries its
 text, title, description, Open Graph and Twitter tags and a schema.org
 `SoftwareApplication` (JSON-LD: free, Windows and macOS, the version and
 download links when release metadata exists; no ratings, since none exist) in
 the HTML itself, so nothing depends on script to be indexed. The header's
-language link goes to the other page; the page does not redirect by browser
-language.
+language menu (a `<details>`, so it works without script) links every page,
+each language named in itself; a choice is saved in `localStorage`
+(`vestra-lang`). Only the English root page redirects, from a small inline
+script at the top of its `<head>`: to the saved choice if there is one,
+otherwise to the first language in `navigator.languages` that has a page
+(`zh-TW`/`zh-HK`/`zh-Hant`: Traditional Chinese, other `zh`: Simplified, any
+`pt`: Brazilian Portuguese), stopping at English; with no preference list
+(crawlers) it stays. The build adds that script's SHA-256 to the
+Content-Security-Policy in `dist/_headers`, which allows no other inline
+script. Translations follow the player's own terms (its `.po` files) where
+they exist; `media/CREDITS.md` has a footer section per language.
 
 `url` in `site.config.json` is the public address (ending in `/`). Search
 engines need absolute addresses for canonical links, `hreflang` alternates,
@@ -66,7 +79,7 @@ engines need absolute addresses for canonical links, `hreflang` alternates,
 (`SITE_URL=… npm run build` overrides it, for example to check the output
 against the local preview). Without it the pages have no canonical or
 `hreflang` links and `dist/robots.txt` (always written) has no `Sitemap`
-line; with it the build also writes `dist/sitemap.xml` with both pages and
+line; with it the build also writes `dist/sitemap.xml` with every page and
 their alternates (`lastmod`: the later of the release date and the last
 commit), absolute `og:image` and structured data (`@graph`: the Organization,
 the WebSite and the SoftwareApplication, linked by `@id`), and `dist/llms.txt`
@@ -210,7 +223,7 @@ into `media/slides.json`. Replacing one item is one command plus that edit.
   `frame.height` pixels. `frame.areas` are rectangles in that image's pixels:
   `client` is the window's client area, `video` only the video area. Each
   slide's `area` names the rectangle its video covers.
-- Each slide has an `id`, `title` and `caption` in `en` and `zh-Hans`, an
+- Each slide has an `id`, `title` and `caption` in every language, an
   optional `icon`, a `poster` and `sources` (tried in order; AV1 WebM first,
   H.264 MP4 last). `"hidden": true` leaves a slide out of the page; its files
   need not exist.
@@ -219,7 +232,7 @@ into `media/slides.json`. Replacing one item is one command plus that edit.
   content-hashed names in `dist/` (as the CSS and JS), so a re-encoded clip is
   never served from a browser cache under its old name.
 - `themes` are the feature section: per theme `id` and `title`
-  (`en`, `zh-Hans`; no lede: the heading stands alone, user ruling 2026-11-12), `rail` (`icons`: each beat has an `icon`, the
+  (every language in `LANGS`; no lede: the heading stands alone, user ruling 2026-11-12), `rail` (`icons`: each beat has an `icon`, the
   plugin's icon as 104 px WebP in `media/icons/`; `chips`: each beat has a
   `glyph` from `GLYPHS` in `scripts/build.mjs`), `duration`, `poster`
   and `sources` (a `"media": "(max-width: 640px)"` source first, for
@@ -229,7 +242,7 @@ into `media/slides.json`. Replacing one item is one command plus that edit.
   beats in words) lights every icon. `"hidden": true` leaves a beat out;
   its span must then be cut out of the video too. The build fails unless the
   visible beats and the outro tile `0`–`duration` (to 1/60 s) and every
-  string exists in both languages.
+  string exists in every language.
 - Each theme's window loops its video; the script follows the video's clock
   (`requestVideoFrameCallback`) to ring the active rail item, fill its
   progress bar and change the caption. A click on an item seeks to its beat

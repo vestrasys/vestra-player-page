@@ -18,12 +18,62 @@ record table.
 
 ## Footer (zh-Hans)
 
-The same lines for the Chinese page: titles, names and licence names stay as
-they are; only the connecting words are Chinese.
+The same lines for the Simplified Chinese page: titles, names and licence
+names stay as they are; only the connecting words are Chinese. The sections
+below do the same for the other languages (a page without a section shows
+the English lines).
 
 - [Big Buck Bunny](https://peach.blender.org/about/)、[Sintel](https://durian.blender.org/sharing/) 和 [Caminandes 2](https://studio.blender.org/films/caminandes-2/)：© Blender Foundation，采用 [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/)；[Elephants Dream](https://orange.blender.org/)：© 2006 Blender Foundation / Netherlands Media Art Institute，采用 [CC BY 2.5](https://creativecommons.org/licenses/by/2.5/)；[Spring](https://studio.blender.org/films/spring/pages/about/)：© Blender Foundation，采用 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)；[Morevna 第 3 集](https://morevnaproject.org/anime/episode-3/)，作者 Morevna Project，采用 [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)。
 - [Twin Dragons](https://github.com/Garydos/twin-dragons-nes)，作者 Garydos、surt 和 Shiru：代码采用 [zlib](https://zlib.net/zlib_license.html)，[图形](https://opengameart.org/content/twin-dragons)采用 [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/)。
 - (hero backdrop) [极光延时摄影](https://www.pexels.com/video/stunning-aurora-borealis-in-night-sky-timelapse-28889010/)，作者 [Frank Cone](https://www.pexels.com/@frank-cone-140140/)，来自 Pexels。
+
+## Footer (zh-Hant)
+
+- [Big Buck Bunny](https://peach.blender.org/about/)、[Sintel](https://durian.blender.org/sharing/) 和 [Caminandes 2](https://studio.blender.org/films/caminandes-2/)：© Blender Foundation，採用 [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/)；[Elephants Dream](https://orange.blender.org/)：© 2006 Blender Foundation / Netherlands Media Art Institute，採用 [CC BY 2.5](https://creativecommons.org/licenses/by/2.5/)；[Spring](https://studio.blender.org/films/spring/pages/about/)：© Blender Foundation，採用 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)；[Morevna 第 3 集](https://morevnaproject.org/anime/episode-3/)，作者 Morevna Project，採用 [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)。
+- [Twin Dragons](https://github.com/Garydos/twin-dragons-nes)，作者 Garydos、surt 和 Shiru：程式碼採用 [zlib](https://zlib.net/zlib_license.html)，[圖像](https://opengameart.org/content/twin-dragons)採用 [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/)。
+- (hero backdrop) [極光縮時攝影](https://www.pexels.com/video/stunning-aurora-borealis-in-night-sky-timelapse-28889010/)，作者 [Frank Cone](https://www.pexels.com/@frank-cone-140140/)，來自 Pexels。
+
+## Footer (ja)
+
+- [Big Buck Bunny](https://peach.blender.org/about/)、[Sintel](https://durian.blender.org/sharing/)、[Caminandes 2](https://studio.blender.org/films/caminandes-2/)：© Blender Foundation、[CC BY 3.0](https://creativecommons.org/licenses/by/3.0/)。[Elephants Dream](https://orange.blender.org/)：© 2006 Blender Foundation / Netherlands Media Art Institute、[CC BY 2.5](https://creativecommons.org/licenses/by/2.5/)。[Spring](https://studio.blender.org/films/spring/pages/about/)：© Blender Foundation、[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)。[Morevna 第 3 話](https://morevnaproject.org/anime/episode-3/)：Morevna Project、[CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)。
+- [Twin Dragons](https://github.com/Garydos/twin-dragons-nes)：Garydos、surt、Shiru。コードは [zlib](https://zlib.net/zlib_license.html)、[グラフィック](https://opengameart.org/content/twin-dragons)は [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/)。
+- (hero backdrop) [オーロラのタイムラプス](https://www.pexels.com/video/stunning-aurora-borealis-in-night-sky-timelapse-28889010/)：[Frank Cone](https://www.pexels.com/@frank-cone-140140/)（Pexels）。
+
+## Footer (ko)
+
+- [Big Buck Bunny](https://peach.blender.org/about/), [Sintel](https://durian.blender.org/sharing/), [Caminandes 2](https://studio.blender.org/films/caminandes-2/): © Blender Foundation, [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/). [Elephants Dream](https://orange.blender.org/): © 2006 Blender Foundation / Netherlands Media Art Institute, [CC BY 2.5](https://creativecommons.org/licenses/by/2.5/). [Spring](https://studio.blender.org/films/spring/pages/about/): © Blender Foundation, [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). [Morevna 3화](https://morevnaproject.org/anime/episode-3/): Morevna Project, [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
+- [Twin Dragons](https://github.com/Garydos/twin-dragons-nes): Garydos, surt, Shiru. 코드는 [zlib](https://zlib.net/zlib_license.html), [그래픽](https://opengameart.org/content/twin-dragons)은 [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/).
+- (hero backdrop) [오로라 타임랩스](https://www.pexels.com/video/stunning-aurora-borealis-in-night-sky-timelapse-28889010/): [Frank Cone](https://www.pexels.com/@frank-cone-140140/), Pexels.
+
+## Footer (de)
+
+- [Big Buck Bunny](https://peach.blender.org/about/), [Sintel](https://durian.blender.org/sharing/) und [Caminandes 2](https://studio.blender.org/films/caminandes-2/) © Blender Foundation, [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/); [Elephants Dream](https://orange.blender.org/) © 2006 Blender Foundation / Netherlands Media Art Institute, [CC BY 2.5](https://creativecommons.org/licenses/by/2.5/); [Spring](https://studio.blender.org/films/spring/pages/about/) © Blender Foundation, [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/); [Morevna Episode 3](https://morevnaproject.org/anime/episode-3/) vom Morevna Project, [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
+- [Twin Dragons](https://github.com/Garydos/twin-dragons-nes) von Garydos, surt und Shiru: Code unter [zlib](https://zlib.net/zlib_license.html), [Grafik](https://opengameart.org/content/twin-dragons) unter [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/).
+- (hero backdrop) [Polarlicht-Zeitraffer](https://www.pexels.com/video/stunning-aurora-borealis-in-night-sky-timelapse-28889010/) von [Frank Cone](https://www.pexels.com/@frank-cone-140140/) auf Pexels.
+
+## Footer (es)
+
+- [Big Buck Bunny](https://peach.blender.org/about/), [Sintel](https://durian.blender.org/sharing/) y [Caminandes 2](https://studio.blender.org/films/caminandes-2/) © Blender Foundation, [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/); [Elephants Dream](https://orange.blender.org/) © 2006 Blender Foundation / Netherlands Media Art Institute, [CC BY 2.5](https://creativecommons.org/licenses/by/2.5/); [Spring](https://studio.blender.org/films/spring/pages/about/) © Blender Foundation, [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/); [Morevna, episodio 3](https://morevnaproject.org/anime/episode-3/), de Morevna Project, [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
+- [Twin Dragons](https://github.com/Garydos/twin-dragons-nes), de Garydos, surt y Shiru: código bajo [zlib](https://zlib.net/zlib_license.html), [gráficos](https://opengameart.org/content/twin-dragons) bajo [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/).
+- (hero backdrop) [Timelapse de aurora](https://www.pexels.com/video/stunning-aurora-borealis-in-night-sky-timelapse-28889010/), de [Frank Cone](https://www.pexels.com/@frank-cone-140140/) en Pexels.
+
+## Footer (fr)
+
+- [Big Buck Bunny](https://peach.blender.org/about/), [Sintel](https://durian.blender.org/sharing/) et [Caminandes 2](https://studio.blender.org/films/caminandes-2/) © Blender Foundation, [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) ; [Elephants Dream](https://orange.blender.org/) © 2006 Blender Foundation / Netherlands Media Art Institute, [CC BY 2.5](https://creativecommons.org/licenses/by/2.5/) ; [Spring](https://studio.blender.org/films/spring/pages/about/) © Blender Foundation, [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) ; [Morevna, épisode 3](https://morevnaproject.org/anime/episode-3/), par le Morevna Project, [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
+- [Twin Dragons](https://github.com/Garydos/twin-dragons-nes), par Garydos, surt et Shiru : code sous [zlib](https://zlib.net/zlib_license.html), [graphismes](https://opengameart.org/content/twin-dragons) sous [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/).
+- (hero backdrop) [Timelapse d’aurore boréale](https://www.pexels.com/video/stunning-aurora-borealis-in-night-sky-timelapse-28889010/), par [Frank Cone](https://www.pexels.com/@frank-cone-140140/) sur Pexels.
+
+## Footer (pt-BR)
+
+- [Big Buck Bunny](https://peach.blender.org/about/), [Sintel](https://durian.blender.org/sharing/) e [Caminandes 2](https://studio.blender.org/films/caminandes-2/) © Blender Foundation, [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/); [Elephants Dream](https://orange.blender.org/) © 2006 Blender Foundation / Netherlands Media Art Institute, [CC BY 2.5](https://creativecommons.org/licenses/by/2.5/); [Spring](https://studio.blender.org/films/spring/pages/about/) © Blender Foundation, [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/); [Morevna, episódio 3](https://morevnaproject.org/anime/episode-3/), do Morevna Project, [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
+- [Twin Dragons](https://github.com/Garydos/twin-dragons-nes), de Garydos, surt e Shiru: código sob [zlib](https://zlib.net/zlib_license.html), [gráficos](https://opengameart.org/content/twin-dragons) sob [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/).
+- (hero backdrop) [Timelapse de aurora](https://www.pexels.com/video/stunning-aurora-borealis-in-night-sky-timelapse-28889010/), de [Frank Cone](https://www.pexels.com/@frank-cone-140140/) no Pexels.
+
+## Footer (ru)
+
+- [Big Buck Bunny](https://peach.blender.org/about/), [Sintel](https://durian.blender.org/sharing/) и [Caminandes 2](https://studio.blender.org/films/caminandes-2/) © Blender Foundation, [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/); [Elephants Dream](https://orange.blender.org/) © 2006 Blender Foundation / Netherlands Media Art Institute, [CC BY 2.5](https://creativecommons.org/licenses/by/2.5/); [Spring](https://studio.blender.org/films/spring/pages/about/) © Blender Foundation, [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/); [Morevna, эпизод 3](https://morevnaproject.org/anime/episode-3/), Morevna Project, [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
+- [Twin Dragons](https://github.com/Garydos/twin-dragons-nes), авторы Garydos, surt и Shiru: код под [zlib](https://zlib.net/zlib_license.html), [графика](https://opengameart.org/content/twin-dragons) под [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/).
+- (hero backdrop) [Таймлапс северного сияния](https://www.pexels.com/video/stunning-aurora-borealis-in-night-sky-timelapse-28889010/), автор [Frank Cone](https://www.pexels.com/@frank-cone-140140/), Pexels.
 
 ## Record
 
